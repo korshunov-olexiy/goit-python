@@ -9,20 +9,28 @@ documents_ext = ['pdf', 'doc', 'docx', 'txt']
 music_ext = ['mp3', 'ogg', 'wav', 'amr']
 archives_ext = ['zip', 'gz', 'tar', 'tar.gz']
 
-pictures = {'name': 'Изображения', 'dir_name': 'images', 'ext': pictures_ext, 'sort': True, 'files': []}
-movies = {'name': 'Видео', 'dir_name': 'video', 'ext': movies_ext, 'sort': True, 'files': []}
-documents = {'name': 'Документы', 'dir_name': 'documents', 'ext': documents_ext, 'sort': True, 'files': []}
-music = {'name': 'Музыка', 'dir_name': 'audio', 'ext': music_ext, 'sort': True, 'files': []}
-archives = {'name': 'Архиы', 'dir_name': 'archives', 'ext': archives_ext, 'sort': True, 'files': []}
-unknown = {'name': 'Другое', 'dir_name': 'other', 'ext': [], 'sort': False, 'files': [], 'dirs': []}
+pictures = {'name': 'Изображения', 'dir_name': 'images',
+            'ext': pictures_ext, 'sort': True, 'files': []}
+movies = {'name': 'Видео', 'dir_name': 'video',
+          'ext': movies_ext, 'sort': True, 'files': []}
+documents = {'name': 'Документы', 'dir_name': 'documents',
+             'ext': documents_ext, 'sort': True, 'files': []}
+music = {'name': 'Музыка', 'dir_name': 'audio',
+         'ext': music_ext, 'sort': True, 'files': []}
+archives = {'name': 'Архиы', 'dir_name': 'archives',
+            'ext': archives_ext, 'sort': True, 'files': []}
+unknown = {'name': 'Другое', 'dir_name': 'other',
+           'ext': [], 'sort': False, 'files': [], 'dirs': []}
 extensions_list = {'known': [], 'unknown': []}
 categories = [pictures, movies, documents, music, archives, unknown]
 
+
 def move_file(input_file, root_dir):
     file_name = input_file.name
-    if root_dir.joinpath(root_dir, file_name).exists():
+    if root_dir.joinpath(file_name).exists():
         file_name = str(uuid1())+input_file.suffix
     return input_file.replace(input_file.joinpath(root_dir, file_name))
+
 
 def constant(f):
     def fset(self, value):
@@ -80,12 +88,15 @@ def get_os_objs(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=
                             if not list(Path(parent_dir).iterdir()):
                                 Path(parent_dir).rmdir()
                         except OSError:
-                            print('WARNING:', f'The {sys_obj} directory is not empty')
+                            print('WARNING:',
+                                  f'The {sys_obj} directory is not empty')
                     else:
-                        sys_obj = sys_obj.rename(sys_obj.with_name(normalize(sys_obj.name)))
+                        sys_obj = sys_obj.rename(
+                            sys_obj.with_name(normalize(sys_obj.name)))
                         yield from get_os_objs(sys_obj, ext=ext, show_all_files_dirs=show_all_files_dirs, categories_list=categories_list)
             else:
-                sys_obj = sys_obj.rename(str(sys_obj.with_name(normalize(sys_obj.stem)))+sys_obj.suffix)
+                sys_obj = sys_obj.rename(
+                    str(sys_obj.with_name(normalize(sys_obj.stem)))+sys_obj.suffix)
                 if sys_obj.match('**'+ext) and show_all_files_dirs in [typeObj.ALL, typeObj.FILES]:
                     yield (typeObj.FILES, sys_obj)
     except FileNotFoundError as e:
@@ -98,9 +109,10 @@ _dir = Path(r"/home/user1/1. COURSES/goit_github/1.test_")
 cat_dirs = [cat['dir_name'] for cat in categories if cat['sort'] == True]
 # создаем подкаталоги для категорий в целевом каталоге
 for cat in cat_dirs:
-    _dir.joinpath(_dir, cat).mkdir(parents=True, exist_ok=True)
+    _dir.joinpath(cat).mkdir(parents=True, exist_ok=True)
 # генерируем список файлов, содержащихся в целевом каталоге
-gen = get_os_objs(_dir, show_all_files_dirs=typeObj.FILES, categories_list=cat_dirs)
+gen = get_os_objs(_dir, show_all_files_dirs=typeObj.FILES,
+                  categories_list=cat_dirs)
 
 for type_obj, path_name in gen:
     if type_obj == typeObj.FILES:
@@ -110,7 +122,7 @@ for type_obj, path_name in gen:
             if ext in cat['ext']:
                 cat['files'].append(name_ext)
                 # move the file to the directory of the selected category
-                move_file(path_name, _dir.joinpath(_dir, cat['dir_name']))
+                move_file(path_name, _dir.joinpath(cat['dir_name']))
                 know_ext = True
                 break
         if know_ext:
