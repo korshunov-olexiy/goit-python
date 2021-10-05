@@ -1,13 +1,13 @@
+from uuid import uuid1
 from pathlib import Path, PosixPath, WindowsPath
 # from string import ascii_letters
 import re
 
-
-pictures_ext = ['jpeg', 'png', 'jpg']
+pictures_ext = ['bmp', 'jpeg', 'png', 'jpg']
 movies_ext = ['avi', 'mp4', 'mov']
-documents_ext = ['doc', 'docx', 'txt']
+documents_ext = ['pdf', 'doc', 'docx', 'txt']
 music_ext = ['mp3', 'ogg', 'wav', 'amr']
-archives_ext = ['zip', 'gz', 'tar']
+archives_ext = ['zip', 'gz', 'tar', 'tar.gz']
 
 pictures = {'name': 'Изображения', 'dir_name': 'images', 'ext': pictures_ext, 'sort': True, 'files': []}
 movies = {'name': 'Видео', 'dir_name': 'video', 'ext': movies_ext, 'sort': True, 'files': []}
@@ -18,8 +18,11 @@ unknown = {'name': 'Другое', 'dir_name': 'other', 'ext': [], 'sort': False
 extensions_list = {'known': [], 'unknown': []}
 categories = [pictures, movies, documents, music, archives, unknown]
 
-def copy_file(root_dir, category, name):
-    pass
+def move_file(input_file, root_dir):
+    file_name = input_file.name
+    if root_dir.joinpath(root_dir, file_name).exists():
+        file_name = str(uuid1())+input_file.suffix
+    return input_file.replace(input_file.joinpath(root_dir, file_name))
 
 def constant(f):
     def fset(self, value):
@@ -64,7 +67,7 @@ def get_os_objs(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=
         return False
     try:
         if show_all_files_dirs in [typeObj.ALL, typeObj.DIRS] and path.is_dir():
-            yield ('dirs', path)
+            yield (typeObj.DIRS, path)
         for sys_obj in path.iterdir():
             if sys_obj.is_dir():
                 # если имя каталога не в списке категорий
@@ -84,7 +87,7 @@ def get_os_objs(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=
             else:
                 sys_obj = sys_obj.rename(str(sys_obj.with_name(normalize(sys_obj.stem)))+sys_obj.suffix)
                 if sys_obj.match('**'+ext) and show_all_files_dirs in [typeObj.ALL, typeObj.FILES]:
-                    yield ('files', sys_obj)
+                    yield (typeObj.FILES, sys_obj)
     except FileNotFoundError as e:
         if e.errno == 2:
             print('ERROR:', 'No such file or directory')
@@ -93,7 +96,9 @@ def get_os_objs(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=
 _dir = Path(r"/home/user1/1. COURSES/goit_github/1.test_")
 # список категорий, которые подлежат сортировке
 cat_dirs = [cat['dir_name'] for cat in categories if cat['sort'] == True]
-(Path(Path.joinpath(_dir, cat)).mkdir(parents=True, exist_ok=True) for cat in cat_dirs)
+# создаем подкаталоги для категорий в целевом каталоге
+for cat in cat_dirs:
+    _dir.joinpath(_dir, cat).mkdir(parents=True, exist_ok=True)
 # генерируем список файлов, содержащихся в целевом каталоге
 gen = get_os_objs(_dir, show_all_files_dirs=typeObj.FILES, categories_list=cat_dirs)
 
@@ -104,6 +109,8 @@ for type_obj, path_name in gen:
             know_ext = False
             if ext in cat['ext']:
                 cat['files'].append(name_ext)
+                # move the file to the directory of the selected category
+                move_file(path_name, _dir.joinpath(_dir, cat['dir_name']))
                 know_ext = True
                 break
         if know_ext:
@@ -116,6 +123,6 @@ for type_obj, path_name in gen:
 print(f"В каталоге \n{_dir}\nимеются следующие файлы:")
 for cat in [c for c in categories if c['sort'] == True]:
     print(f"{cat['name']:<12}: {', '.join(cat['files'])}")
-print(f"{'Каталоги':<12}: {', '.join(unknown['dirs'])}")
+# print(f"{'Каталоги':<12}: {', '.join(unknown['dirs'])}")
 print('Список известных расширений:', ', '.join(extensions_list['known']))
 print('Список неизвестных расширений:', ', '.join(extensions_list['unknown']))
