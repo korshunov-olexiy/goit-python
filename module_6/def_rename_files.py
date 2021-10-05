@@ -63,7 +63,7 @@ def get_files_recur(path, ext='*', show_all_files_dirs=typeObj.ALL, calls=1):
             yield ('dir', path)
         for sys_obj in path.iterdir():
             if sys_obj.is_dir():
-                # если функция вызвана больше 1 раза или имя каталога не в списке категорий
+                # если имя каталога не в списке категорий
                 if sys_obj.name not in [cat['dir_name'] for cat in categories if cat['dir_name'] != 'other']:
                     if not list(Path(sys_obj).iterdir()):
                         try:
