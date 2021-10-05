@@ -65,6 +65,7 @@ def get_files_recur(path, ext='*', show_all_files_dirs=typeObj.ALL, calls=1):
             if sys_obj.is_dir():
                 # если имя каталога не в списке категорий
                 if sys_obj.name not in [cat['dir_name'] for cat in categories if cat['dir_name'] != 'other']:
+                    # если каталог пустой нужно его удалить
                     if not list(Path(sys_obj).iterdir()):
                         try:
                             Path(sys_obj).rmdir()
@@ -78,8 +79,7 @@ def get_files_recur(path, ext='*', show_all_files_dirs=typeObj.ALL, calls=1):
                         yield from get_files_recur(path, ext=ext, show_all_files_dirs=show_all_files_dirs, calls=calls+1)
             else:
                 name, extension = sys_obj.stem, sys_obj.suffix
-                path = Path(Path.rename(sys_obj, Path.joinpath(
-                    sys_obj.parent, normalize(name)+extension)))
+                path = Path(Path.rename(sys_obj, Path.joinpath(sys_obj.parent, normalize(name)+extension)))
                 if sys_obj.match('**'+ext) and show_all_files_dirs in [typeObj.ALL, typeObj.FILES]:
                     yield ('file', sys_obj)
     except FileNotFoundError as e:
