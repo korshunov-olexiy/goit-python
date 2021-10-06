@@ -1,13 +1,18 @@
-from uuid import uuid1
+from datetime import datetime
 from pathlib import Path, PosixPath, WindowsPath
-# from string import ascii_letters
+from sys import argv
+from shutil import unpack_archive
+from random import randint
 import re
+
+def standard_input():
+    yield "/home/user1/1. COURSES/goit_github/1.test_"
 
 pictures_ext = ['bmp', 'jpeg', 'png', 'jpg']
 movies_ext = ['avi', 'mp4', 'mov']
 documents_ext = ['pdf', 'doc', 'docx', 'txt']
 music_ext = ['mp3', 'ogg', 'wav', 'amr']
-archives_ext = ['zip', 'gz', 'tar', 'tar.gz']
+archives_ext = ['zip', 'gz', 'tar']
 
 pictures = {'name': 'Изображения', 'dir_name': 'images', 'ext': pictures_ext, 'sort': True, 'files': []}
 movies = {'name': 'Видео', 'dir_name': 'video', 'ext': movies_ext, 'sort': True, 'files': []}
@@ -18,11 +23,6 @@ unknown = {'name': 'Другое', 'dir_name': 'other', 'ext': [], 'sort': False
 extensions_list = {'known': [], 'unknown': []}
 categories = [pictures, movies, documents, music, archives, unknown]
 
-def move_file(input_file, root_dir):
-    file_name = input_file.name
-    if root_dir.joinpath(root_dir, file_name).exists():
-        file_name = str(uuid1())+input_file.suffix
-    return input_file.replace(input_file.joinpath(root_dir, file_name))
 
 def constant(f):
     def fset(self, value):
@@ -92,8 +92,15 @@ def get_os_objs(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=
         if e.errno == 2:
             print('ERROR:', 'No such file or directory')
 
+try:
+    _dir = Path(argv[1])
+except IndexError:
+    print("Fatal error: Use the target directory path parameter to run the program.")
+    exit()
+except Exception as err:
+    print(f"Fatal error: {str(err)}")
+    exit()
 
-_dir = Path(r"/home/user1/1. COURSES/goit_github/1.test_")
 # список категорий, которые подлежат сортировке
 cat_dirs = [cat['dir_name'] for cat in categories if cat['sort'] == True]
 # создаем подкаталоги для категорий в целевом каталоге
@@ -109,8 +116,17 @@ for type_obj, path_name in gen:
             know_ext = False
             if ext in cat['ext']:
                 cat['files'].append(name_ext)
-                # move the file to the directory of the selected category
-                move_file(path_name, _dir.joinpath(_dir, cat['dir_name']))
+                # move the files to the directory of the selected category
+                out_file = _dir.joinpath(cat['dir_name'], name_ext)
+                end_name = out_file.stem+datetime.now().strftime('_%d%m%Y_%H%M%S_')+str(randint(1,10000))
+                if ext in archives_ext:
+                    out_file = _dir.joinpath(cat['dir_name'], end_name)
+                    unpack_archive(path_name, out_file)
+                    path_name.unlink()
+                else:
+                    if out_file.exists():
+                        out_file = _dir.joinpath(cat['dir_name'], end_name+out_file.suffix)
+                    path_name.replace(out_file)                    
                 know_ext = True
                 break
         if know_ext:
