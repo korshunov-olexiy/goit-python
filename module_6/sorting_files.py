@@ -135,6 +135,9 @@ for type_obj, path_name in gen:
         else:
             if ext not in extensions_list['unknown']:
                 extensions_list['unknown'].append(ext)
+        if not list(Path(path_name.parent).iterdir()) and path_name.name not in [c['dir_name'] for c in categories if c['sort'] == True]:
+            Path(path_name.parent).rmdir()
+
 
 print(f"В каталоге \n{_dir}\nимеются следующие файлы:")
 for cat in [c for c in categories if c['sort'] == True]:
