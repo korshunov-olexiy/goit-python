@@ -151,15 +151,17 @@ gen = sort_dir(_dir, show_all_files_dirs=typeObj.FILES, categories_list=cat_dirs
 for type_obj, path_name in gen:
     if type_obj == typeObj.FILES:
         name_ext, ext = path_name.name, path_name.suffix[1:]
-        # по расширению определяем каталог, в который кидать файлы
+        # по расширению файла path_name определяем имя каталога, в который будем перемещать файлы
         cat_dir = ''.join([k for k,v in cat_dirs.items() if ext in v])
+        # добавляем найденные имена файлов в список файлов для определенной категории
         [cat['files'].append(name_ext) for cat in categories if cat['dir_name'] == cat_dir]
-        # если расширение файла в списке расширений (вычисленное имя каталога для расширений != '')
+        # если расширение файла в списке расширений
+        # (а значит вычисленное имя каталога для расширений != '')
         if cat_dir:
-            # если это док-т, музыка, видео, изображение
+            # если это файл из тэга 'media' (док-т, музыка, видео, изображение)
             if ext in [c for cat in categories for c in cat['ext'] if cat['tag'] == 'media']:
                 move_media(_dir.joinpath(cat_dir), path_name)
-            # если это архив
+            # если это архив (тэг 'archive')
             elif ext in [c for cat in categories for c in cat['ext'] if cat['tag'] == 'archive']:
                 move_archives(_dir.joinpath(cat_dir), path_name)
             # добавляем расширение файла в список известных расширений
@@ -174,7 +176,7 @@ for type_obj, path_name in gen:
 # удаляем пустые каталоги в целевом каталоге (кроме каталогов для категорий)
 del_empty_dirs(_dir, cat_dirs)
 
-
+# Выдаем результат работы программы в форматированном виде
 print(f"В каталоге \n{_dir}\nимеются следующие файлы:")
 for cat in [c for c in categories if c['sort'] == True]:
     print(f"{cat['name']:<12}: {', '.join(cat['files'])}")
