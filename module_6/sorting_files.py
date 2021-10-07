@@ -8,8 +8,6 @@ import re
 try:
     # AHTUNG: если ругается на ошибку WinError 122 это значит в пути указаны не те слеши. Нужно "/"
     _dir = Path(argv[1])
-    # for testing uncomming
-    # _dir = Path("/home/user1/1. COURSES/goit_github/1.test_")
 except IndexError:
     print("Fatal error: Use the target directory path parameter to run the program.")
     exit()
