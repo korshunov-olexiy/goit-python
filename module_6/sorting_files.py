@@ -48,8 +48,14 @@ class TypeOfShowObject(object):
 
 typeObj = TypeOfShowObject()
 
+# таблица перекодировки символов
 table_symbols = ('абвгґдеєжзиіїйклмнопрстуфхцчшщюяыэАБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЮЯЫЭьъЬЪ',
-                 (*(u'abvhgde'), 'ye', 'zh', *(u'zyi'), 'yi', *(u'yklmnoprstuf'), 'kh', 'ts', 'ch', 'sh', 'shch', 'yu', 'ya', 'y', 'ye', *(u'ABVHGDE'), 'Ye', 'Zh', *(u'ZYI'), 'Yi', *(u'YKLMNOPRSTUF'), 'KH', 'TS', 'CH', 'SH', 'SHCH', 'YU', 'YA', 'Y', 'YE', *(u'_'*4)))
+                 (*(u'abvhgde'), 'ye', 'zh', *(u'zyi'), 'yi', *(u'yklmnoprstuf'), 'kh', 'ts',
+                 'ch', 'sh', 'shch', 'yu', 'ya', 'y', 'ye', *(u'ABVHGDE'), 'Ye', 'Zh', *(u'ZYI'),
+                 'Yi', *(u'YKLMNOPRSTUF'), 'KH', 'TS', 'CH', 'SH', 'SHCH', 'YU', 'YA', 'Y', 'YE',
+                 *(u'_'*4)))
+
+# преобразовываем таблицу перекодировки в словарь для свойства str.translate
 map_cyr_to_latin = {ord(src): dest for src, dest in zip(*table_symbols)}
 
 def del_empty_dirs(path, sort_dirs):
@@ -77,7 +83,7 @@ def move_archives(root_dir, file_name):
         unpack_archive(path_name, root_dir.joinpath(f"{file_name.stem}_{str(datetime.now().microsecond)}"))
     else:
         unpack_archive(path_name, root_dir.joinpath(f"{file_name.stem}"))
-    # удаляем исходный архив file_name
+    # удаляем исходный файл архива file_name
     file_name.unlink()
 
 
@@ -89,6 +95,7 @@ def move_media(root_dir, file_name):
     file_name -- имя исходного файла
     """
     if root_dir.joinpath(file_name.name).exists():
+        # перемещаем файл file_name в каталог root_dir используя имя файла + время в миллисекундах
         file_name.replace(root_dir.joinpath(f"{file_name.stem}_{str(datetime.now().microsecond)}{file_name.suffix}"))
     else:
         file_name.replace(root_dir.joinpath(file_name.name))
@@ -101,7 +108,10 @@ def normalize(in_str):
     in_str -- строка, которая будет подвергнута изменению
     """
     global table_symbols, map_cyr_to_latin
+    # подготавливаем шаблон для замены не латинских симв., цифр и '-'
     rx = re.compile(r"[^\w_]")
+    # проводим транслитерацию кириллического алфавита на латинский
+    # и заменяем все символы кроме латинских букв, цифр на '_'
     return rx.sub('_', in_str.translate(map_cyr_to_latin))
 
 
