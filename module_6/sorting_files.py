@@ -149,6 +149,14 @@ def sort_dir(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=[])
 # словарь: имя_каталога и список расширений категории
 cat_dirs = {cat['dir_name']: cat['ext'] for cat in categories}
 
+# по extension определяем имя каталога в категориях
+dir_of_category = lambda extension: ''.join([k for k,v in cat_dirs.items() if extension in v])
+
+# список расширений по тэгу 'media' из словаря категорий
+ext_media_list = [c for cat in categories for c in cat['ext'] if cat['tag'] == 'media']
+# список расширений по тэгу 'archive' из словаря категорий
+ext_archive_list = [c for cat in categories for c in cat['ext'] if cat['tag'] == 'archive']
+
 for cat in cat_dirs.keys():
     # Создаем подкаталоги для категорий в целевом каталоге
     _dir.joinpath(cat).mkdir(parents=True, exist_ok=True)
@@ -161,17 +169,17 @@ for type_obj, path_name in gen:
     if type_obj == typeObj.FILES:
         name_ext, ext = path_name.name, path_name.suffix[1:]
         # по расширению файла path_name определяем имя каталога, в который будем перемещать файлы
-        cat_dir = ''.join([k for k,v in cat_dirs.items() if ext in v])
+        cat_dir = dir_of_category(ext)
         # добавляем найденные имена файлов в список файлов для определенной категории
         [cat['files'].append(name_ext) for cat in categories if cat['dir_name'] == cat_dir]
         # если расширение файла в списке расширений
         # (а значит вычисленное имя каталога для расширений != '')
         if cat_dir:
             # если это файл из тэга 'media' (док-т, музыка, видео, изображение)
-            if ext in [c for cat in categories for c in cat['ext'] if cat['tag'] == 'media']:
+            if ext in ext_media_list:
                 move_media(_dir.joinpath(cat_dir), path_name)
             # если это архив (тэг 'archive')
-            elif ext in [c for cat in categories for c in cat['ext'] if cat['tag'] == 'archive']:
+            elif ext in ext_archive_list:
                 move_archives(_dir.joinpath(cat_dir), path_name)
             # добавляем расширение файла в список известных расширений
             if ext not in extensions_list['known']:
