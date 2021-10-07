@@ -27,6 +27,15 @@ extensions_list = {'known': [], 'unknown': []}
 categories = [pictures, movies, documents, music, archives, unknown]
 
 
+# рекурсивное удаление пустых каталогов в целевом каталоге path
+def del_empty_dirs(path, sort_dirs):
+    for f in path.rglob('*'):
+        if f.is_dir():
+            if not list(f.iterdir()) and f.name not in sort_dirs:
+                f.rmdir()
+                return del_empty_dirs(path, sort_dirs)
+
+
 def constant(f):
     def fset(self, value):
         raise TypeError
@@ -149,10 +158,7 @@ for type_obj, path_name in gen:
                 extensions_list['unknown'].append(ext)
 
 # удаляем пустые каталоги в целевом каталоге (кроме каталогов для категорий)
-for f in _dir.rglob('*'):
-    if f.is_dir():
-        if not list(f.iterdir()) and f.name not in cat_dirs:
-            f.rmdir()
+del_empty_dirs(_dir, cat_dirs)
 
 
 print(f"В каталоге \n{_dir}\nимеются следующие файлы:")
