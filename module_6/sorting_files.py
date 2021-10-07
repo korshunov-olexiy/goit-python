@@ -2,7 +2,6 @@ from datetime import datetime
 from pathlib import Path, PosixPath, WindowsPath
 from sys import argv
 from shutil import unpack_archive
-from random import randint
 import re
 
 try:
