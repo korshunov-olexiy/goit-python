@@ -5,7 +5,7 @@ from shutil import unpack_archive
 import re
 
 try:
-    # AHTUNG: если ругается на ошибку WinError 122 это значит в пути указаны не те слеши. Нужно "/"
+    # ACHTUNG: если ругается на ошибку WinError 122 это значит в пути указаны не те слеши. Нужно "/"
     _dir = Path(argv[1])
 except IndexError:
     print("Fatal error: Use the target directory path parameter to run the program.")
