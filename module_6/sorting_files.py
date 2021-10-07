@@ -5,21 +5,24 @@ from shutil import unpack_archive
 from random import randint
 import re
 
-def standard_input():
-    yield "/home/user1/1. COURSES/goit_github/1.test_"
-
-pictures_ext = ['bmp', 'jpeg', 'png', 'jpg']
+pictures_ext = ['bmp', 'jpeg', 'png', 'jpg', 'gif']
 movies_ext = ['avi', 'mp4', 'mov']
 documents_ext = ['pdf', 'doc', 'docx', 'txt']
 music_ext = ['mp3', 'ogg', 'wav', 'amr']
 archives_ext = ['zip', 'gz', 'tar']
 
-pictures = {'name': 'Изображения', 'dir_name': 'images', 'ext': pictures_ext, 'sort': True, 'files': []}
-movies = {'name': 'Видео', 'dir_name': 'video', 'ext': movies_ext, 'sort': True, 'files': []}
-documents = {'name': 'Документы', 'dir_name': 'documents', 'ext': documents_ext, 'sort': True, 'files': []}
-music = {'name': 'Музыка', 'dir_name': 'audio', 'ext': music_ext, 'sort': True, 'files': []}
-archives = {'name': 'Архиы', 'dir_name': 'archives', 'ext': archives_ext, 'sort': True, 'files': []}
-unknown = {'name': 'Другое', 'dir_name': 'other', 'ext': [], 'sort': False, 'files': [], 'dirs': []}
+pictures = {'name': 'Изображения', 'dir_name': 'images',
+            'ext': pictures_ext, 'sort': True, 'files': []}
+movies = {'name': 'Видео', 'dir_name': 'video',
+          'ext': movies_ext, 'sort': True, 'files': []}
+documents = {'name': 'Документы', 'dir_name': 'documents',
+             'ext': documents_ext, 'sort': True, 'files': []}
+music = {'name': 'Музыка', 'dir_name': 'audio',
+         'ext': music_ext, 'sort': True, 'files': []}
+archives = {'name': 'Архиы', 'dir_name': 'archives',
+            'ext': archives_ext, 'sort': True, 'files': []}
+unknown = {'name': 'Другое', 'dir_name': 'other',
+           'ext': [], 'sort': False, 'files': [], 'dirs': []}
 extensions_list = {'known': [], 'unknown': []}
 categories = [pictures, movies, documents, music, archives, unknown]
 
@@ -80,19 +83,24 @@ def get_os_objs(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=
                             if not list(Path(parent_dir).iterdir()):
                                 Path(parent_dir).rmdir()
                         except OSError:
-                            print('WARNING:', f'The {sys_obj} directory is not empty')
+                            print('WARNING:',
+                                  f'The {sys_obj} directory is not empty')
                     else:
-                        sys_obj = sys_obj.rename(sys_obj.with_name(normalize(sys_obj.name)))
+                        sys_obj = sys_obj.rename(
+                            sys_obj.with_name(normalize(sys_obj.name)))
                         yield from get_os_objs(sys_obj, ext=ext, show_all_files_dirs=show_all_files_dirs, categories_list=categories_list)
             else:
-                sys_obj = sys_obj.rename(str(sys_obj.with_name(normalize(sys_obj.stem)))+sys_obj.suffix)
+                sys_obj = sys_obj.rename(
+                    str(sys_obj.with_name(normalize(sys_obj.stem)))+sys_obj.suffix)
                 if sys_obj.match('**'+ext) and show_all_files_dirs in [typeObj.ALL, typeObj.FILES]:
                     yield (typeObj.FILES, sys_obj)
     except FileNotFoundError as e:
         if e.errno == 2:
             print('ERROR:', 'No such file or directory')
 
+
 try:
+    # AHTUNG: если ругается на ошибку WinError 122 это значит в пути указаны не те слеши. Нужно "/"
     _dir = Path(argv[1])
 except IndexError:
     print("Fatal error: Use the target directory path parameter to run the program.")
@@ -105,9 +113,11 @@ except Exception as err:
 cat_dirs = [cat['dir_name'] for cat in categories if cat['sort'] == True]
 # создаем подкаталоги для категорий в целевом каталоге
 for cat in cat_dirs:
-    _dir.joinpath(_dir, cat).mkdir(parents=True, exist_ok=True)
+    _dir.joinpath(cat).mkdir(parents=True, exist_ok=True)
+
 # генерируем список файлов, содержащихся в целевом каталоге
-gen = get_os_objs(_dir, show_all_files_dirs=typeObj.FILES, categories_list=cat_dirs)
+gen = get_os_objs(_dir, show_all_files_dirs=typeObj.FILES,
+                  categories_list=cat_dirs)
 
 for type_obj, path_name in gen:
     if type_obj == typeObj.FILES:
@@ -118,15 +128,17 @@ for type_obj, path_name in gen:
                 cat['files'].append(name_ext)
                 # move the files to the directory of the selected category
                 out_file = _dir.joinpath(cat['dir_name'], name_ext)
-                end_name = out_file.stem+datetime.now().strftime('_%d%m%Y_%H%M%S_')+str(randint(1,10000))
+                end_name = out_file.stem+datetime.now().strftime('_%d%m%Y_%H%M%S_') + \
+                    str(randint(1, 10000))
                 if ext in archives_ext:
                     out_file = _dir.joinpath(cat['dir_name'], end_name)
                     unpack_archive(path_name, out_file)
                     path_name.unlink()
                 else:
                     if out_file.exists():
-                        out_file = _dir.joinpath(cat['dir_name'], end_name+out_file.suffix)
-                    path_name.replace(out_file)                    
+                        out_file = _dir.joinpath(
+                            cat['dir_name'], end_name+out_file.suffix)
+                    path_name.replace(out_file)
                 know_ext = True
                 break
         if know_ext:
@@ -135,8 +147,12 @@ for type_obj, path_name in gen:
         else:
             if ext not in extensions_list['unknown']:
                 extensions_list['unknown'].append(ext)
-        if not list(Path(path_name.parent).iterdir()) and path_name.name not in [c['dir_name'] for c in categories if c['sort'] == True]:
-            Path(path_name.parent).rmdir()
+
+# удаляем пустые каталоги в целевом каталоге (кроме каталогов для категорий)
+for f in _dir.rglob('*'):
+    if f.is_dir():
+        if not list(f.iterdir()) and f.name not in cat_dirs:
+            f.rmdir()
 
 
 print(f"В каталоге \n{_dir}\nимеются следующие файлы:")
