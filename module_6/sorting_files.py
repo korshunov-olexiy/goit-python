@@ -181,7 +181,7 @@ if __name__ == "__main__":
     for type_obj, path_name in src_files_gen:
         # If the object type is "error", print a message to the console and end the loop. 
         if type_obj == typeObj.ERROR:
-            print(typeObj.ERROR, path_name)
+            print(type_obj, path_name)
             break
         elif type_obj == typeObj.FILES:
             name_ext, ext = path_name.name, path_name.suffix[1:]
