@@ -5,7 +5,7 @@ from shutil import unpack_archive
 import re
 
 try:
-    # ACHTUNG: если ругается на ошибку WinError 122 это значит в пути указаны не те слеши. Нужно "/"
+    # ACHTUNG: If WinError 122 is thrown, then the path contains the wrong slashes. Necessary "/"
     _dir = Path(argv[1])
 except IndexError:
     print("Fatal error: Use the target directory path parameter to run the program.")
@@ -20,7 +20,7 @@ documents_ext = ['pdf', 'doc', 'docx', 'txt']
 music_ext = ['mp3', 'ogg', 'wav', 'amr']
 archives_ext = ['zip', 'gz', 'tar']
 
-# словари для каждой категории. ключ 'tag' используется в функциях обработки файлов (move_media, move_archives)
+# Dictionaries for each category. The 'tag' key is used in file handling functions. (move_media, move_archives)
 pictures = {'name': 'Изображения', 'dir_name': 'images', 'ext': pictures_ext, 'sort': True, 'tag': 'media', 'files': []}
 movies = {'name': 'Видео', 'dir_name': 'video', 'ext': movies_ext, 'sort': True, 'tag': 'media', 'files': []}
 documents = {'name': 'Документы', 'dir_name': 'documents', 'ext': documents_ext, 'sort': True, 'tag': 'media', 'files': []}
@@ -30,13 +30,13 @@ unknown = {'name': 'Другое', 'dir_name': 'other', 'ext': [], 'sort': False
 extensions_list = {'known': [], 'unknown': []}
 categories = [pictures, movies, documents, music, archives, unknown]
 
-# декоратор для констант типов файлов
+# Decorator for file type constants.
 def constant(f):
     def fset(self, value): raise TypeError
     def fget(self): return f()
     return property(fget, fset)
 
-# классы для выбора констант 'all', 'files', 'dirs'
+# Classes for choosing constants 'all', 'files', 'dirs'
 class TypeOfShowObject(object):
     @constant
     def ALL(): return 'all'
@@ -47,22 +47,22 @@ class TypeOfShowObject(object):
 
 typeObj = TypeOfShowObject()
 
-# таблица перекодировки символов
+# Character transcoding table.
 table_symbols = ('абвгґдеєжзиіїйклмнопрстуфхцчшщюяыэАБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЮЯЫЭьъЬЪ',
                  (*(u'abvhgde'), 'ye', 'zh', *(u'zyi'), 'yi', *(u'yklmnoprstuf'), 'kh', 'ts',
                  'ch', 'sh', 'shch', 'yu', 'ya', 'y', 'ye', *(u'ABVHGDE'), 'Ye', 'Zh', *(u'ZYI'),
                  'Yi', *(u'YKLMNOPRSTUF'), 'KH', 'TS', 'CH', 'SH', 'SHCH', 'YU', 'YA', 'Y', 'YE',
                  *(u'_'*4)))
 
-# преобразовываем таблицу перекодировки в словарь для свойства str.translate
+# Converting the lookup table to a dictionary for the str.translate property.
 map_cyr_to_latin = {ord(src): dest for src, dest in zip(*table_symbols)}
 
 def del_empty_dirs(path, sort_dirs):
-    """Рекурсивное удаление пустых каталогов в целевом каталоге path.
+    """Recursively deleting empty directories in the target directory path.
     
-    Ключевые аргументы:
-    path -- каталог, в котором будет проводиться удаление
-    sort_dirs -- список имен каталогов, которые будут пропущены в любом случае
+    Key arguments:
+    path - the directory in which the deletion will be carried out.
+    sort_dirs is a list of directory names to be skipped anyway. 
     """
     for f in path.rglob('*'):
         if f.is_dir():
@@ -72,57 +72,57 @@ def del_empty_dirs(path, sort_dirs):
 
 
 def move_archives(root_dir, file_name):
-    """Распаковка архива в каталог root_dir с последующим удалением исходного архива
+    """Unpacking the archive into the root_dir directory and then deleting the original archive.
     
-    Ключевые аргументы:
-    root_dir -- каталог, в который будет распаковываться архив
-    file_name -- имя архива
+    Key arguments:
+    root_dir is the directory into which the archive will be unpacked.
+    file_name is the name of the archive. 
     """
     if root_dir.joinpath(file_name.stem).exists():
         unpack_archive(path_name, root_dir.joinpath(f"{file_name.stem}_{str(datetime.now().microsecond)}"))
     else:
         unpack_archive(path_name, root_dir.joinpath(f"{file_name.stem}"))
-    # удаляем исходный файл архива file_name
+    # Delete the original archive file file_name.
     file_name.unlink()
 
 
 def move_media(root_dir, file_name):
-    """Перенос файла по тэгу 'media' в каталог root_dir
+    """Transferring the file using the 'media' tag to the root_dir directory.
     
-    Ключевые аргументы:
-    root_dir -- каталог, в который будет распаковываться архив
-    file_name -- имя исходного файла
+    Key arguments:
+    root_dir is the directory into which the archive will be unpacked.
+    file_name is the name of the source file.
     """
     if root_dir.joinpath(file_name.name).exists():
-        # перемещаем файл file_name в каталог root_dir используя имя файла + время в миллисекундах
+        # Move file_name to root_dir using filename + time in milliseconds.
         file_name.replace(root_dir.joinpath(f"{file_name.stem}_{str(datetime.now().microsecond)}{file_name.suffix}"))
     else:
         file_name.replace(root_dir.joinpath(file_name.name))
 
 
 def normalize(in_str):
-    """Замена всех символов, кроме латинских и цифр в переданной строке на латинские и '_'
+    """Replacing all characters except Latin and numbers in the transmitted string with Latin and '_'.
     
-    Ключевые аргументы:
-    in_str -- строка, которая будет подвергнута изменению
+    Key arguments:
+    in_str - the string to be modified.
     """
     global table_symbols, map_cyr_to_latin
-    # подготавливаем шаблон для замены не латинских симв., цифр и '_'
+    # Preparing a template for replacing non-latin characters, numbers and '_'.
     rx = re.compile(r"[^\w_]")
-    # проводим транслитерацию кириллического алфавита на латинский
-    # и заменяем все символы кроме латинских букв, цифр на '_'
+    # We transliterate the Cyrillic alphabet into Latin
+    # and replace all symbols except Latin letters and numbers with '_'.
     return rx.sub('_', in_str.translate(map_cyr_to_latin))
 
 
 def sort_dir(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=[]):
-    """Рекусривно ищем в переданном каталоге файлы,каталоги или файлы или каталоги,
-    пропуская имена каталогов из переданных категорий.
+    """We search recursively in the passed directory for files, directories or files or directories,
+    skipping directory names from the passed categories.
 
-    Ключевые аргументы:
-    path -- целевой каталог, в котором ищем объекты
-    ext -- расширение файлов, которые попадут в вывод (без точек)
-    show_all_files_dirs -- какие объекты выдавать в выводе: ВСЕ, ФАЙЛЫ или КАТАЛОГИ
-    categories_list -- список каталогов, в которых не будет проводиться поиск
+    Key arguments:
+    path is the target directory in which we are looking for objects.
+    ext - the extension of the files that will appear in the output (without dots).
+    show_all_files_dirs - which objects to display in the output: ALL, FILES or DIRES.
+    categories_list - a list of directories that will not be searched. 
     """
     if not isinstance(path, (PosixPath, WindowsPath)):
         print('ERROR:', 'path must be a PosixPath or WindowsPath')
@@ -132,7 +132,7 @@ def sort_dir(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=[])
             yield (typeObj.DIRS, path)
         for sys_obj in path.iterdir():
             if sys_obj.is_dir():
-                # если имя каталога не в списке категорий
+                # If the directory name is not in the list of categories.
                 if sys_obj.name not in categories_list:
                     sys_obj = sys_obj.rename(sys_obj.with_name(normalize(sys_obj.name)))
                     yield from sort_dir(sys_obj, ext=ext, show_all_files_dirs=show_all_files_dirs, categories_list=categories_list)
@@ -146,54 +146,56 @@ def sort_dir(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=[])
             print('ERROR:', 'No such file or directory')
 
 
-# словарь: имя_каталога и список расширений категории
+# Dictionary: directory_name and a list of category extensions.
 cat_dirs = {cat['dir_name']: cat['ext'] for cat in categories}
 
-# по extension определяем имя каталога в категориях
+# By extension, we determine the name of the directory in the categories.
 dir_of_category = lambda extension: ''.join([k for k,v in cat_dirs.items() if extension in v])
 
-# список расширений по тэгу 'media' из словаря категорий
+# List of extensions by tag 'media' from the category dictionary.
 ext_media_list = [c for cat in categories for c in cat['ext'] if cat['tag'] == 'media']
-# список расширений по тэгу 'archive' из словаря категорий
+# List of extensions by tag 'archive' from the category dictionary.
 ext_archive_list = [c for cat in categories for c in cat['ext'] if cat['tag'] == 'archive']
 
 for cat in cat_dirs.keys():
-    # Создаем подкаталоги для категорий в целевом каталоге
+    # Create subdirectories for the categories in the target directory.
     _dir.joinpath(cat).mkdir(parents=True, exist_ok=True)
 
-# генерируем список файлов, содержащихся в целевом каталоге
+# We generate a list of files contained in the target directory.
 gen = sort_dir(_dir, show_all_files_dirs=typeObj.FILES, categories_list=cat_dirs.keys())
 
-# сортируем файлы: с тэгом media и archive по своим правилам
+# We sort the files: with the media and archive tags according to our own rules.
 for type_obj, path_name in gen:
     if type_obj == typeObj.FILES:
         name_ext, ext = path_name.name, path_name.suffix[1:]
-        # по расширению файла path_name определяем имя каталога, в который будем перемещать файлы
+        # By the file extension path_name,
+        # we determine the name of the directory into which we will move the files.
         cat_dir = dir_of_category(ext)
-        # добавляем найденные имена файлов в список файлов для определенной категории
+        # Add the found filenames to the list of files for a specific category.
         [cat['files'].append(name_ext) for cat in categories if cat['dir_name'] == cat_dir]
-        # если расширение файла в списке расширений
-        # (а значит вычисленное имя каталога для расширений != '')
+        # If the file extension is in the list of extensions
+        # (which means the calculated directory name for extensions! = ''). 
         if cat_dir:
-            # если это файл из тэга 'media' (док-т, музыка, видео, изображение)
+            # If it is a file from the 'media' tag (document, music, video, image).
             if ext in ext_media_list:
                 move_media(_dir.joinpath(cat_dir), path_name)
-            # если это архив (тэг 'archive')
+            # If it is an archive (tag 'archive').
             elif ext in ext_archive_list:
                 move_archives(_dir.joinpath(cat_dir), path_name)
-            # добавляем расширение файла в список известных расширений
+            # Add the file extension to the list of known extensions.
             if ext not in extensions_list['known']:
                 extensions_list['known'].append(ext)
-        # если нашли файл с неизвестным расширением
+        # If you find a file with an unknown extension.
         else:
-            # добавляем расширение файла в список не известных расширений
+            # Add the file extension to the list of unknown extensions.
             if ext not in extensions_list['unknown']:
                 extensions_list['unknown'].append(ext)
 
-# удаляем пустые каталоги в целевом каталоге (кроме каталогов для категорий)
+# We delete empty directories in the target directory
+# (except directories for categories).
 del_empty_dirs(_dir, cat_dirs)
 
-# Выдаем результат работы программы в форматированном виде
+# We display the result of the program in a formatted form.
 print(f"В каталоге \n{_dir}\nимеются следующие файлы:")
 for cat in [c for c in categories if c['sort'] == True]:
     print(f"{cat['name']:<12}: {', '.join(cat['files'])}")
