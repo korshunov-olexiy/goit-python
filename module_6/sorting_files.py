@@ -157,9 +157,9 @@ ext_media_list = [c for cat in categories for c in cat['ext'] if cat['tag'] == '
 # List of extensions by tag 'archive' from the category dictionary.
 ext_archive_list = [c for cat in categories for c in cat['ext'] if cat['tag'] == 'archive']
 
-for cat in cat_dirs.keys():
+for dir_name in cat_dirs.keys():
     # Create subdirectories for the categories in the target directory.
-    _dir.joinpath(cat).mkdir(parents=True, exist_ok=True)
+    _dir.joinpath(dir_name).mkdir(parents=True, exist_ok=True)
 
 # We generate a list of files contained in the target directory.
 gen = sort_dir(_dir, show_all_files_dirs=typeObj.FILES, categories_list=cat_dirs.keys())
