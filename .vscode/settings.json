@@ -1,5 +1,5 @@
 {
     "AREPL.show_to_level": 4,
     "workbench.sash.size": 3,
-    "python.pythonPath": "C:\\ProgramData\\Miniconda3\\python.exe"
+    "python.pythonPath": "/bin/python3.9"
 }
