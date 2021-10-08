@@ -121,7 +121,7 @@ def sort_dir(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=[])
     Key arguments:
     path is the target directory in which we are looking for objects.
     ext - the extension of the files that will appear in the output (without dots).
-    show_all_files_dirs - which objects to display in the output: ALL, FILES or DIRES.
+    show_all_files_dirs - which objects to display in the output: ALL, FILES or DIRS.
     categories_list - a list of directories that will not be searched. 
     """
     if not isinstance(path, (PosixPath, WindowsPath)):
