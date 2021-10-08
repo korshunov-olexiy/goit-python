@@ -176,6 +176,7 @@ if __name__ == "__main__":
 
     # We generate a list of files contained in the target directory.
     src_files_gen = sort_dir(_dir, show_all_files_dirs=typeObj.FILES, categories_list=cat_dirs.keys())
+
     # We sort the files: with the media and archive tags according to our own rules.
     for type_obj, path_name in src_files_gen:
         # If the object type is "error", print a message to the console and end the loop. 
