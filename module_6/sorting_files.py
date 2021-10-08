@@ -215,10 +215,10 @@ if __name__ == "__main__":
     del_empty_dirs(_dir, cat_dirs.keys())
 
     # We display the result of the program in a formatted form.
-    print(f"В каталоге \n{_dir}\nимеются следующие файлы:")
+    print(f"The \n{_dir}\n directory contains the following files:")
 
     for cat in [c for c in categories if c['sort'] == True]:
         print(f"{cat['name']:<12}: {', '.join(cat['files'])}")
 
-    print('Список известных расширений:', ', '.join(extensions_list['known']))
-    print('Список неизвестных расширений:', ', '.join(extensions_list['unknown']))
+    print('List of known extensions:', ', '.join(extensions_list['known']))
+    print('List of unknown extensions:', ', '.join(extensions_list['unknown']))
