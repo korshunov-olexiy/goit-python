@@ -156,11 +156,12 @@ if __name__ == "__main__":
     cat_dirs = {cat['dir_name']: cat['ext'] for cat in categories}
     # By extension, we determine the name of the directory in the categories.
     dir_of_category = lambda extension: ''.join([k for k,v in cat_dirs.items() if extension in v])
+
     # List of extensions by tag 'media' from the category dictionary.
     ext_media_list = []
     # List of extensions by tag 'archive' from the category dictionary.
-
     ext_archive_list = []
+
     for cat in categories:
         tag = cat['tag']
         for c in cat['ext']:
