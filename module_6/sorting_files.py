@@ -132,6 +132,7 @@ if __name__ == "__main__":
     documents_ext = ['pdf', 'doc', 'docx', 'txt']
     music_ext = ['mp3', 'ogg', 'wav', 'amr']
     archives_ext = ['zip', 'gz', 'tar']
+
     # Dictionaries for each category. The 'tag' key is used in file handling functions. (move_media, move_archives)
     pictures = {'name': 'Изображения', 'dir_name': 'images', 'ext': pictures_ext, 'sort': True, 'tag': 'media', 'files': []}
     movies = {'name': 'Видео', 'dir_name': 'video', 'ext': movies_ext, 'sort': True, 'tag': 'media', 'files': []}
@@ -141,12 +142,14 @@ if __name__ == "__main__":
     unknown = {'name': 'Другое', 'dir_name': 'other', 'ext': [], 'sort': False, 'tag': 'other', 'files': [], 'dirs': []}
     extensions_list = {'known': [], 'unknown': []}
     categories = [pictures, movies, documents, music, archives, unknown]
+
     # Character transcoding table.
     table_symbols = ('абвгґдеєжзиіїйклмнопрстуфхцчшщюяыэАБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЮЯЫЭьъЬЪ',
                     (*(u'abvhgde'), 'ye', 'zh', *(u'zyi'), 'yi', *(u'yklmnoprstuf'), 'kh', 'ts',
                     'ch', 'sh', 'shch', 'yu', 'ya', 'y', 'ye', *(u'ABVHGDE'), 'Ye', 'Zh', *(u'ZYI'),
                     'Yi', *(u'YKLMNOPRSTUF'), 'KH', 'TS', 'CH', 'SH', 'SHCH', 'YU', 'YA', 'Y', 'YE',
                     *(u'_'*4)))
+
     # Converting the lookup table to a dictionary for the str.translate property.
     map_cyr_to_latin = {ord(src): dest for src, dest in zip(*table_symbols)}
     # Dictionary: directory_name and a list of category extensions.
@@ -156,6 +159,7 @@ if __name__ == "__main__":
     # List of extensions by tag 'media' from the category dictionary.
     ext_media_list = []
     # List of extensions by tag 'archive' from the category dictionary.
+
     ext_archive_list = []
     for cat in categories:
         tag = cat['tag']
