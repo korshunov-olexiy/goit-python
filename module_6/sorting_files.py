@@ -197,7 +197,7 @@ for type_obj, path_name in gen:
 
 # We delete empty directories in the target directory
 # (except directories for categories).
-del_empty_dirs(_dir, cat_dirs)
+del_empty_dirs(_dir, cat_dirs.keys())
 
 # We display the result of the program in a formatted form.
 print(f"В каталоге \n{_dir}\nимеются следующие файлы:")
