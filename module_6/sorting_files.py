@@ -127,7 +127,6 @@ def sort_dir(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=[])
     categories_list - a list of directories that will not be searched. 
     """
     if not isinstance(path, (PosixPath, WindowsPath)):
-        print(typeObj.ERROR, 'path must be a PosixPath or WindowsPath')
         return (typeObj.ERROR, 'path must be a PosixPath or WindowsPath')
     try:
         if show_all_files_dirs in [typeObj.ALL, typeObj.DIRS] and path.is_dir():
