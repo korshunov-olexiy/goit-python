@@ -44,6 +44,8 @@ class TypeOfShowObject(object):
     def FILES(): return 'files'
     @constant
     def DIRS(): return 'dirs'
+    @constant
+    def ERROR(): return 'error'
 
 typeObj = TypeOfShowObject()
 
@@ -125,8 +127,8 @@ def sort_dir(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=[])
     categories_list - a list of directories that will not be searched. 
     """
     if not isinstance(path, (PosixPath, WindowsPath)):
-        print('ERROR:', 'path must be a PosixPath or WindowsPath')
-        return False
+        print(typeObj.ERROR, 'path must be a PosixPath or WindowsPath')
+        return (typeObj.ERROR, 'path must be a PosixPath or WindowsPath')
     try:
         if show_all_files_dirs in [typeObj.ALL, typeObj.DIRS] and path.is_dir():
             yield (typeObj.DIRS, path)
@@ -137,13 +139,12 @@ def sort_dir(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=[])
                     sys_obj = sys_obj.rename(sys_obj.with_name(normalize(sys_obj.name)))
                     yield from sort_dir(sys_obj, ext=ext, show_all_files_dirs=show_all_files_dirs, categories_list=categories_list)
             else:
-                sys_obj = sys_obj.rename(
-                    str(sys_obj.with_name(normalize(sys_obj.stem)))+sys_obj.suffix)
+                sys_obj = sys_obj.rename(str(sys_obj.with_name(normalize(sys_obj.stem)))+sys_obj.suffix)
                 if sys_obj.match('**'+ext) and show_all_files_dirs in [typeObj.ALL, typeObj.FILES]:
                     yield (typeObj.FILES, sys_obj)
     except FileNotFoundError as e:
         if e.errno == 2:
-            print('ERROR:', 'No such file or directory')
+            print(typeObj.ERROR, 'No such file or directory')
 
 
 # Dictionary: directory_name and a list of category extensions.
@@ -166,7 +167,11 @@ gen = sort_dir(_dir, show_all_files_dirs=typeObj.FILES, categories_list=cat_dirs
 
 # We sort the files: with the media and archive tags according to our own rules.
 for type_obj, path_name in gen:
-    if type_obj == typeObj.FILES:
+    # If the object type is "error", print a message to the console and end the loop. 
+    if type_obj == typeObj.ERROR:
+        print(typeObj.ERROR, path_name)
+        break
+    elif type_obj == typeObj.FILES:
         name_ext, ext = path_name.name, path_name.suffix[1:]
         # By the file extension path_name,
         # we determine the name of the directory into which we will move the files.
