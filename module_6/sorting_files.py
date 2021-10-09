@@ -34,10 +34,9 @@ def del_empty_dirs(path, sort_dirs):
     sort_dirs is a list of directory names to be skipped anyway. 
     """
     for f in path.rglob('*'):
-        if f.is_dir():
-            if not list(f.iterdir()) and f.name not in sort_dirs:
-                f.rmdir()
-                return del_empty_dirs(path, sort_dirs)
+        if f.is_dir() and not (list(f.iterdir()) or f.name in sort_dirs):
+            f.rmdir()
+            return del_empty_dirs(path, sort_dirs)
 
 
 def move_archives(root_dir, file_name):
