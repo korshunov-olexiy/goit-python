@@ -117,7 +117,7 @@ if __name__ == "__main__":
     try:
         # Attention: If WinError 122 is thrown, then the path contains the wrong slashes. Necessary "/"
         _dir = Path(argv[1])
-        if not (_dir.exists() and _dir.is_dir()):
+        if not _dir.is_dir():
             print("The program has stopped: The parameter passed is not a directory, or the directory does not exist.")
             exit()
     except IndexError:
