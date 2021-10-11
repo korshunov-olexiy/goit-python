@@ -74,7 +74,7 @@ def normalize(in_str):
     Key arguments:
     in_str - the string to be modified.
     """
-    global table_symbols, map_cyr_to_latin
+    global map_cyr_to_latin
     # Preparing a template for replacing non-latin characters, numbers and '_'.
     rx = re.compile(r"[^\w_]")
     # We transliterate the Cyrillic alphabet into Latin
