@@ -82,7 +82,7 @@ def normalize(in_str):
     return rx.sub('_', in_str.translate(map_cyr_to_latin))
 
 
-def sort_dir(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=[]):
+def get_dir_obj(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=[]):
     """We search recursively in the passed directory for files, directories or files or directories,
     skipping directory names from the passed categories.
 
@@ -102,7 +102,7 @@ def sort_dir(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=[])
                 # If the directory name is not in the list of categories.
                 if sys_obj.name not in categories_list:
                     sys_obj = sys_obj.rename(sys_obj.with_name(normalize(sys_obj.name)))
-                    yield from sort_dir(sys_obj, ext=ext, show_all_files_dirs=show_all_files_dirs, categories_list=categories_list)
+                    yield from get_dir_obj(sys_obj, ext=ext, show_all_files_dirs=show_all_files_dirs, categories_list=categories_list)
             else:
                 sys_obj = sys_obj.rename(str(sys_obj.with_name(normalize(sys_obj.stem)))+sys_obj.suffix)
                 if sys_obj.match('**'+ext) and show_all_files_dirs in [typeObj.ALL, typeObj.FILES]:
@@ -112,37 +112,17 @@ def sort_dir(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=[])
             print(typeObj.ERROR, 'No such file or directory')
 
 
-# Character transcoding table.
-TABLE_SYMBOLS = ('абвгґдеєжзиіїйклмнопрстуфхцчшщюяыэАБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЮЯЫЭьъЬЪ',
-                (*('abvhgde'), 'ye', 'zh', *('zyi'), 'yi', *('yklmnoprstuf'), 'kh', 'ts',
-                'ch', 'sh', 'shch', 'yu', 'ya', 'y', 'ye', *('ABVHGDE'), 'YE', 'ZH', *('ZYI'),
-                'Yi', *('YKLMNOPRSTUF'), 'KH', 'TS', 'CH', 'SH', 'SHCH', 'YU', 'YA', 'Y', 'YE',
-                *('_'*4)))
+def sort_dir(_dir):
+    """Sorting files in the passed directory.
 
-# Converting the lookup table to a dictionary for the str.translate property.
-map_cyr_to_latin = {ord(src): dest for src, dest in zip(*TABLE_SYMBOLS)}
-
-
-if __name__ == "__main__":
-    try:
-        # Attention: If WinError 122 is thrown, then the path contains the wrong slashes. Necessary "/"
-        _dir = Path(argv[1])
-        if not _dir.is_dir():
-            print("The program has stopped: The parameter passed is not a directory, or the directory does not exist.")
-            exit()
-    except IndexError:
-        print("Fatal error: Use the target directory path parameter to run the program.")
-        exit()
-    except Exception as err:
-        print(f"Fatal error: {str(err)}")
-        exit()
-
+    Key arguments:
+    _dir is the target directory in which we are looking for objects.
+    """
     pictures_ext = ['bmp', 'jpeg', 'png', 'jpg', 'gif']
     movies_ext = ['avi', 'mp4', 'mov']
     documents_ext = ['pdf', 'doc', 'docx', 'txt']
     music_ext = ['mp3', 'ogg', 'wav', 'amr']
     archives_ext = ['zip', 'gz', 'tar']
-
     # Dictionaries for each category. The 'tag' key is used in file handling functions. (move_media, move_archives)
     pictures = {'name': 'Изображения', 'dir_name': 'images', 'ext': pictures_ext, 'sort': True, 'tag': 'media', 'files': []}
     movies = {'name': 'Видео', 'dir_name': 'video', 'ext': movies_ext, 'sort': True, 'tag': 'media', 'files': []}
@@ -152,17 +132,14 @@ if __name__ == "__main__":
     unknown = {'name': 'Другое', 'dir_name': 'other', 'ext': [], 'sort': False, 'tag': 'other', 'files': [], 'dirs': []}
     extensions_list = {'known': [], 'unknown': []}
     categories = [pictures, movies, documents, music, archives, unknown]
-
     # Dictionary: directory_name and a list of category extensions.
     cat_dirs = {cat['dir_name']: cat['ext'] for cat in categories}
     # By extension, we determine the name of the directory in the categories.
     dir_of_category = lambda extension: ''.join([k for k,v in cat_dirs.items() if extension in v])
-
     # List of extensions by tag 'media' from the category dictionary.
     ext_media_list = []
     # List of extensions by tag 'archive' from the category dictionary.
     ext_archive_list = []
-
     for cat in categories:
         tag = cat['tag']
         for c in cat['ext']:
@@ -170,20 +147,17 @@ if __name__ == "__main__":
                 ext_media_list.append(c)
             elif tag == 'archive':
                 ext_archive_list.append(c)
-
     # Create subdirectories for the categories in the target directory.
     for dir_name in cat_dirs.keys():
         _dir.joinpath(dir_name).mkdir(parents=True, exist_ok=True)
-
     # We generate a list of files contained in the target directory.
-    src_files_gen = sort_dir(_dir, show_all_files_dirs=typeObj.FILES, categories_list=cat_dirs.keys())
-
+    src_files_gen = get_dir_obj(_dir, show_all_files_dirs=typeObj.FILES, categories_list=cat_dirs.keys())
     # We sort the files: with the media and archive tags according to our own rules.
     for type_obj, path_name in src_files_gen:
         # If the object type is "error", print a message to the console and end the loop. 
         if type_obj == typeObj.ERROR:
             print(type_obj, path_name)
-            break
+            return ''
         elif type_obj == typeObj.FILES:
             name_ext, ext = path_name.name, path_name.suffix[1:]
             # By the file extension path_name,
@@ -210,16 +184,41 @@ if __name__ == "__main__":
                 # Add the file extension to the list of unknown extensions.
                 if ext not in extensions_list['unknown']:
                     extensions_list['unknown'].append(ext)
-
     # We delete empty directories in the target directory
     # (except directories for categories).
     del_empty_dirs(_dir, cat_dirs.keys())
-
-    # We display the result of the program in a formatted form.
-    print(f"The \n{_dir}\n directory contains the following files:")
-
+    # Return the result of the program in a formatted form.
+    res_out = f"The directory\n{_dir}\ncontains the following files:\n"
     for cat in [c for c in categories if c['sort'] == True]:
-        print(f"{cat['name']:<12}: {', '.join(cat['files'])}")
+        res_out += f"{cat['name']:<12}: {', '.join(cat['files'])}\n"
+    res_out += f"List of known extensions: {', '.join(extensions_list['known'])}\n"
+    res_out += f"List of unknown extensions: {', '.join(extensions_list['unknown'])}\n"
+    return res_out
 
-    print('List of known extensions:', ', '.join(extensions_list['known']))
-    print('List of unknown extensions:', ', '.join(extensions_list['unknown']))
+
+# Character transcoding table.
+TABLE_SYMBOLS = ('абвгґдеєжзиіїйклмнопрстуфхцчшщюяыэАБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЮЯЫЭьъЬЪ',
+                (*('abvhgde'), 'ye', 'zh', *('zyi'), 'yi', *('yklmnoprstuf'), 'kh', 'ts',
+                'ch', 'sh', 'shch', 'yu', 'ya', 'y', 'ye', *('ABVHGDE'), 'YE', 'ZH', *('ZYI'),
+                'Yi', *('YKLMNOPRSTUF'), 'KH', 'TS', 'CH', 'SH', 'SHCH', 'YU', 'YA', 'Y', 'YE',
+                *('_'*4)))
+
+# Converting the lookup table to a dictionary for the str.translate property.
+map_cyr_to_latin = {ord(src): dest for src, dest in zip(*TABLE_SYMBOLS)}
+
+
+if __name__ == "__main__":
+    try:
+        # Attention: If WinError 122 is thrown, then the path contains the wrong slashes. Necessary "/"
+        _dir = Path(argv[1])
+        if not _dir.is_dir():
+            print("The program has stopped: The parameter passed is not a directory, or the directory does not exist.")
+            exit()
+    except IndexError:
+        print("Fatal error: Use the target directory path parameter to run the program.")
+        exit()
+    except Exception as err:
+        print(f"Fatal error: {str(err)}")
+        exit()
+    # Sorting target directory
+    print(sort_dir(_dir))
