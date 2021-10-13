@@ -47,9 +47,9 @@ def move_archives(root_dir, file_name):
     file_name is the name of the archive. 
     """
     if root_dir.joinpath(file_name.stem).exists():
-        unpack_archive(path_name, root_dir.joinpath(f"{file_name.stem}_{str(datetime.now().microsecond)}"))
+        unpack_archive(file_name, root_dir.joinpath(f"{file_name.stem}_{str(datetime.now().microsecond)}"))
     else:
-        unpack_archive(path_name, root_dir.joinpath(f"{file_name.stem}"))
+        unpack_archive(file_name, root_dir.joinpath(f"{file_name.stem}"))
     # Delete the original archive file file_name.
     file_name.unlink()
 
