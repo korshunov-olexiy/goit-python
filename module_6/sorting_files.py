@@ -92,6 +92,7 @@ def get_dir_obj(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=
     show_all_files_dirs - which objects to display in the output: ALL, FILES or DIRS.
     categories_list - a list of directories that will not be searched. 
     """
+    global typeObj
     if not isinstance(path, (PosixPath, WindowsPath)):
         return (typeObj.ERROR, 'path must be a PosixPath or WindowsPath')
     try:
