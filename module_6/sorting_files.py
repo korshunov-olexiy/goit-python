@@ -112,6 +112,17 @@ def sort_dir(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=[])
             print(typeObj.ERROR, 'No such file or directory')
 
 
+# Character transcoding table.
+TABLE_SYMBOLS = ('абвгґдеєжзиіїйклмнопрстуфхцчшщюяыэАБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЮЯЫЭьъЬЪ',
+                (*('abvhgde'), 'ye', 'zh', *('zyi'), 'yi', *('yklmnoprstuf'), 'kh', 'ts',
+                'ch', 'sh', 'shch', 'yu', 'ya', 'y', 'ye', *('ABVHGDE'), 'YE', 'ZH', *('ZYI'),
+                'Yi', *('YKLMNOPRSTUF'), 'KH', 'TS', 'CH', 'SH', 'SHCH', 'YU', 'YA', 'Y', 'YE',
+                *('_'*4)))
+
+# Converting the lookup table to a dictionary for the str.translate property.
+map_cyr_to_latin = {ord(src): dest for src, dest in zip(*TABLE_SYMBOLS)}
+
+
 if __name__ == "__main__":
     try:
         # Attention: If WinError 122 is thrown, then the path contains the wrong slashes. Necessary "/"
@@ -142,15 +153,6 @@ if __name__ == "__main__":
     extensions_list = {'known': [], 'unknown': []}
     categories = [pictures, movies, documents, music, archives, unknown]
 
-    # Character transcoding table.
-    table_symbols = ('абвгґдеєжзиіїйклмнопрстуфхцчшщюяыэАБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЮЯЫЭьъЬЪ',
-                    (*(u'abvhgde'), 'ye', 'zh', *(u'zyi'), 'yi', *(u'yklmnoprstuf'), 'kh', 'ts',
-                    'ch', 'sh', 'shch', 'yu', 'ya', 'y', 'ye', *(u'ABVHGDE'), 'Ye', 'Zh', *(u'ZYI'),
-                    'Yi', *(u'YKLMNOPRSTUF'), 'KH', 'TS', 'CH', 'SH', 'SHCH', 'YU', 'YA', 'Y', 'YE',
-                    *(u'_'*4)))
-
-    # Converting the lookup table to a dictionary for the str.translate property.
-    map_cyr_to_latin = {ord(src): dest for src, dest in zip(*table_symbols)}
     # Dictionary: directory_name and a list of category extensions.
     cat_dirs = {cat['dir_name']: cat['ext'] for cat in categories}
     # By extension, we determine the name of the directory in the categories.
