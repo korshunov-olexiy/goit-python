@@ -118,6 +118,7 @@ def sort_dir(_dir):
     Key arguments:
     _dir is the target directory in which we are looking for objects.
     """
+    global typeObj
     pictures_ext = ['bmp', 'jpeg', 'png', 'jpg', 'gif']
     movies_ext = ['avi', 'mp4', 'mov']
     documents_ext = ['pdf', 'doc', 'docx', 'txt']
