@@ -1,11 +1,7 @@
 from datetime import datetime, timedelta, date
 
 
-WEEKDAYS = {0: "Monday", 1: "Tuesday", 2: "Wednesday", 3: "Thursday", 4: "Friday", 5: "Saturday", 6: "Sunday"}
-
-# print(users[0])
-# .strftime('%d.%m.%Y')
-# print(date.today().weekday())
+WEEKDAYS_NAMES = ("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
 
 def congratulate(file_name):
     """Displays a list of birthday people who need to be congratulated this week.
@@ -13,17 +9,28 @@ def congratulate(file_name):
     Args:
         file_name ([str]): The name of the file where names and birthdays are stored.
     """
-    # current date without year.
-    cur_date = datetime.today().strftime('%d.%m.')
+    weekdays_data = [[], [], [], [], [], [], []]
+    weekdays = []
+    global WEEKDAYS_NAMES
+    # current date.
+    cur_date = datetime.today()
     # List of days of the week from current date to Sunday (weekday = 6)
-    week_dates = range(datetime.today().weekday, 7)
-    # list with users dict
-    users = []
+    week_days = range(datetime.today().weekday(), 7)
+    for day in week_days:
+        # Get and write the dates for this week, starting from the current date.
+        week_date = cur_date + timedelta(days=day)
+        week_date = week_date.strftime("%d.%m")
+        weekdays.append(week_date)
+    print(weekdays)
     with open(file_name, 'r', encoding='utf-8') as file_users:
         for line in file_users:
+            # Get the name and date.
             name, birth = line.strip().split("\t")
-            users.append({'name': name, 'birthday': datetime.strptime(birth, "%d.%m.%Y").date()})
+            birth = datetime.strptime(birth[:5], "%d.%m")
+            birth_weekday = birth.weekday()
+            if birth.strftime("%d.%m") in weekdays:
+                weekdays_data[birth_weekday].append(name)
+    return weekdays_data
 
-wk_brth = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
 
-# congratulate('users.txt')
+congratulate('users.txt')
