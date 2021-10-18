@@ -6,7 +6,7 @@ wk_brth = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
 
 users = []
 with open('users.txt', 'r', encoding='utf-8') as file_users:
-    for line in file_users:
+    for line in file_users:  #.read().splitlines():
         name, birth = line.strip().split("\t")
         users.append({'name': name, 'birthday': datetime.strptime(birth, "%d.%m.%Y").date()})
 
