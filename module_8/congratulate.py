@@ -26,9 +26,7 @@ def congratulate(file_name):
         for line in file_users:
             # Get the name and date.
             name, birth = line.strip().split("\t")
-            birth = datetime.strptime(birth[:5], "%d.%m")
-            cur_weekday = cur_date.weekday()
-            birth = birth.strftime("%d.%m")
+            birth = datetime.strptime(birth[:5], "%d.%m").strftime("%d.%m")
             idx = weekdays.index(birth) if birth in weekdays else -1
             if idx != -1:
                weekdays_data[idx].append(f"{name},{birth}")
