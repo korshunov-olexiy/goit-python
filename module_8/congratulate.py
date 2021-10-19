@@ -10,23 +10,23 @@ def congratulate(file_name):
         file_name ([str]): The name of the file where names and birthdays are stored.
     """
     global WEEKDAYS_NAMES
-    weekdays_data = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
+    weekdays_data = [[],[], [], [], [], [], []]
     # current date
-    cur_date = datetime.today()
+    current_date = datetime.today()
     # monday of the current week
-    base_date = cur_date - timedelta(days=cur_date.weekday())
+    base_date = current_date - timedelta(days=current_date.weekday())
     weekdays_list = [(base_date + timedelta(days=x)).strftime("%d.%m") for x in range(-2, 7)]
-    weekdays_list = [weekdays_list[:3]]+weekdays_list[3:]
+    days_list = [weekdays_list[:3]]+weekdays_list[3:]
     with open(file_name, 'r', encoding='utf-8') as file_users:
         for line in file_users:
             # Get the birthdayman name and date
             name, birth = line.strip().split("\t")
             birth = datetime.strptime(birth[:5], "%d.%m").strftime("%d.%m")
-            for idx, days in enumerate(weekdays_list):
-                if birth in days:
+            for idx in range(len(days_list)):
+                if birth in days_list[idx]:
                     weekdays_data[idx].append(name)
-    for idx, day in weekdays_data.items():
-        print(f"{WEEKDAYS_NAMES[idx]:<9}: {', '.join(day)}")
+    for idx in range(len(weekdays_data)):
+        print(f"{WEEKDAYS_NAMES[idx]:<9}: {', '.join(weekdays_data[idx])}")
 
 
 if __name__ == "__main__":
