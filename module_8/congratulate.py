@@ -1,7 +1,5 @@
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 
-
-WEEKDAYS_NAMES = ("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
 
 def congratulate(file_name):
     """Displays a list of birthday people who need to be congratulated this week.
@@ -9,28 +7,24 @@ def congratulate(file_name):
     Args:
         file_name ([str]): The name of the file where names and birthdays are stored.
     """
-    weekdays_data = [[], [], [], [], [], [], []]
-    weekdays = []
-    global WEEKDAYS_NAMES
-    # current date.
+    WEEKDAYS_NAMES = {0:"Monday",1:"Tuesday",2:"Wednesday",3:"Thursday",4:"Friday",5:"Saturday",6:"Sunday"}
+    weekdays_data = {0:[], 1:[], 2:[], 3:[], 4:[], 5:[], 6:[]}
+    # current date
     cur_date = datetime.today()
-    # List of days of the week from current date to Sunday (weekday = 6)
-    week_days = range(datetime.today().weekday(), 7)
-    for day in week_days:
-        # Get and write the dates for this week, starting from the current date.
-        week_date = cur_date + timedelta(days=day)
-        week_date = week_date.strftime("%d.%m")
-        weekdays.append(week_date)
-    print(weekdays)
+    # monday of the current week
+    base_date = (cur_date - timedelta(days=cur_date.weekday())).date()
+    weekdays_list = [(base_date + timedelta(days=x)).strftime("%d.%m") for x in range(-2, 7)]
+    weekdays_list = [weekdays_list[:3]]+weekdays_list[3:]
     with open(file_name, 'r', encoding='utf-8') as file_users:
         for line in file_users:
             # Get the name and date.
             name, birth = line.strip().split("\t")
             birth = datetime.strptime(birth[:5], "%d.%m").strftime("%d.%m")
-            idx = weekdays.index(birth) if birth in weekdays else -1
-            if idx != -1:
-               weekdays_data[idx].append(f"{name},{birth}")
-    return weekdays_data
+            for idx, days in enumerate(weekdays_list):
+                if birth in days:
+                    weekdays_data[idx].append(name)
+    for idx,day in weekdays_data.items():
+        print(f"{WEEKDAYS_NAMES[idx]:<9}: {', '.join(day)}")
 
 
-print(congratulate('users.txt'))
+congratulate('users.txt')
