@@ -12,19 +12,20 @@ def congratulate(file_name):
     # current date
     cur_date = datetime.today()
     # monday of the current week
-    base_date = (cur_date - timedelta(days=cur_date.weekday())).date()
+    base_date = cur_date - timedelta(days=cur_date.weekday())
     weekdays_list = [(base_date + timedelta(days=x)).strftime("%d.%m") for x in range(-2, 7)]
     weekdays_list = [weekdays_list[:3]]+weekdays_list[3:]
     with open(file_name, 'r', encoding='utf-8') as file_users:
         for line in file_users:
-            # Get the name and date.
+            # Get the birthdayman name and date
             name, birth = line.strip().split("\t")
             birth = datetime.strptime(birth[:5], "%d.%m").strftime("%d.%m")
             for idx, days in enumerate(weekdays_list):
                 if birth in days:
                     weekdays_data[idx].append(name)
-    for idx,day in weekdays_data.items():
+    for idx, day in weekdays_data.items():
         print(f"{WEEKDAYS_NAMES[idx]:<9}: {', '.join(day)}")
 
 
-congratulate('users.txt')
+if __name__ == "__main__":
+    congratulate('users.txt')
