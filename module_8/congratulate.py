@@ -1,14 +1,16 @@
 from datetime import datetime, timedelta
 
 
+WEEKDAYS_NAMES = {0: "Monday", 1: "Tuesday", 2: "Wednesday", 3: "Thursday", 4: "Friday", 5: "Saturday", 6: "Sunday"}
+
 def congratulate(file_name):
     """Displays a list of birthday people who need to be congratulated this week.
 
     Args:
         file_name ([str]): The name of the file where names and birthdays are stored.
     """
-    WEEKDAYS_NAMES = {0:"Monday",1:"Tuesday",2:"Wednesday",3:"Thursday",4:"Friday",5:"Saturday",6:"Sunday"}
-    weekdays_data = {0:[], 1:[], 2:[], 3:[], 4:[], 5:[], 6:[]}
+    global WEEKDAYS_NAMES
+    weekdays_data = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
     # current date
     cur_date = datetime.today()
     # monday of the current week
