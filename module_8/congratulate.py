@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 
-WEEKDAYS_NAMES = {0: "Monday", 1: "Tuesday", 2: "Wednesday", 3: "Thursday", 4: "Friday", 5: "Saturday", 6: "Sunday"}
+WEEKDAYS_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 def congratulate(file_name):
     """Displays a list of birthday people who need to be congratulated this week.
