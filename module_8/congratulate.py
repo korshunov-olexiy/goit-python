@@ -9,7 +9,6 @@ def congratulate(file_name):
     Args:
         file_name ([str]): The name of the file where names and birthdays are stored.
     """
-    global WEEKDAYS_NAMES
     weekdays_data = [[], [], [], [], [], [], []]
     # current date
     current_date = datetime.today()
