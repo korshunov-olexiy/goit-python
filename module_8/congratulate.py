@@ -3,11 +3,11 @@ from datetime import datetime, timedelta
 
 WEEKDAYS_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
-def congratulate(file_name):
-    """Displays a list of birthday people who need to be congratulated this week.
-
+def get_birthdaymans(file_name):
+    """Get a list of birthdays
+    
     Args:
-        file_name ([str]): The name of the file where names and birthdays are stored.
+    file_name ([str]): The name of the file where names and birthdays are stored.
     """
     weekdays_data = [[], [], [], [], [], [], []]
     # current date
@@ -24,9 +24,15 @@ def congratulate(file_name):
             for idx in range(len(days_list)):
                 if birth in days_list[idx]:
                     weekdays_data[idx].append(name)
-    for idx in range(len(weekdays_data)):
-        print(f"{WEEKDAYS_NAMES[idx]:<9}: {', '.join(weekdays_data[idx])}")
+    return weekdays_data
+
+def congratulate():
+    """Displays a list of birthday people who need to be congratulated this week.
+    """
+    birthdaymans = get_birthdaymans('users.txt')
+    for idx in range(len(birthdaymans)):
+        print(f"{WEEKDAYS_NAMES[idx]:<9}: {', '.join(birthdaymans[idx])}")
 
 
 if __name__ == "__main__":
-    congratulate('users.txt')
+    congratulate()
