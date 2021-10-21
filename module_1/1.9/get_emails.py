@@ -4,7 +4,7 @@
 Используйте при этом функцию map
 '''
 def get_emails(list_contacts):
-    return list(map(lambda item: item['email'],list_contacts))
+    return list(map(lambda item: item['email'], list_contacts))
 
 
 # EXAMPE:
