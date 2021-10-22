@@ -29,8 +29,7 @@ def cmd_hello():
     """Gives a welcome message to the console.
 
     """
-    msg = "How can I help you?"
-    return msg
+    return "How can I help you?"
 
 
 @input_error
