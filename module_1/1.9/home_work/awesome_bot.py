@@ -2,14 +2,16 @@
 
 def input_error(func):
     def check_error(input_str):
-        if func.__name__ == "get_input_command":
-            result = func(input_error)
-            return result
-        elif func.__name__ in ['cmd_hello', 'cmd_show_all']:
+        #if func.__name__ == "get_input_command":
+        #    result = func(input_str)
+        #    return result
+        # Если выполняем функции cmd_hello, cmd_show_all,
+        # то они не требуют параметров
+        if func.__name__ in ['cmd_hello', 'cmd_show_all']:
             result = func()
             return result
         try:
-            result = func
+            result = func(input_str)
             return result
         except KeyError as err_key:
             print(err_key)
@@ -17,6 +19,7 @@ def input_error(func):
             print(err_val)
         except IndexError as err_idx:
             print(err_idx)
+    return check_error
 
 @input_error
 def cmd_hello():
@@ -33,11 +36,11 @@ def cmd_add(input_str):
 def cmd_change(input_str):
     name, phone = input_str.split()
     address_book[name.strip().capitalize()] = phone.strip()
-    return f"The phone number for {name} has been changed"
+    return f"The phone number for {name} has been changed to {phone}"
 
 @input_error
 def cmd_phone(input_str):
-    name = input_str.split().capitalize()
+    name = input_str.capitalize()
     finding_phone = address_book.get(name)
     if finding_phone:
         return f"The {name} has a phone number as {finding_phone}"
@@ -47,30 +50,32 @@ def cmd_phone(input_str):
 @input_error
 def cmd_show_all():
     res = []
-    for user_info in address_book:
-        name, phone = user_info.items()
+    for name, phone in address_book.items():
         res.append(f"{name}: {phone}")
     return '\n'.join(res)
 
-address_book = []
-commands_list = ['hello', 'add', 'change', 'phone', 'show_all']
+address_book = {}
+commands_list = ['hello', 'add', 'change', 'phone', 'show all']
 functions_list = [cmd_hello, cmd_add, cmd_change, cmd_phone, cmd_show_all]
 commands_func = {cmd: func for cmd, func in zip(commands_list, functions_list)}
 
 def get_handler(operator):
     return commands_func[operator]
 
+
+@input_error
 def get_input_command(input_str):
-    cmd = ''.join([c for c in commands_list if input_msg.startswith(c)])
+    cmd = ''.join([c for c in commands_list if input_str.startswith(c)])
     if cmd:
-        print(get_handler(cmd)(input_msg))
+        print(get_handler(cmd)(input_str[len(cmd):].strip()))
     else:
         print("Sorry, I could not recognize the entered command!")
 
+
 if __name__ == "__main__":
     input_msg = input("Hello, please enter one of the commands: hello, add, change, phone or show all\n: ").lower().strip()
-    while input_msg != ['good bye', 'close', 'exit']:
+    while input_msg not in ['good bye', 'close', 'exit']:
         get_input_command(input_msg)
-        input_msg = input("Hello, please enter one of the commands: hello, add, change, phone or show all\n: ").lower().strip()
+        input_msg = input("Please enter one of the commands: hello, add, change, phone or show all\n: ").lower().strip()
     
     print("Have a nice day... Good bye!")
