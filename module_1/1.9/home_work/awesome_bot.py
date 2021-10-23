@@ -16,11 +16,11 @@ def input_error(func):
             result = func(input_str)
             return result
         except KeyError as err_key:
-            print(err_key)
+            return err_key
         except ValueError as err_val:
-            print(err_val)
+            return err_val
         except IndexError as err_idx:
-            print(err_idx)
+            return err_idx
     return check_error
 
 
