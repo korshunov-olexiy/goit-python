@@ -7,9 +7,9 @@ def input_error(func):
     func - Decorated function.
     """
     def check_error(input_str):
-        # If we perform the functions cmd_hello, cmd_show_all,
+        # If we perform the functions cmd_help, cmd_hello, cmd_show_all,
         # they do not require parameters.
-        if func.__name__ in ['cmd_hello', 'cmd_show_all']:
+        if func.__name__ in ['cmd_help', 'cmd_hello', 'cmd_show_all']:
             result = func()
             return result
         try:
@@ -25,9 +25,16 @@ def input_error(func):
 
 
 @input_error
+def cmd_help():
+    """Gives a list of commands that the bot understands.
+
+    """
+    return f"Our bot understands the following commands: {', '.join(commands_list[:-1])} and {commands_list[-1]}"
+
+
+@input_error
 def cmd_hello():
     """Gives a welcome message to the console.
-
     """
     return "How can I help you?"
 
@@ -79,18 +86,24 @@ def cmd_show_all():
 
 
 address_book = {}
-commands_list = ['hello', 'add', 'change', 'phone', 'show all']
-functions_list = [cmd_hello, cmd_add, cmd_change, cmd_phone, cmd_show_all]
+# List of commands.
+commands_list = ['help', 'hello', 'add', 'change', 'phone', 'show all']
+# List of functions
+functions_list = [cmd_help, cmd_hello, cmd_add, cmd_change, cmd_phone, cmd_show_all]
+# Dictionary of combined lists of commands and functions.
 commands_func = {cmd: func for cmd, func in zip(commands_list, functions_list)}
 
 def get_handler(operator):
+    """Function handler.
+
+    operator - The name of the command by which the corresponding function will be searched.
+    """
     return commands_func[operator]
 
 
 @input_error
 def get_input_command(input_str):
     """Attempts to find a command in the passed line
-
     Args:
     input_str - Input string from a user without a passed command.
     """
@@ -102,9 +115,9 @@ def get_input_command(input_str):
 
 
 if __name__ == "__main__":
-    input_msg = input("Hello, please enter one of the commands: hello, add, change, phone or show all\n: ").lower().strip()
+    input_msg = input("Hello, please enter the command: ").lower().strip()
     while input_msg not in ['good bye', 'close', 'exit']:
         get_input_command(input_msg)
-        input_msg = input("Please enter one of the commands: hello, add, change, phone or show all\n: ").lower().strip()
+        input_msg = input("Please enter the command: ").lower().strip()
     
     print("Have a nice day... Good bye!")
