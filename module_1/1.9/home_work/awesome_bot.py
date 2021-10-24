@@ -11,11 +11,9 @@ def input_error(func):
         # If we perform the functions cmd_help, cmd_hello, cmd_show_all,
         # they do not require parameters.
         if func.__name__ in ['cmd_help', 'cmd_hello', 'cmd_show_all']:
-            result = func()
-            return result
+            return func()
         try:
-            result = func(input_str)
-            return result
+            return func(input_str)
         except KeyError as err_key:
             return err_key
         except ValueError as err_val:
