@@ -28,7 +28,6 @@ def input_error(func):
 @input_error
 def cmd_help():
     """Gives a list of commands that the bot understands.
-
     """
     return f"Our bot understands the following commands: {', '.join(commands_list[:-1])} and {commands_list[-1]}"
 
@@ -67,6 +66,7 @@ def cmd_change(input_str):
 @input_error
 def cmd_phone(input_str):
     """Find a user by name in the database.
+
     Args:
     input_str - Input string from a user without a passed command.
     """
@@ -81,7 +81,6 @@ def cmd_phone(input_str):
 @input_error
 def cmd_show_all():
     """Show all records from the database.
-    
     """
     return "\n".join(f"{k}: {v}" for k, v in address_book.items())
 
@@ -89,6 +88,7 @@ def cmd_show_all():
 @input_error
 def get_input_command(input_str):
     """Attempts to find a command in the passed line
+
     Args:
     input_str - Input string from a user without a passed command.
     """
