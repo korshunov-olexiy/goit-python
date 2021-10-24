@@ -1,5 +1,6 @@
 # --*-- coding: utf-8 --*--
 
+
 def input_error(func):
     """Decorator for error handling.
     
@@ -85,22 +86,6 @@ def cmd_show_all():
     return "\n".join(f"{k}: {v}" for k, v in address_book.items())
 
 
-address_book = {}
-# List of commands.
-commands_list = ['help', 'hello', 'add', 'change', 'phone', 'show all']
-# List of functions
-functions_list = [cmd_help, cmd_hello, cmd_add, cmd_change, cmd_phone, cmd_show_all]
-# Dictionary of combined lists of commands and functions.
-commands_func = {cmd: func for cmd, func in zip(commands_list, functions_list)}
-
-def get_handler(operator):
-    """Function handler.
-
-    operator - The name of the command by which the corresponding function will be searched.
-    """
-    return commands_func[operator]
-
-
 @input_error
 def get_input_command(input_str):
     """Attempts to find a command in the passed line
@@ -109,12 +94,21 @@ def get_input_command(input_str):
     """
     cmd = ''.join([c for c in commands_list if input_str.startswith(c)])
     if cmd:
-        print(get_handler(cmd)(input_str[len(cmd):].strip()))
+        print(commands_func[cmd](input_str[len(cmd):].strip()))
     else:
         print("Sorry, I could not recognize the entered command!")
 
 
 if __name__ == "__main__":
+
+    address_book = {}
+    # List of commands.
+    commands_list = ['help', 'hello', 'add', 'change', 'phone', 'show all']
+    # List of functions
+    functions_list = [cmd_help, cmd_hello, cmd_add, cmd_change, cmd_phone, cmd_show_all]
+    # Dictionary of combined lists of commands and functions.
+    commands_func = {cmd: func for cmd, func in zip(commands_list, functions_list)}
+
     input_msg = input("Hello, please enter the command: ").lower().strip()
     while input_msg not in ['good bye', 'close', 'exit']:
         get_input_command(input_msg)
