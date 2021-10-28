@@ -79,7 +79,6 @@ def normalize(in_str):
     Key arguments:
     in_str - the string to be modified.
     """
-    global map_cyr_to_latin
     # Preparing a template for replacing non-latin characters, numbers and '_'.
     rx = re.compile(r"[^\w_]")
     # We transliterate the Cyrillic alphabet into Latin
@@ -97,7 +96,6 @@ def get_dir_obj(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=
     show_all_files_dirs - which objects to display in the output: ALL, FILES or DIRS.
     categories_list - a list of directories that will not be searched. 
     """
-    global typeObj
     if not isinstance(path, (PosixPath, WindowsPath)):
         return (typeObj.ERROR, 'path must be a PosixPath or WindowsPath')
     try:
@@ -138,7 +136,6 @@ def sort_dir():
     except Exception as err:
         print(f"Fatal error: {str(err)}")
         exit()
-    global typeObj
     pictures_ext = ['bmp', 'jpeg', 'png', 'jpg', 'gif']
     movies_ext = ['avi', 'mp4', 'mov']
     documents_ext = ['pdf', 'doc', 'docx', 'txt']
