@@ -1,3 +1,8 @@
+'''
+Реализовать итерируемый class RandomVectors, который должен возвращать класс Vector
+Итерация должна останавливаться при меньше или равно max_vectors.
+Значения x и y класса Point должны быть не больше max_points
+'''
 from random import randrange
 
 
@@ -97,14 +102,14 @@ class Iterable:
     def __init__(self, max_vectors, max_points):
         self.current_index = 0
         self.vectors = []
-        
-            
+        self.max_vectors = max_vectors
+        while len(self.vectors) < self.max_vectors:
+            self.vectors.append(Vector(Point(randrange(0, max_points), randrange(0, max_points))))
 
     def __next__(self):
-        if self.current_index < self.max_vectors
-            
-            
-            
+        if self.current_index < self.max_vectors:
+            self.current_index += 1
+            return self.vectors[self.current_index-1]
         else:
             raise StopIteration
 
@@ -115,16 +120,15 @@ class RandomVectors:
         self.max_points = max_points
 
     def __iter__(self):
-        return Iterable()
+        return Iterable(self.max_vectors, self.max_points)
 
 
 # EXAMPLE:
 vectors = RandomVectors(5, 10)
-
 for vector in vectors:
     print(vector)
 
-# RESULT:
+# примерный результат должен быть такой:
 # Vector(7,7)
 # Vector(0,0)
 # Vector(8,9)
