@@ -1,4 +1,4 @@
-from collections import UserDict
+from collections import UserDict, UserList
 
 '''
 обязательное поле с именем
@@ -17,8 +17,9 @@ class Field:
 Не обязательное поле с телефоном
 и таких одна запись (Record) может содержать несколько полей
 '''
-class Phone:
-    pass
+class Phones(UserList):
+    def add(self, value):
+        self.data.append(value)
 
 '''
 добавление, удаление, редактирование
@@ -26,9 +27,11 @@ class Phone:
 и хранение обязательного поля name
 '''
 class Record:
-    def __init__(self, name, phone = Phone):
+    def __init__(self, name, phone = []):
         self.name = name
-        self.phones.append(phone)
+        phones = self.data.get('phones', Phones())
+        phones.add(phone)
+        #self.phones.append(Phones.add(phone))
 
 
 class AddressBook(UserDict):
