@@ -44,3 +44,12 @@ class AddressBook(UserDict):
     def find_record(self, value):
         keys = []
 
+
+class Point:
+    x, y = 12, 22
+    def setCoord(self, x, y):
+        self.a, self.b = x,y
+
+p = Point()
+p.setCoord(10,20)
+print(p.x, p.y, p.__dict__)
