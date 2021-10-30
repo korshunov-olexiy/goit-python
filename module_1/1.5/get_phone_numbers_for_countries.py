@@ -19,7 +19,9 @@ def get_phone_numbers_for_countries(list_phones):
     
     countries_codes = {'UA': '380', 'TW': '886', 'SG': '65', 'JP': '81'}
     countries_phones = {k:[] for k in countries_codes.keys()}
+    print(countries_phones, end='\n\n')
     list_phones = [sanitize_phone_number(l) for l in list_phones]
+    print(list_phones, end='\n\n')
     for l in list_phones:
         countries_phones[country_code(l, countries_codes)].append(l)
     return countries_phones

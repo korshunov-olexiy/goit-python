@@ -8,7 +8,10 @@
 def decode(data):
     if data == []:
         return data
-    return list(data[0]*data[1]) + decode(data[2:])
+    if isinstance(data[1], int):
+        return list(data[0]*data[1]) + decode(data[2:])
+    else:
+        return decode(data[2:])
 
 
 lst = ['X', 3, 'Z', 2, 'X', 2, 'Y', 3, 'Z', 2]
