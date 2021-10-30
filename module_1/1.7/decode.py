@@ -9,7 +9,7 @@ def decode(data):
     if data == []:
         return data
     if isinstance(data[1], int):
-        return [d for d in data[0]*data[1]] + decode(data[2:])
+        return list(data[0]*data[1]) + decode(data[2:])
     else:
         return decode(data[1:])
 
