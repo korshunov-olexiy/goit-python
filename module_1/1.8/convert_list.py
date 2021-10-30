@@ -7,12 +7,12 @@ def convert_list(cats):
     func_cat = []
     if isinstance(cats[0], Cat):
         for cat in cats:
-            func_cat.append({'nickname': cat.nickname,
-                            'age': cat.age, 'owner': cat.owner})
+            func_cat.append({'nickname': cat.nickname, 'age': cat.age, 'owner': cat.owner})
     else:
         for cat in cats:
             func_cat.append(Cat(cat['nickname'], cat['age'], cat['owner']))
     return func_cat
+
 
 
 # lst = [Cat(nickname='Mick', age=5, owner='Sara'),
