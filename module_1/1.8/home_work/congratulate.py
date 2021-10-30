@@ -26,6 +26,7 @@ def get_birthdaymans(file_name):
                     weekdays_data[idx].append(name)
     return weekdays_data
 
+
 def congratulate():
     """Displays a list of birthday people who need to be congratulated this week.
     """
