@@ -13,7 +13,7 @@ class Phone:
             self.values = [p.replace(' ', '') for p in phones]
 
 class Record(UserDict):
-    def __init__(self, name, phones = [], address = None):
+    def __init__(self, name, phones = []):
         self.data = {'name': Name(name), 'phones': Phone(phones)}
 
 
