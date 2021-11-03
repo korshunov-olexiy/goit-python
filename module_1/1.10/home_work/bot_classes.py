@@ -41,14 +41,15 @@ class AddressBook(UserDict):
 
 
 
-# -=- Usage example -=-
-# create address book
-ad = AddressBook()
-# add user in address book
-john = ad.add_record('john')
-# add another user in address book
-bob = ad.add_record('bob')
-# add new field for user john in address book
-john.add_field('address', 'Kurska, 56')
-# edit field for user john in address book
-john.edit_field('address', 'Illinska, 156')
+if __name__ == "__main__":
+    # -=- Usage example -=-
+    # create address book
+    ad = AddressBook()
+    # add user in address book
+    john = ad.add_record('john')
+    # add another user in address book
+    bob = ad.add_record('bob')
+    # add new field for user john in address book
+    john.add_field('address', 'Kurska, 56')
+    # edit field for user john in address book
+    john.edit_field('address', 'Illinska, 156')
