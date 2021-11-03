@@ -2,26 +2,25 @@ from collections import UserDict
 
 
 class Field:
-    '''
-    Field class is parent for all fields in Record class
-    '''
+    '''Field class is parent for all fields in Record class'''
 
 class Name(Field):
-    '''
-    Name class for storage name's field
-    '''
+    '''Name class for storage name's field'''
+    def __init__(self, name):
+        self.value = name
 
 class Phone(Field):
-    '''
-    Phone class for storage phone's field
-    '''
+    '''Phone class for storage phone's field'''
+    def __init__(self, phones):
+        self.values = phones
 
-class Record(UserDict):
-    '''
-    Record class responsible for the logic of adding/removing/editing fields
-    '''
+class Record:
+    '''Record class responsible for the logic of adding/removing/editing fields'''
     def __init__(self, name, phones = []):
-        self.data = {'name': name, 'phone': phones}
+        self.name = Name(name)
+        self.phones = []
+        self.phones.append(Phone(phones))
+        #self.data = {'name': name, 'phone': phones}
     
     def add_field(self, field_name, value):
         self.data.update({field_name: value})
@@ -47,6 +46,7 @@ if __name__ == "__main__":
     ad = AddressBook()
     # add user in address book
     john = ad.add_record('john')
+    print(john.name.value)
     # add another user in address book
     bob = ad.add_record('bob')
     # add new field for user john in address book
