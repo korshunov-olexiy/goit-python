@@ -1,11 +1,14 @@
 from collections import UserDict, UserList
 
 
-class Name:
+class Field:
+    pass
+
+class Name(Field):
     def __init__(self, name):
         self.value = name
 
-class Phone:
+class Phone(Field):
     def __init__(self, phones):
         if isinstance(phones, str):
             self.values = [p.replace(' ', '') for p in phones.split(',')]
