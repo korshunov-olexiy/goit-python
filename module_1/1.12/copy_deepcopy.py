@@ -1,3 +1,8 @@
+'''
+Реализуйте метод  __copy__ для класса Person.
+Реализуйте методы  __copy__ и  __deepcopy__ для класса Contacts
+'''
+
 import copy
 import pickle
 
@@ -55,12 +60,5 @@ class Contacts:
     def __deepcopy__(self, memo):
         copy_obj = Contacts(self.filename, self.contacts)
         memo[id(copy_obj)] = copy_obj
-        copy_obj.filename = copy.deepcopy(self.filename)
-        copy_obj.contacts = copy.deepcopy(self.filename)
+        copy_obj.contacts = copy.deepcopy(self.contacts)
         return copy_obj
-
-
-cnt = Contacts('cnt.bin', [Person('john','b@gmail.com','23432-1312', True)])
-cnt.save_to_file()
-m = []
-cnt.__deepcopy__(m)
