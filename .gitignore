@@ -2,3 +2,4 @@
 module_7/clean_folder/install_package.cmd
 env
 venv
+.idea
