@@ -1,10 +1,7 @@
-'''
-добавим в класс метод get_contact_by_id. Метод должен искать контакт
+'''добавим в класс метод get_contact_by_id. Метод должен искать контакт
 по уникальному id в списке contacts и возвращать словарь из него
 с указанным ключом id. Если словаря с указанным id в списке contacts
-не найдено, метод возвращает None
-'''
-
+не найдено, метод возвращает None'''
 
 class Contacts:
     current_id = 1
@@ -38,5 +35,5 @@ cnt.add_contacts('vasya2', 9249249249, 'vasya2@gamil.com', 'petya2')
 cnt.add_contacts('vasya3', 9249249249, 'vasya3@gamil.com', 'petya3')
 cnt.add_contacts('vasya4', 9249249249, 'vasya4@gamil.com', 'petya4')
 
-print(cnt.list_contacts())
-print(cnt.get_contact_by_id(3))
+#print(cnt.list_contacts())
+print(cnt.get_contact_by_id(1))
