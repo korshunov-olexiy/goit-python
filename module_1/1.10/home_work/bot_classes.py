@@ -3,16 +3,22 @@ from collections import UserDict
 
 class Field:
     '''Field class is parent for all fields in Record class'''
+    def __init__(self, value, phones=None):
+        self.value = value
+        self.phones = phones
+
 
 class Name(Field):
     '''Name class for storage name's field'''
-    def __init__(self, name):
-        self.value = name
+    def __init__(self, value):
+        super().__init__(value, phones=None)
+
 
 class Phone(Field):
     '''Phone class for storage phone's field'''
-    def __init__(self, phones):
-        self.values = phones
+    def __init__(self, values):
+        super().__init__(value, phones=values)
+
 
 class Record:
     '''Record class responsible for the logic of adding/removing/editing fields'''
