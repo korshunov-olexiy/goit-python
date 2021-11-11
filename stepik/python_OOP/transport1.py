@@ -28,9 +28,6 @@ class Car(Transport):
         else:
             print("Ошибка заправки автомобиля")
 
-    def __str__(self):
-        return f"Тип транспорта {self.kind} марки BMW может развить скорость {self.max_speed}  км/ч"
-
 
 class Boat(Transport):
     
