@@ -17,7 +17,7 @@ class Name(Field):
 class Phone(Field):
     '''Phone class for storage phone's field'''
     def __init__(self, values):
-        super().__init__(value, phones=values)
+        super().__init__(values, phones=values)
 
 
 class Record:
