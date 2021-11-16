@@ -46,7 +46,6 @@ class AddressBook(UserDict):
 
 
 
-
 if __name__ == "__main__":
     # -=- Usage example -=-
     # create address book
