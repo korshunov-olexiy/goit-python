@@ -78,7 +78,6 @@ if __name__ == "__main__":
     # -=- Usage example -=-
     ab = AddressBook()
     john = Record('john', ['144-255', '202-324'])
-    #print('john:', john.phones.phones)
     ab.add_record(john)
     bob = Record('bob', ['325-146'])
     bob.add_phone('55555')
@@ -87,13 +86,4 @@ if __name__ == "__main__":
     bob.change_phone('55555', '55555-5555555')
     bob.del_phone('55555-5555555')
     ab.add_record(bob)
-    for name, rec in ab.data.items():
-        print(name, rec.name.value, rec.phones.phones)
-    
     ab.change_record_name('bob', 'smith')
-    print(ab.__dict__)
-    print(ab.find_record('smith').name.value)
-    # add new field for user john in address book
-    #john.add_field('address', 'Kurska, 56')
-    # edit field for user john in address book
-    #john.edit_field('address', 'Illinska, 156')
