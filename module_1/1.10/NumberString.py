@@ -5,11 +5,11 @@
 '''
 from collections import UserString
 
-
 class NumberString(UserString):
     def number_count(self):
+        print(self.data)
         return len([chr for chr in self.data if chr in '0123456789'])
 
 
-nmbr = NumberString("whoAreYou")
+nmbr = NumberString("2whoAre1You")
 print(nmbr.number_count())
