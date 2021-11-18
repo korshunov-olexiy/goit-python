@@ -1,6 +1,18 @@
 from collections import UserDict
 
 
+def check_if_present_phone(func):
+    '''Decorator for checking if the phone number is present'''
+    def inner(*args):
+        phone_present = args[1] in args[0].phones.phones
+        if func.__name__ == 'add_phone':
+            if not phone_present:
+                return func(*args)
+        elif phone_present:
+            return func(*args)
+    return inner
+
+
 class Record:
     """Record class responsible for the logic of adding/removing/editing fields
     Only one name but many phone numbers"""
@@ -9,14 +21,18 @@ class Record:
         self.name = Name(name)
         self.phones = Phone(name, phones)
 
+    @check_if_present_phone
     def add_phone(self, phone):
-        self.phones.append(Phone(phone))
+        self.phones.phones.append(phone)
 
+    @check_if_present_phone
     def del_phone(self, phone):
-        self.phones.remove(phone)
+        self.phones.phones.remove(phone)
 
-    def change_phone(self, old_phone_index, new_phone):
-        self.phones[old_phone_index] = Phone(new_phone)
+    @check_if_present_phone
+    def change_phone(self, old_phone, new_phone):
+        self.del_phone(old_phone)
+        self.phones.phones.append(new_phone)
 
 
 
@@ -53,8 +69,8 @@ class AddressBook(UserDict):
         return False
 
     '''Find record by name'''
-    def find_record(self, required_name:str):
-        return self.data.get(required_name.capitalize(), None)
+    def find_record(self, name):
+        return self.data.get(name.capitalize(), None)
 
 
 
@@ -65,6 +81,11 @@ if __name__ == "__main__":
     #print('john:', john.phones.phones)
     ab.add_record(john)
     bob = Record('bob', ['325-146'])
+    bob.add_phone('55555')
+    bob.add_phone('55555')
+    bob.add_phone('55555')
+    bob.change_phone('55555', '55555-5555555')
+    bob.del_phone('55555-5555555')
     ab.add_record(bob)
     for name, rec in ab.data.items():
         print(name, rec.name.value, rec.phones.phones)

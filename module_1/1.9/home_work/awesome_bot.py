@@ -5,8 +5,7 @@ def input_error(func):
     """Decorator for error handling.
     
     Args:
-    func - Decorated function.
-    """
+    func - Decorated function."""
     def check_error(input_str):
         # If we perform the functions cmd_help, cmd_hello, cmd_show_all,
         # they do not require parameters.
@@ -25,15 +24,13 @@ def input_error(func):
 
 @input_error
 def cmd_help():
-    """Gives a list of commands that the bot understands.
-    """
-    return f"Our bot understands the following commands: {', '.join(commands_list[:-1])} and {commands_list[-1]}"
+    """Gives a list of commands that the bot understands."""
+    return f"Sorry, the bot understands the following commands: {', '.join(commands_list[:-1])} and {commands_list[-1]}"
 
 
 @input_error
 def cmd_hello():
-    """Gives a welcome message to the console.
-    """
+    """Gives a welcome message to the console."""
     return "How can I help you?"
 
 
@@ -42,8 +39,7 @@ def cmd_add(input_str):
     """Save the user name and phone number entered in address_book.
     
     Args:
-    input_str - Input string from a user without a passed command.
-    """
+    input_str - Input string from a user without a passed command."""
     name, phone = input_str.split()
     address_book[name.strip().capitalize()] = phone.strip()
     return f"User {name} with phone number {phone} has been added to address book"
@@ -54,8 +50,7 @@ def cmd_change(input_str):
     """Change the transmitted phone number of the specified user.
     
     Args:
-    input_str - Input string from a user without a passed command.
-    """
+    input_str - Input string from a user without a passed command."""
     name, phone = input_str.split()
     address_book[name.strip().capitalize()] = phone.strip()
     return f"The phone number for {name} has been changed to {phone}"
@@ -66,8 +61,7 @@ def cmd_phone(input_str):
     """Find a user by name in the database.
 
     Args:
-    input_str - Input string from a user without a passed command.
-    """
+    input_str - Input string from a user without a passed command."""
     name = input_str.capitalize()
     finding_phone = address_book.get(name)
     if finding_phone:
@@ -78,8 +72,7 @@ def cmd_phone(input_str):
 
 @input_error
 def cmd_show_all():
-    """Show all records from the database.
-    """
+    """Show all records from the database."""
     return "\n".join(f"{k}: {v}" for k, v in address_book.items())
 
 
@@ -88,8 +81,7 @@ def get_input_command(input_str):
     """Attempts to find a command in the passed line
 
     Args:
-    input_str - Input string from a user without a passed command.
-    """
+    input_str - Input string from a user without a passed command."""
     cmd = ''.join([c for c in commands_list if input_str.startswith(c)])
     if cmd:
         print(commands_func[cmd](input_str[len(cmd):].strip()))
