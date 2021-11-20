@@ -26,11 +26,11 @@ def check_if_present_phone_number(func):
         return func(*args, idx=idx)
     return inner
 
-
 class Field:
     '''Field class is parent for all fields in Record class'''
+    @capitalize_name
     def __init__(self, value: str):
-        self.value = value.capitalize()
+        self.value = value
 
 
 class Name(Field):
@@ -57,15 +57,18 @@ class Record:
 
     @check_if_present_phone_number
     def add_phone(self, phone_number: str, idx=-1) -> None:
-        self.phone.append(Phone(phone_number)) if idx == -1 else None
+        if idx == -1:
+            self.phone.append(Phone(phone_number))
 
     @check_if_present_phone_number
     def delete_phone(self, phone: str, idx=-1) -> None:
-        self.phone.pop(idx) if idx != -1 else None
+        if idx != -1:
+            self.phone.pop(idx)
 
     @check_if_present_phone_number
     def edit_phone(self, old_phone: str, new_phone: str, idx=-1) -> None:
-        self.phone[idx] = Phone(new_phone) if idx != -1 else None
+        if idx != -1:
+            self.phone[idx] = Phone(new_phone)
 
     def __str__(self):
         return f"Record of {self.name.value}, phones {[p.value for p in self.phone]}"
@@ -85,7 +88,8 @@ class AddressBook(UserDict):
 
     @capitalize_name
     def delete_record(self, value: str) -> None:
-        self.data.pop(value)
+        if self.data.get(value):
+            self.data.pop(value)
 
     def __str__(self):
         return str(self.data)
@@ -94,10 +98,10 @@ class AddressBook(UserDict):
 if __name__ == '__main__':
     # USAGE EXAMPLE:
     book = AddressBook()
-    book.add_record(["yehor", "063 666 99 66", "048 722 22 22"])
-    book.add_record(["pavel", "063 666 66 66", "048 222 22 22"])
+    book.add_record(["seMeN", "063 666 99 66", "048 722 22 22"])
+    book.add_record(["grySha", "063 666 66 66", "048 222 22 22"])
 
-    record = book.find_record("pAvel")
+    record = book.find_record("semen")
     book.delete_record("yehor")
 
     print("#" * 10)
