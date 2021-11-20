@@ -3,7 +3,7 @@ from typing import Optional, List
 
 
 def capitalize_name(outer_method):
-    '''Decorator for capitalize name attribute in function/method'''
+    '''Decorator for capitalize name attribute in method'''
     def inner_func(*args):
         if isinstance(args[1], list):
             return outer_method(args[0], [args[1][0].capitalize()] + args[1][1:])
