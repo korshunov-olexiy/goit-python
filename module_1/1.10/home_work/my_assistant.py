@@ -61,7 +61,7 @@ class Record:
 
     @check_if_present_phone_number
     def delete_phone(self, phone: str, idx=-1) -> None:
-        self.phone.pop(idx) if idx else None
+        self.phone.pop(idx) if idx != -1 else None
 
     @check_if_present_phone_number
     def edit_phone(self, old_phone: str, new_phone: str, idx=-1) -> None:
@@ -103,7 +103,7 @@ if __name__ == '__main__':
     print("#" * 10)
     print(book)
     print("#" * 10)
-    #record.delete_phone("048 222 22 22")
+    record.delete_phone("048 222 22 22")
     record.add_phone('123-345-567')
     record.edit_phone("063 666 66 66", "067-666-66-66")
     print(record)
