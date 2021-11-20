@@ -1,46 +1,36 @@
 from collections import UserDict
+from typing import Optional, List
 
 
-def check_if_present_phone(func):
+def capitalize_name(outer_method):
+    '''Decorator for capitalize name attribute in function/method'''
+    def inner_func(*args):
+        if isinstance(args[1], list):
+            return outer_method(args[0], [args[1][0].capitalize()] + args[1][1:])
+        elif isinstance(args[1], str):
+            return outer_method(args[0], args[1].capitalize())
+        elif isinstance(args[0] == args[1]):
+            self, other = args[0], args[1]
+            self.value = self.value.capitalize()
+            other.value = self.other.value.capitalize()
+            return outer_method(self, other)
+    return inner_func
+
+
+def check_if_present_phone_number(func):
     '''Decorator for checking if the phone number is present'''
-    def inner(*args):
-        phone_present = args[1] in args[0].phones.phones
-        if func.__name__ == 'add_phone':
-            if not phone_present:
-                return func(*args)
-        elif phone_present:
-            return func(*args)
+    def inner(*args, idx=-1):
+        for i,p in enumerate(args[0].phone):
+            if p.value == args[1]:
+                return func(*args, idx=i)
+        return func(*args, idx=idx)
     return inner
-
-
-class Record:
-    """Record class responsible for the logic of adding/removing/editing fields
-    Only one name but many phone numbers"""
-
-    def __init__(self, name:str, phones=['']):
-        self.name = Name(name)
-        self.phones = Phone(name, phones)
-
-    @check_if_present_phone
-    def add_phone(self, phone):
-        self.phones.phones.append(phone)
-
-    @check_if_present_phone
-    def del_phone(self, phone):
-        self.phones.phones.remove(phone)
-
-    @check_if_present_phone
-    def change_phone(self, old_phone, new_phone):
-        self.del_phone(old_phone)
-        self.phones.phones.append(new_phone)
-
 
 
 class Field:
     '''Field class is parent for all fields in Record class'''
-    def __init__(self, name:str, phones=['']):
-        self.value = name.capitalize()
-        self.phones = phones
+    def __init__(self, value: str):
+        self.value = value.capitalize()
 
 
 class Name(Field):
@@ -50,40 +40,70 @@ class Name(Field):
 class Phone(Field):
     '''Phone class for storage phone's field'''
 
+    def __str__(self):
+        return f"Phone: {self.value}"
+
+
+class Record:
+    """Record class responsible for the logic of adding/removing/editing fields
+    Only one name but many phone numbers"""
+
+    def __init__(self, name: str, phone: List[str] = None) -> None:
+        if phone is None:
+            self.phone = []
+        else:
+            self.phone = [Phone(p) for p in phone]
+        self.name = Name(name)
+
+    @check_if_present_phone_number
+    def add_phone(self, phone_number: str, idx=-1) -> None:
+        self.phone.append(Phone(phone_number)) if idx == -1 else None
+
+    @check_if_present_phone_number
+    def delete_phone(self, phone: str, idx=-1) -> None:
+        self.phone.pop(idx) if idx else None
+
+    @check_if_present_phone_number
+    def edit_phone(self, old_phone: str, new_phone: str, idx=-1) -> None:
+        self.phone[idx] = Phone(new_phone) if idx != -1 else None
+
+    def __str__(self):
+        return f"Record of {self.name.value}, phones {[p.value for p in self.phone]}"
+
 
 class AddressBook(UserDict):
     '''Add new instance of Record class in AddressBook'''
-    def add_record(self, record:Record):
-        self.data[record.name.value] = record
 
-    '''Change record name & attribute name in Name class'''
-    def change_record_name(self, record_name:str, new_name:str):
-        record_name = record_name.capitalize()
-        new_name = new_name.capitalize()
-        if self.data.get(record_name):
-            # change name of record
-            self.data[new_name] = self.data.pop(record_name)
-            # change name in Name class
-            self.data[new_name].name.value = new_name
-            return True
-        return False
+    @capitalize_name
+    def add_record(self, record: list) -> None:
+        new_record = Record(record[0], record[1:])
+        self.data[new_record.name.value] = new_record
 
-    '''Find record by name'''
-    def find_record(self, name):
-        return self.data.get(name.capitalize(), None)
+    @capitalize_name
+    def find_record(self, value: str) -> Optional[Record]:
+        return self.data.get(value)
+
+    @capitalize_name
+    def delete_record(self, value: str) -> None:
+        self.data.pop(value)
+
+    def __str__(self):
+        return str(self.data)
 
 
+if __name__ == '__main__':
+    # USAGE EXAMPLE:
+    book = AddressBook()
+    book.add_record(["yehor", "063 666 99 66", "048 722 22 22"])
+    book.add_record(["pavel", "063 666 66 66", "048 222 22 22"])
 
-if __name__ == "__main__":
-    # -=- Usage example -=-
-    ab = AddressBook()
-    john = Record('john', ['144-255', '202-324'])
-    ab.add_record(john)
-    bob = Record('bob', ['325-146'])
-    bob.add_phone('55555')
-    bob.add_phone('55555')
-    bob.add_phone('55555')
-    bob.change_phone('55555', '55555-5555555')
-    bob.del_phone('55555-5555555')
-    ab.add_record(bob)
-    ab.change_record_name('bob', 'smith')
+    record = book.find_record("pAvel")
+    book.delete_record("yehor")
+
+    print("#" * 10)
+    print(book)
+    print("#" * 10)
+    #record.delete_phone("048 222 22 22")
+    record.add_phone('123-345-567')
+    record.edit_phone("063 666 66 66", "067-666-66-66")
+    print(record)
