@@ -1,10 +1,12 @@
 from collections import UserDict
 from typing import Optional, List
-
+from inspect import getcallargs
 
 def check_if_present_phone_number(func):
     '''Decorator for checking if the phone number is present'''
-    def inner(*args, idx=-1):
+    def inner(*args, **kwargs):
+        # getting default named attribute 'idx'
+        idx = getcallargs(func, *args, *kwargs)['idx']
         for i,p in enumerate(args[0].phone):
             if p.value == args[1]:
                 return func(*args, idx=i)

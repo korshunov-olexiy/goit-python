@@ -1,11 +1,21 @@
 from collections import UserDict
 from datetime import datetime, timedelta
 from typing import Optional, List
-
+from inspect import getcallargs
 
 def check_if_present_phone_number(func):
     '''Decorator for checking if the phone number is present'''
-    def inner(*args, idx=-1):
+    # def inner(*args, idx=-1):
+    #     for i,p in enumerate(args[0].phone):
+    #         if p.value == args[1]:
+    #             return func(*args, idx=i)
+    #     return func(*args, idx=idx)
+    # return inner
+    #argspec = getargspec(func).defaults
+    #print(argspec)
+    def inner(*args, **kwargs):
+        # getting default named attribute 'idx'
+        idx = getcallargs(func, *args, *kwargs)['idx']
         for i,p in enumerate(args[0].phone):
             if p.value == args[1]:
                 return func(*args, idx=i)
@@ -51,10 +61,11 @@ class Record:
         current_year = current_date.year
         birthday = datetime.strptime(f"{self.birthday.value[:6]}{current_year}", '%d.%m.%Y')
         if birthday > current_date:
-            return f"{(birthday - current_date).days} days"
+            days = (birthday - current_date).days
         else:
             birthday = birthday.replace(year=current_year+1)
-            return f"{(birthday - current_date).days} days"
+            days = (birthday - current_date).days
+        return f"{days} day(s)"
 
     @check_if_present_phone_number
     def add_phone(self, phone_number: str, idx=-1) -> None:
@@ -90,9 +101,15 @@ class AddressBook(UserDict):
         if self.data.get(value):
             self.data.pop(value)
 
-    def iterator(self):
-        for record in self.data:
-            yield record
+    def iterator(self, n: str = 1) -> List[str]:
+        page = []
+        for name, rec in self.items():
+            page.append(f"{name}: {rec}")
+            if len(page) == n:
+                yield page 
+                page = []
+        if page:
+            yield page
 
     def __str__(self):
         return str(self.data)
@@ -103,17 +120,18 @@ if __name__ == '__main__':
     book = AddressBook()
     book.add_record("seMeN", ["063 666 99 66", "048 722 22 22"], '01.12.1975')
     book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], '01.01.1996')
-    print(book.data['Semen'])
-    print(book.data['Grysha'])
+    book.add_record("vasya", ["777 666 555", "999 111 333"], '23.04.1976')
+    #print(book.data['Semen'])
+    #print(book.data['Grysha'])
 
-    for rec in book.iterator():
-        print(rec)
+    # for rec in book.iterator(2):
+    #     print(rec)
 
-    #record = book.find_record("semen")
-    #print(record)
-    #book.delete_record("seMEN")
+    record = book.find_record("semen")
+    print(record)
+    book.delete_record("seMEN")
 
-    # record.delete_phone("048 722 22 22")
-    # record.add_phone('123-345-567')
-    # record.edit_phone("063 666 66 66", "067-666-66-66")
-    # print(record)
+    record.delete_phone("048 722 22 22")
+    record.add_phone('123-345-567')
+    record.edit_phone("063 666 66 66", "067-666-66-66")
+    print(record)
