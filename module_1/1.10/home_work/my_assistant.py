@@ -2,22 +2,6 @@ from collections import UserDict
 from typing import Optional, List
 
 
-def capitalize_name(outer_method):
-    '''Decorator for capitalize name attribute in method'''
-    def inner_func(*args):
-        if isinstance(args[1], list):
-            return outer_method(args[0], [args[1][0].capitalize()] + args[1][1:])
-        elif isinstance(args[1], str):
-            print(222, args)
-            return outer_method(args[0], args[1].capitalize())
-        elif isinstance(args[0] == args[1]):
-            self, other = args[0], args[1]
-            self.value = self.value.capitalize()
-            other.value = self.other.value.capitalize()
-            return outer_method(self, other)
-    return inner_func
-
-
 def check_if_present_phone_number(func):
     '''Decorator for checking if the phone number is present'''
     def inner(*args, idx=-1):
@@ -29,9 +13,8 @@ def check_if_present_phone_number(func):
 
 class Field:
     '''Field class is parent for all fields in Record class'''
-    @capitalize_name
     def __init__(self, value: str):
-        self.value = value
+        self.value = value.capitalize()
 
 
 class Name(Field):
@@ -82,12 +65,11 @@ class AddressBook(UserDict):
         new_record = Record(name, phones)
         self.data[new_record.name.value] = new_record
 
-    @capitalize_name
     def find_record(self, value: str) -> Optional[Record]:
-        return self.data.get(value)
+        return self.data.get(value.capitalize())
 
-    @capitalize_name
     def delete_record(self, value: str) -> None:
+        value = value.capitalize()
         if self.data.get(value):
             self.data.pop(value)
 

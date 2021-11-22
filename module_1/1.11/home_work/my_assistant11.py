@@ -3,23 +3,6 @@ from datetime import datetime, timedelta
 from typing import Optional, List
 
 
-def capitalize_name(outer_method):
-    '''Decorator for capitalize name attribute in method'''
-    def inner_func(*args):
-        print(args)
-        if isinstance(args[1], list):
-            print(args[1], 'outer:', args[0], args[1][0].capitalize(), args[1][1:] )
-            return outer_method(args[0], args[1][0].capitalize(), args[1][1:])
-        elif isinstance(args[1], str):
-            return outer_method(args[0], args[1].capitalize())
-        elif isinstance(args[0] == args[1]):
-            self, other = args[0], args[1]
-            self.value = self.value.capitalize()
-            other.value = self.other.value.capitalize()
-            return outer_method(self, other)
-    return inner_func
-
-
 def check_if_present_phone_number(func):
     '''Decorator for checking if the phone number is present'''
     def inner(*args, idx=-1):
@@ -31,9 +14,8 @@ def check_if_present_phone_number(func):
 
 class Field:
     '''Field class is parent for all fields in Record class'''
-    @capitalize_name
     def __init__(self, value: str):
-        self.value = value
+        self.value = value.capitalize()
 
 
 class Name(Field):
@@ -89,17 +71,15 @@ class Record:
 class AddressBook(UserDict):
     '''Add new instance of Record class in AddressBook'''
 
-    @capitalize_name
-    def add_record(self, record: list) -> None:
-        new_record = Record(record[0], record[1:])
+    def add_record(self, name: str, phones: List[str] = None, birthday: str = None) -> None:
+        new_record = Record(name, phones, birthday)
         self.data[new_record.name.value] = new_record
 
-    @capitalize_name
     def find_record(self, value: str) -> Optional[Record]:
-        return self.data.get(value)
+        return self.data.get(value.capitalize())
 
-    @capitalize_name
     def delete_record(self, value: str) -> None:
+        value = value.capitalize()
         if self.data.get(value):
             self.data.pop(value)
 
@@ -111,15 +91,17 @@ if __name__ == '__main__':
     # USAGE EXAMPLE:
     book = AddressBook()
     book.add_record("seMeN", ["063 666 99 66", "048 722 22 22"], '15.11.2021')
-    book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], '19.03.1996')
+    #book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], '19.03.1996')
+    #print(book.data['Semen'])
 
     record = book.find_record("semen")
-    book.delete_record("yehor")
-
-    print("#" * 10)
-    print(book)
-    print("#" * 10)
-    record.delete_phone("048 222 22 22")
-    record.add_phone('123-345-567')
-    record.edit_phone("063 666 66 66", "067-666-66-66")
     print(record)
+    #book.delete_record("seMEN")
+
+    # print("#" * 10)
+    # print(book)
+    # print("#" * 10)
+    # record.delete_phone("048 222 22 22")
+    # record.add_phone('123-345-567')
+    # record.edit_phone("063 666 66 66", "067-666-66-66")
+    # print(record)
