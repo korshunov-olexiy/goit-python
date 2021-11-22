@@ -62,11 +62,9 @@ class Record:
         current_date = datetime.today()
         current_year = current_date.year
         birthday = datetime.strptime(f"{self.birthday.value[:6]}{current_year}", '%d.%m.%Y')
-        if birthday > current_date:
-            days = (birthday - current_date).days
-        else:
+        if  birthday < current_date:
             birthday = birthday.replace(year=current_year+1)
-            days = (birthday - current_date).days
+        days = (birthday - current_date).days
         return f"{days} day(s)"
 
     @check_if_present_phone_number
@@ -85,8 +83,11 @@ class Record:
             self.phone[idx] = Phone(new_phone)
 
     def __str__(self):
-        return f"Record of {self.name.value}, phones: {[p.value for p in self.phone]}, birthday: {self.birthday.value}, to birthday: {self.days_to_birthday()}"
-
+        result = f"Record of {self.name.value}, "
+        result += f"phones: {[p.value for p in self.phone]}, "
+        result += f"birthday: {self.birthday.value}, "
+        result += f"to birthday: {self.days_to_birthday()}"
+        return result
 
 class AddressBook(UserDict):
     '''Add new instance of Record class in AddressBook'''
@@ -120,11 +121,12 @@ class AddressBook(UserDict):
 if __name__ == '__main__':
     # USAGE EXAMPLE:
     book = AddressBook()
-    book.add_record("seMeN", ["063 666 99 66", "048 722 22 22"], '01.12.1975')
+    book.add_record("seMeN", ["063 666 99 66", "048 722 22 22"], '31.12.1975')
     book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], '01.01.1996')
     book.add_record("vasya", ["777 666 555", "999 111 333"], '23.04.1976')
-    #print(book.data['Semen'])
-    #print(book.data['Grysha'])
+    print(book.data['Semen'])
+    print(book.data['Grysha'])
+    print(book.data['Vasya'])
 
     # for rec in book.iterator(2):
     #     print(rec)
