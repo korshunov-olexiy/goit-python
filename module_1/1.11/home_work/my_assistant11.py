@@ -20,8 +20,15 @@ def check_if_present_phone_number(func):
 class Field:
     '''Field class is parent for all fields in Record class'''
     def __init__(self, value: str):
-        self.value = value.capitalize()
-
+        self._value = value
+    
+    @property
+    def value(self):
+        return self._value.capitalize()
+    
+    @value.setter
+    def value(self):
+        ''''''
 
 class Name(Field):
     '''Name class for storage name's field'''
