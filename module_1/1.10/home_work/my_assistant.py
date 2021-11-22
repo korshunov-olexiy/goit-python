@@ -1,17 +1,20 @@
 from collections import UserDict
-from typing import Optional, List
 from inspect import getcallargs
+from typing import List, Optional
+
 
 def check_if_present_phone_number(func):
     '''Decorator for checking if the phone number is present'''
     def inner(*args, **kwargs):
         # getting default named attribute 'idx'
-        idx = getcallargs(func, *args, *kwargs)['idx']
-        for i,p in enumerate(args[0].phone):
-            if p.value == args[1]:
-                return func(*args, idx=i)
-        return func(*args, idx=idx)
+        kwargs['idx'] = getcallargs(func, *args, *kwargs)['idx']
+        for i,phone in enumerate(args[0].phone):
+            if phone.value == args[1]:
+                kwargs['idx'] = i
+                break
+        return func(*args, **kwargs)
     return inner
+
 
 class Field:
     '''Field class is parent for all fields in Record class'''
