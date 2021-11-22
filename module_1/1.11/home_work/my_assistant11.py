@@ -46,8 +46,15 @@ class Record:
         self.birthday = Birthday(birthday)
 
     def days_to_birthday(self) -> Optional[str]:
-        '''return count of days for next birthday'''
-        
+        '''return number of days until the next birthday'''
+        current_date = datetime.today()
+        current_year = current_date.year
+        birthday = datetime.strptime(f"{self.birthday.value[:6]}{current_year}", '%d.%m.%Y')
+        if birthday > current_date:
+            return f"{(birthday - current_date).days} days"
+        else:
+            birthday = birthday.replace(year=current_year+1)
+            return f"{(birthday - current_date).days} days"
 
     @check_if_present_phone_number
     def add_phone(self, phone_number: str, idx=-1) -> None:
@@ -65,7 +72,7 @@ class Record:
             self.phone[idx] = Phone(new_phone)
 
     def __str__(self):
-        return f"Record of {self.name.value}, phones {[p.value for p in self.phone]}"
+        return f"Record of {self.name.value}, phones: {[p.value for p in self.phone]}, birthday: {self.birthday.value}, to birthday: {self.days_to_birthday()}"
 
 
 class AddressBook(UserDict):
@@ -83,6 +90,10 @@ class AddressBook(UserDict):
         if self.data.get(value):
             self.data.pop(value)
 
+    def iterator(self):
+        for record in self.data:
+            yield record
+
     def __str__(self):
         return str(self.data)
 
@@ -90,18 +101,19 @@ class AddressBook(UserDict):
 if __name__ == '__main__':
     # USAGE EXAMPLE:
     book = AddressBook()
-    book.add_record("seMeN", ["063 666 99 66", "048 722 22 22"], '15.11.2021')
-    #book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], '19.03.1996')
-    #print(book.data['Semen'])
+    book.add_record("seMeN", ["063 666 99 66", "048 722 22 22"], '01.12.1975')
+    book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], '01.01.1996')
+    print(book.data['Semen'])
+    print(book.data['Grysha'])
 
-    record = book.find_record("semen")
-    print(record)
+    for rec in book.iterator():
+        print(rec)
+
+    #record = book.find_record("semen")
+    #print(record)
     #book.delete_record("seMEN")
 
-    # print("#" * 10)
-    # print(book)
-    # print("#" * 10)
-    # record.delete_phone("048 222 22 22")
+    # record.delete_phone("048 722 22 22")
     # record.add_phone('123-345-567')
     # record.edit_phone("063 666 66 66", "067-666-66-66")
     # print(record)
