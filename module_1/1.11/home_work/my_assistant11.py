@@ -1,14 +1,16 @@
 from collections import UserDict
+from datetime import datetime, timedelta
 from typing import Optional, List
 
 
 def capitalize_name(outer_method):
     '''Decorator for capitalize name attribute in method'''
     def inner_func(*args):
+        print(args)
         if isinstance(args[1], list):
-            return outer_method(args[0], [args[1][0].capitalize()] + args[1][1:])
+            print(args[1], 'outer:', args[0], args[1][0].capitalize(), args[1][1:] )
+            return outer_method(args[0], args[1][0].capitalize(), args[1][1:])
         elif isinstance(args[1], str):
-            print(222, args)
             return outer_method(args[0], args[1].capitalize())
         elif isinstance(args[0] == args[1]):
             self, other = args[0], args[1]
@@ -45,16 +47,25 @@ class Phone(Field):
         return f"Phone: {self.value}"
 
 
+class Birthday(Field):
+    '''Birthday class for storage birthday's field'''
+
+
 class Record:
     """Record class responsible for the logic of adding/removing/editing fields
     Only one name but many phone numbers"""
 
-    def __init__(self, name: str, phone: List[str] = None) -> None:
+    def __init__(self, name: str, phone: List[str] = None, birthday: str = None) -> None:
         if phone is None:
             self.phone = []
         else:
             self.phone = [Phone(p) for p in phone]
         self.name = Name(name)
+        self.birthday = Birthday(birthday)
+
+    def days_to_birthday(self) -> Optional[str]:
+        '''return count of days for next birthday'''
+        
 
     @check_if_present_phone_number
     def add_phone(self, phone_number: str, idx=-1) -> None:
@@ -78,8 +89,9 @@ class Record:
 class AddressBook(UserDict):
     '''Add new instance of Record class in AddressBook'''
 
-    def add_record(self, name: str, phones: list) -> None:
-        new_record = Record(name, phones)
+    @capitalize_name
+    def add_record(self, record: list) -> None:
+        new_record = Record(record[0], record[1:])
         self.data[new_record.name.value] = new_record
 
     @capitalize_name
@@ -98,12 +110,11 @@ class AddressBook(UserDict):
 if __name__ == '__main__':
     # USAGE EXAMPLE:
     book = AddressBook()
-    book.add_record('seMeN', ["063 666 99 66", "048 722 22 22"])
-    book.add_record("grySha", ["063 666 66 66", "048 222 22 22"])
+    book.add_record("seMeN", ["063 666 99 66", "048 722 22 22"], '15.11.2021')
+    book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], '19.03.1996')
 
     record = book.find_record("semen")
-    print(111, record)
-    book.delete_record("grYsha")
+    book.delete_record("yehor")
 
     print("#" * 10)
     print(book)
