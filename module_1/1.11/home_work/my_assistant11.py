@@ -132,6 +132,7 @@ if __name__ == '__main__':
     #     print(rec)
 
     record = book.find_record("semen")
+    record.add_phone('34455678')
     print(record)
     book.delete_record("seMEN")
     record.delete_phone("048 722 22 22")
