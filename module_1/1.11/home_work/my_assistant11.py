@@ -19,16 +19,29 @@ def check_if_present_phone_number(func):
 
 class Field:
     '''Field class is parent for all fields in Record class'''
-    def __init__(self, value: str):
-        self._value = value
+    def __init__(self, value):
+        self.value = value
     
     @property
     def value(self):
-        return self._value.capitalize()
+        #if hasattr(self, '_value'):
+        return self._value
     
     @value.setter
-    def value(self):
-        ''''''
+    def value(self, value):
+        if isinstance(self, Phone):
+            self._value = value if len(value) == 13 else ''
+        elif isinstance(self, Birthday):
+            try:
+                dt = value.split('.')
+                value = f"{int(dt[0]):02d}.{int(dt[1]):02d}.{int(dt[2])}"
+                datetime.strptime(value, '%d.%m.%Y')
+                self._value = value
+            except:
+                self._value = None
+        else:
+            self._value = value.capitalize()
+
 
 class Name(Field):
     '''Name class for storage name's field'''
@@ -59,13 +72,16 @@ class Record:
 
     def days_to_birthday(self) -> Optional[str]:
         '''return number of days until the next birthday'''
-        current_date = datetime.today()
-        current_year = current_date.year
-        birthday = datetime.strptime(f"{self.birthday.value[:6]}{current_year}", '%d.%m.%Y')
-        if  birthday < current_date:
-            birthday = birthday.replace(year=current_year+1)
-        days = (birthday - current_date).days
-        return f"{days} day(s)"
+        
+        if not isinstance(self.birthday.value, type(None)):
+            current_date = datetime.today()
+            current_year = current_date.year
+            birthday = datetime.strptime(f"{self.birthday.value[:6]}{current_year}", '%d.%m.%Y')
+            if  birthday < current_date:
+                birthday = birthday.replace(year=current_year+1)
+            days = (birthday - current_date).days
+            return f"{days} day(s)"
+        return ''
 
     @check_if_present_phone_number
     def add_phone(self, phone_number: str, idx=-1) -> None:
@@ -84,9 +100,10 @@ class Record:
 
     def __str__(self):
         result = f"Record of {self.name.value}, "
-        result += f"phones: {[p.value for p in self.phone]}, "
-        result += f"birthday: {self.birthday.value}, "
-        result += f"to birthday: {self.days_to_birthday()}"
+        result += f"phones: {[p.value for p in self.phone]}"
+        if not isinstance(self.birthday.value, type(None)):
+            result += f", birthday: {self.birthday.value}"
+            result += f", to birthday: {self.days_to_birthday()}"
         return result
 
 class AddressBook(UserDict):
@@ -121,9 +138,9 @@ class AddressBook(UserDict):
 if __name__ == '__main__':
     # USAGE EXAMPLE:
     book = AddressBook()
-    book.add_record("seMeN", ["063 666 99 66", "048 722 22 22"], '31.12.1975')
+    book.add_record("seMeN", ["063 666 99 66", "048 722 22 22"], '1.12.2021')
     book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], '01.01.1996')
-    book.add_record("vasya", ["777 666 555", "999 111 333"], '23.04.1976')
+    book.add_record("vasya", ["777 666 55545", "999 111 33323"], '23.04.1976')
     print(book.data['Semen'])
     print(book.data['Grysha'])
     print(book.data['Vasya'])
@@ -132,7 +149,7 @@ if __name__ == '__main__':
     #     print(rec)
 
     record = book.find_record("semen")
-    record.add_phone('34455678')
+    record.add_phone('344-55-678')
     print(record)
     book.delete_record("seMEN")
     record.delete_phone("048 722 22 22")
