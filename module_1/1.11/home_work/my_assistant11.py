@@ -141,18 +141,18 @@ if __name__ == '__main__':
     book.add_record("seMeN", ["063 666 99 66", "048 722 22 22"], '1.12.2021')
     book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], '01.01.1996')
     book.add_record("vasya", ["777 666 55545", "999 111 33323"], '23.04.1976')
-    print(book.data['Semen'])
-    print(book.data['Grysha'])
-    print(book.data['Vasya'])
+    # print(book.data['Semen'])
+    # print(book.data['Grysha'])
+    # print(book.data['Vasya'])
 
-    # for rec in book.iterator(2):
-    #     print(rec)
+    for rec in book.iterator(2):
+        print(rec)
 
     record = book.find_record("semen")
     record.add_phone('344-55-678')
-    print(record)
+    #print(record)
     book.delete_record("seMEN")
     record.delete_phone("048 722 22 22")
     record.add_phone('123-345-567')
     record.edit_phone("063 666 66 66", "067-666-66-66")
-    print(record)
+    #print(record)
