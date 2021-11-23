@@ -110,6 +110,9 @@ class Record:
 class AddressBook(UserDict):
     '''Add new instance of Record class in AddressBook'''
 
+    def __init(self):
+        self.is_unpacking = False
+
     def add_record(self, name: str, phones: List[str] = None, birthday: str = None) -> None:
         new_record = Record(name, phones, birthday)
         self.data[new_record.name.value] = new_record
@@ -132,13 +135,36 @@ class AddressBook(UserDict):
         if page:
             yield page
 
+    def save_data(self, filename):
+        with open(filename, 'wb') as fn:
+            data = self.data.copy
+            pickle.dump(data, fn)
+
+    def load_data(self, filename):
+        with open(filename, 'rb') as fn:
+            self.data = pickle.load(fn)
+        return self.data
+
+    def __getstate__(self):
+        attributes = self.data.copy()
+        return attributes
+
+    def __setstate__(self, value):
+        self.data = value
+        self.is_unpacking = True
+
     def __str__(self):
-        return str(self.data)
+        return str([name.value for name, rec in self.data.items()])
 
 
 if __name__ == '__main__':
     # USAGE EXAMPLE:
+    cur_dir = pathlib.Path().cwd()
+    data_file = cur_dir.joinpath("data.bin")
     book = AddressBook()
+    if data_file.exists():
+        book.load_data(data_file)
+    print(book)
     book.add_record("seMeN", ["063 666 99 66", "048 722 22 22"], '1.12.2021')
     book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], '01.01.1996')
     book.add_record("vasya", ["777 666 55545", "999 111 33323"], '23.04.1976')
@@ -156,3 +182,4 @@ if __name__ == '__main__':
     record.delete_phone("048 722 22 22")
     record.add_phone('123-345-567')
     record.edit_phone("063 666 66 66", "067-666-66-66")
+    book.save_data(data_file)

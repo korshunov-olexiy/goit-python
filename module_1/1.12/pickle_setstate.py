@@ -10,6 +10,7 @@ is_unpacking на значение True. Таким образом это
 '''
 
 import pickle
+from typing import List
 
 
 class Person:
@@ -21,7 +22,7 @@ class Person:
 
 
 class Contacts:
-    def __init__(self, filename: str, contacts: list[Person] = None):
+    def __init__(self, filename: str, contacts: List[Person] = None):
         if contacts is None:
             contacts = []
         self.filename = filename
