@@ -2,7 +2,6 @@ from collections import UserDict
 from datetime import datetime
 from inspect import getcallargs
 from typing import List, Optional
-import pickle, pathlib
 
 
 def check_if_present_phone_number(func):
@@ -22,34 +21,33 @@ class Field:
     '''Field class is parent for all fields in Record class'''
     def __init__(self, value):
         self.value = value
-    
-    @property
-    def value(self):
-        #if hasattr(self, '_value'):
-        return self._value
-    
-    @value.setter
-    def value(self, value):
-        if isinstance(self, Phone):
-            self._value = value if len(value) == 13 else ''
-        elif isinstance(self, Birthday):
-            try:
-                dt = value.split('.')
-                value = f"{int(dt[0]):02d}.{int(dt[1]):02d}.{int(dt[2])}"
-                datetime.strptime(value, '%d.%m.%Y')
-                self._value = value
-            except:
-                self._value = None
-        else:
-            self._value = value.capitalize()
-
 
 class Name(Field):
     '''Name class for storage name's field'''
+    def __init__(self, value):
+        super().__init__(value)
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        self._value = value.capitalize()
 
 
 class Phone(Field):
     '''Phone class for storage phone's field'''
+    def __init__(self, value):
+        super().__init__(value)
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        self._value = value if len(value) == 13 else ''
 
     def __str__(self):
         return f"Phone: {self.value}"
@@ -57,6 +55,22 @@ class Phone(Field):
 
 class Birthday(Field):
     '''Birthday class for storage birthday's field'''
+    def __init__(self, value):
+        super().__init__(value)
+    
+    @property
+    def value(self):
+        return self._value
+    
+    @value.setter
+    def value(self, value):
+        try:
+            dt = value.split('.')
+            value = f"{int(dt[0]):02d}.{int(dt[1]):02d}.{int(dt[2])}"
+            datetime.strptime(value, '%d.%m.%Y')
+            self._value = value
+        except:
+            self._value = None
 
 
 class Record:
@@ -123,14 +137,10 @@ class AddressBook(UserDict):
             self.data.pop(value)
 
     def iterator(self, n: str = 1) -> List[str]:
-        page = []
-        for name, rec in self.items():
-            page.append(f"{name}: {rec}")
-            if len(page) == n:
-                yield page 
-                page = []
-        if page:
-            yield page
+        start = 0
+        while start < len(self.items()):
+            yield [f"{name}: {rec}" for name,rec in list(self.items())[start:start+n]]
+            start += n
 
     def __str__(self):
         return str(self.data)
@@ -139,20 +149,18 @@ class AddressBook(UserDict):
 if __name__ == '__main__':
     # USAGE EXAMPLE:
     book = AddressBook()
-    book.add_record("seMeN", ["063 666 99 66", "048 722 22 22"], '1.12.2021')
+    book.add_record("seMeN", ["063 666 99 66", "048 722 22 22"], '01.12.2021')
     book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], '01.01.1996')
     book.add_record("vasya", ["777 666 55545", "999 111 33323"], '23.04.1976')
-    # print(book.data['Semen'])
-    # print(book.data['Grysha'])
-    # print(book.data['Vasya'])
+    book.add_record("petya", ["111 222 333 444", "800 546 342"], '13.04.1996')
 
-    for rec in book.iterator(2):
+    for rec in book.iterator(4):
         print(rec)
 
-    record = book.find_record("semen")
-    record.add_phone('344-55-678')
-    #print(record)
-    book.delete_record("seMEN")
-    record.delete_phone("048 722 22 22")
-    record.add_phone('123-345-567')
-    record.edit_phone("063 666 66 66", "067-666-66-66")
+    # record = book.find_record("semen")
+    # record.add_phone('344-55-678')
+    # #print(record)
+    # book.delete_record("seMEN")
+    # record.delete_phone("048 722 22 22")
+    # record.add_phone('123-345-567')
+    # record.edit_phone("063 666 66 66", "067-666-66-66")
