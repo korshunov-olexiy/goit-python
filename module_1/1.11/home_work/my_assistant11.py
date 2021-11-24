@@ -138,7 +138,7 @@ class AddressBook(UserDict):
 
     def iterator(self, n: str = 1) -> List[str]:
         start = 0
-        while start < len(self.items()):
+        while start < len(self):
             yield [f"{name}: {rec}" for name,rec in list(self.items())[start:start+n]]
             start += n
 
