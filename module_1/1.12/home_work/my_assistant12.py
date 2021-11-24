@@ -4,7 +4,6 @@ from inspect import getcallargs
 from typing import List, Optional
 import pickle, pathlib
 
-
 def check_if_present_phone_number(func):
     '''Decorator for checking if the phone number is present'''
     def inner(*args, **kwargs):
@@ -22,34 +21,33 @@ class Field:
     '''Field class is parent for all fields in Record class'''
     def __init__(self, value):
         self.value = value
-    
-    @property
-    def value(self):
-        #if hasattr(self, '_value'):
-        return self._value
-    
-    @value.setter
-    def value(self, value):
-        if isinstance(self, Phone):
-            self._value = value if len(value) == 13 else ''
-        elif isinstance(self, Birthday):
-            try:
-                dt = value.split('.')
-                value = f"{int(dt[0]):02d}.{int(dt[1]):02d}.{int(dt[2])}"
-                datetime.strptime(value, '%d.%m.%Y')
-                self._value = value
-            except:
-                self._value = None
-        else:
-            self._value = value.capitalize()
-
 
 class Name(Field):
     '''Name class for storage name's field'''
+    def __init__(self, value):
+        super().__init__(value)
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        self._value = value.capitalize()
 
 
 class Phone(Field):
     '''Phone class for storage phone's field'''
+    def __init__(self, value):
+        super().__init__(value)
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        self._value = value if len(value) == 13 else ''
 
     def __str__(self):
         return f"Phone: {self.value}"
@@ -57,6 +55,22 @@ class Phone(Field):
 
 class Birthday(Field):
     '''Birthday class for storage birthday's field'''
+    def __init__(self, value):
+        super().__init__(value)
+    
+    @property
+    def value(self):
+        return self._value
+    
+    @value.setter
+    def value(self, value):
+        try:
+            dt = value.split('.')
+            value = f"{int(dt[0]):02d}.{int(dt[1]):02d}.{int(dt[2])}"
+            datetime.strptime(value, '%d.%m.%Y')
+            self._value = value
+        except:
+            self._value = None
 
 
 class Record:
@@ -126,35 +140,23 @@ class AddressBook(UserDict):
             self.data.pop(value)
 
     def iterator(self, n: str = 1) -> List[str]:
-        page = []
-        for name, rec in self.items():
-            page.append(f"{name}: {rec}")
-            if len(page) == n:
-                yield page 
-                page = []
-        if page:
-            yield page
+        start = 0
+        while start < len(self):
+            yield [f"{name}: {rec}" for name,rec in list(self.items())[start:start+n]]
+            start += n
 
     def save_data(self, filename):
         with open(filename, 'wb') as fn:
-            data = self.data.copy
-            pickle.dump(data, fn)
+            pickle.dump(self.data, fn)
+            print(f"Saving to file {filename} is successfully")
 
     def load_data(self, filename):
         with open(filename, 'rb') as fn:
             self.data = pickle.load(fn)
-        return self.data
-
-    def __getstate__(self):
-        attributes = self.data.copy()
-        return attributes
-
-    def __setstate__(self, value):
-        self.data = value
-        self.is_unpacking = True
+            print(f"Loading from file {filename} is successfully")
 
     def __str__(self):
-        return str([name.value for name, rec in self.data.items()])
+        return ', '.join(self.data)
 
 
 if __name__ == '__main__':
@@ -162,23 +164,18 @@ if __name__ == '__main__':
     cur_dir = pathlib.Path().cwd()
     data_file = cur_dir.joinpath("data.bin")
     book = AddressBook()
-    if data_file.exists():
+    if data_file.is_file() and data_file.stat().st_size > 0:
         book.load_data(data_file)
-    print(book)
-    book.add_record("seMeN", ["063 666 99 66", "048 722 22 22"], '1.12.2021')
-    book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], '01.01.1996')
-    book.add_record("vasya", ["777 666 55545", "999 111 33323"], '23.04.1976')
-    # print(book.data['Semen'])
-    # print(book.data['Grysha'])
-    # print(book.data['Vasya'])
+    else:
+        book.add_record("seMeN", ["063 666 99 66", "048 722 22 22"], '1.12.2021')
+        book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], '01.01.1996')
+        book.add_record("vasya", ["777 666 55545", "999 111 33323"], '23.04.1976')
 
     for rec in book.iterator(2):
         print(rec)
 
-    record = book.find_record("semen")
+    record = book.find_record("Grysha")
     record.add_phone('344-55-678')
-    #print(record)
-    book.delete_record("seMEN")
     record.delete_phone("048 722 22 22")
     record.add_phone('123-345-567')
     record.edit_phone("063 666 66 66", "067-666-66-66")
