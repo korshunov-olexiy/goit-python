@@ -32,7 +32,7 @@ class Name(Field):
         return self._value
 
     @value.setter
-    def value(self, value):
+    def value(self, value: str) -> None:
         self._value = value.capitalize()
 
 
@@ -46,7 +46,7 @@ class Phone(Field):
         return self._value
 
     @value.setter
-    def value(self, value):
+    def value(self, value: str) -> None:
         self._value = value if len(value) == 13 else ''
 
     def __str__(self):
