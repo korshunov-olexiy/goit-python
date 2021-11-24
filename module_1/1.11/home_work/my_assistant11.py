@@ -154,7 +154,7 @@ if __name__ == '__main__':
     book.add_record("vasya", ["777 666 55545", "999 111 33323"], '23.04.1976')
     book.add_record("petya", ["111 222 333 444", "800 546 342"], '13.04.1996')
 
-    for rec in book.iterator(4):
+    for rec in book.iterator(2):
         print(rec)
 
     # record = book.find_record("semen")
