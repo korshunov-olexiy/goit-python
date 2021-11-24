@@ -63,7 +63,7 @@ class Birthday(Field):
         return self._value
     
     @value.setter
-    def value(self, value):
+    def value(self, value: str) -> None:
         try:
             dt = value.split('.')
             value = f"{int(dt[0]):02d}.{int(dt[1]):02d}.{int(dt[2])}"
@@ -145,12 +145,12 @@ class AddressBook(UserDict):
             yield [f"{name}: {rec}" for name,rec in list(self.items())[start:start+n]]
             start += n
 
-    def save_data(self, filename):
+    def save_data(self, filename: str) -> None:
         with open(filename, 'wb') as fn:
             pickle.dump(self.data, fn)
             print(f"Saving to file {filename} is successfully")
 
-    def load_data(self, filename):
+    def load_data(self, filename: str) -> None:
         with open(filename, 'rb') as fn:
             self.data = pickle.load(fn)
             print(f"Loading from file {filename} is successfully")
