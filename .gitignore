@@ -4,3 +4,4 @@ env
 venv
 .idea
 .token
+config_bot.py
