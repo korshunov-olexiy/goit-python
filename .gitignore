@@ -5,3 +5,4 @@ venv
 .idea
 .token
 config_bot.py
+__pycache__

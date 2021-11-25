@@ -6,4 +6,3 @@ from aiogram.utils import executor
 
 bot = Bot(token=config['token'])
 dp = Dispatcher(bot)
-
