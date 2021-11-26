@@ -6,3 +6,5 @@ venv
 .token
 config_bot.py
 __pycache__
+chromedriver.exe
+chromedriver_win32.zip

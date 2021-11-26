@@ -1,79 +1,53 @@
-import asyncio
-import logging
-import pathlib
-import sys
-from http import HTTPStatus
+import telebot
+import os
+import validators
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from config_bot import config
+from PIL import Image
+from io import BytesIO
 from urllib.parse import urlparse
 
-import requests
-from pyppeteer import launch
-from telegram import Update
-from telegram.ext import (CallbackContext, CommandHandler, Filters, MessageHandler, Updater)
-
-from config_bot import config
-
-
 TOKEN = config['token']
-CURRENT_PATH = pathlib.Path(sys.argv[0]).parent.absolute()
+bot = telebot.TeleBot(TOKEN)
 
-def start(update: Update, context: CallbackContext):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Send me the link to the site and I will return the screenshot to you.")
+chrome_options = Options()
+chrome_options.add_argument('--headless')
 
-def check_site_exist(url: str) -> str:
+@bot.message_handler(commands=['start'])
+def hello_user(message):
+    bot.send_message(message.chat.id, "Hello. This bot returns you an image of the site you specified.")
+
+@bot.message_handler(commands=['help'])
+def show_help(message):
+    bot.send_message(message.chat.id, 'To get a screenshot of the site, use the /url command.\nExample: /url https://www.google.com')
+
+@bot.message_handler(commands=['url'])
+def get_screenshot(message):
+    uid = message.chat.id
+    url = ""
     try:
-        url_parts = urlparse(url)
-        domain_name = url_parts.netloc
-        request = requests.get(url).status_code
-        return domain_name if request in [HTTPStatus.OK, HTTPStatus.MOVED_PERMANENTLY] else ''
-    except:
-        return ''
-
-async def take_screenshot(url: str, screenshot_name: pathlib.Path) -> str:
-    try:
-        browser = await launch()
-        page = await browser.newPage()
-        await page.goto(url)
-        await page.screenshot({'path': screenshot_name})
-        await browser.close()
-        return True
-    except Exception as err:
-        print("::::::::::::::::::::::::::::::::::::: ERROR: ", err)
-        return False
-
-def send_screenshot(update: Update, context: CallbackContext):
-    url = update.message.text
-    print("::::::::::::::URL:", url)
-    screenshot_name = check_site_exist(url)
-    if screenshot_name:
-        screenshot_name = CURRENT_PATH.joinpath(f"{screenshot_name}.png")
-        print('::::::::::::::: IMAGE:', screenshot_name)
-        #if asyncio.get_event_loop().run_until_complete(take_screenshot(url, screenshot_name)):
-        if asyncio.run(take_screenshot(url, screenshot_name)):
-            logging.info(f"image name: {screenshot_name}")
-            context.bot.send_photo(chat_id=update.effective_chat.id, photo=open(screenshot_name, 'rb'), caption=f'This is screenshot of {url}')
-        else:
-            context.bot.send_message(chat_id=update.effective_chat.id, text="Something went wrong. Please try again later.")
+        url = message.text.split(' ')[1]
+        image_name = f"{urlparse(url).netloc}.png"
+    except IndexError:
+        bot.send_message(uid, 'After the command /url, you need to enter a valid URL!')
+        return
+    if not validators.url(url):
+        bot.send_message(uid, 'I could not open the URL. Try later.')
     else:
-        context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, but couldn't open passed url.")
-
-
-def main():
-    #asyncio.get_event_loop().run_until_complete(main())
-    updater = Updater(token=TOKEN, use_context=True)
-    dispatcher = updater.dispatcher
-
-    echo_handler = MessageHandler(Filters.text & (~Filters.command), send_screenshot)
-    dispatcher.add_handler(echo_handler)
-
-    start_handler = CommandHandler('start', start)
-    dispatcher.add_handler(start_handler)
-
-    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-
-
-    updater.start_polling(clean=True)
-    updater.idle()
-
+        driver = webdriver.Chrome(options=chrome_options)
+        driver.set_window_size(1920, 1800)
+        try:
+            driver.get(url)
+            png = driver.get_screenshot_as_png()
+            im = Image.open(BytesIO(png))
+            im.save(image_name, 'PNG')
+            bot.send_document(uid, open(image_name, 'rb'))
+            os.remove(image_name)
+        except Exception as err:
+            print(err)
+        finally:
+            driver.quit()
 
 if __name__ == '__main__':
-    main()
+    bot.infinity_polling()
