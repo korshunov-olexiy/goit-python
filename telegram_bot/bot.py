@@ -1,12 +1,15 @@
-import telebot
 import os
-import validators
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from config_bot import config
-from PIL import Image
 from io import BytesIO
 from urllib.parse import urlparse
+
+import telebot
+import validators
+from PIL import Image
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+from config_bot import config
+
 
 TOKEN = config['token']
 bot = telebot.TeleBot(TOKEN)
@@ -16,7 +19,7 @@ chrome_options.add_argument('--headless')
 
 @bot.message_handler(commands=['start'])
 def hello_user(message):
-    bot.send_message(message.chat.id, "Hello. This bot returns you an image of the site you specified.")
+    bot.send_message(message.chat.id, "Hello. This bot returns you an image of the site you specified. Use /url command and address of site")
 
 @bot.message_handler(commands=['help'])
 def show_help(message):
