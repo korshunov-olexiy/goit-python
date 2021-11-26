@@ -4,6 +4,7 @@ import telebot
 import validators
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from itertools import groupby
 
 from config_bot import config
 
@@ -12,6 +13,10 @@ bot = telebot.TeleBot(TOKEN)
 
 chrome_options = Options()
 chrome_options.add_argument('--headless')
+
+def norm_spaces(s):
+    '''replace many spaces to one space in string'''
+    return ''.join(' ' if chr == ' ' else ''.join(times) for chr,times in groupby(s))
 
 @bot.message_handler(commands=['start'])
 def hello_user(message):
@@ -26,7 +31,7 @@ def get_screenshot(message):
     uid = message.chat.id
     url = ""
     try:
-        url = message.text.split(' ')[1]
+        url = norm_spaces(message.text).split(' ')[1]
         image_name = f"{urlparse(url).netloc}.png"
     except IndexError:
         bot.send_message(uid, 'After the command /url, you need to enter a valid URL!')
