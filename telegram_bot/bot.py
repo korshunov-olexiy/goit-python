@@ -10,7 +10,6 @@ from selenium.webdriver.chrome.options import Options
 
 from config_bot import config
 
-
 TOKEN = config['token']
 bot = telebot.TeleBot(TOKEN)
 
@@ -39,7 +38,7 @@ def get_screenshot(message):
         bot.send_message(uid, 'I could not open the URL. Try later.')
     else:
         driver = webdriver.Chrome(executable_path='./chromedriver', options=chrome_options)
-        driver.set_window_size(1920, 1800)
+        driver.set_window_size(1920, 1080)
         try:
             driver.get(url)
             png = driver.get_screenshot_as_png()
