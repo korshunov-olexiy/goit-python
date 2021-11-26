@@ -14,20 +14,20 @@ bot = telebot.TeleBot(TOKEN)
 chrome_options = Options()
 chrome_options.add_argument('--headless')
 
-def norm_spaces(s):
+def norm_spaces(s: str) -> str:
     '''replace many spaces to one space in string'''
     return ''.join(' ' if chr == ' ' else ''.join(times) for chr,times in groupby(s))
 
 @bot.message_handler(commands=['start'])
-def hello_user(message):
+def hello_user(message) -> None:
     bot.send_message(message.chat.id, "Hello. This bot returns you an image of the site you specified. Use /url command and address of site")
 
 @bot.message_handler(commands=['help'])
-def show_help(message):
+def show_help(message) -> None:
     bot.send_message(message.chat.id, 'To get a screenshot of the site, use the /url command.\nExample: /url https://www.google.com')
 
 @bot.message_handler(commands=['url'])
-def get_screenshot(message):
+def get_screenshot(message) -> None:
     uid = message.chat.id
     url = ""
     try:
