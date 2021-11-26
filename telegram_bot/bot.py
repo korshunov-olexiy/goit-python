@@ -38,7 +38,7 @@ def get_screenshot(message):
     if not validators.url(url):
         bot.send_message(uid, 'I could not open the URL. Try later.')
     else:
-        driver = webdriver.Chrome(options=chrome_options)
+        driver = webdriver.Chrome(executable_path='./chromedriver', options=chrome_options)
         driver.set_window_size(1920, 1800)
         try:
             driver.get(url)
