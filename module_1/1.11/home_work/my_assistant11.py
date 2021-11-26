@@ -17,6 +17,9 @@ def check_if_present_phone_number(func):
     return inner
 
 
+class InvalidPhoneNumber(Exception):
+    ''''''
+
 class Field:
     '''Field class is parent for all fields in Record class'''
     def __init__(self, value):
@@ -47,7 +50,10 @@ class Phone(Field):
 
     @value.setter
     def value(self, value):
-        self._value = value if len(value) == 13 else ''
+        if len(value) == 13:
+            self._value = value
+        else:
+            raise InvalidPhoneNumber
 
     def __str__(self):
         return f"Phone: {self.value}"
@@ -78,10 +84,15 @@ class Record:
     Only one name but many phone numbers"""
 
     def __init__(self, name: str, phone: List[str] = None, birthday: str = None) -> None:
+        self.phone = []
         if phone is None:
             self.phone = []
         else:
-            self.phone = [Phone(p) for p in phone]
+            for p in phone:
+                try:
+                    self.phone.append(Phone(p))
+                except InvalidPhoneNumber:
+                    print(f"The phone number {p} is invalid")
         self.name = Name(name)
         self.birthday = Birthday(birthday)
 
@@ -101,7 +112,10 @@ class Record:
     @check_if_present_phone_number
     def add_phone(self, phone_number: str, idx=-1) -> None:
         if idx == -1:
-            self.phone.append(Phone(phone_number))
+            try:
+                self.phone.append(Phone(phone_number))
+            except InvalidPhoneNumber:
+                print(f'The phone number {phone_number} is invalid')
 
     @check_if_present_phone_number
     def delete_phone(self, phone: str, idx=-1) -> None:
@@ -111,7 +125,10 @@ class Record:
     @check_if_present_phone_number
     def edit_phone(self, old_phone: str, new_phone: str, idx=-1) -> None:
         if idx != -1:
-            self.phone[idx] = Phone(new_phone)
+            try:
+                self.phone[idx] = Phone(new_phone)
+            except InvalidPhoneNumber:
+                print(f'The phone number {new_phone} is invalid')
 
     def __str__(self):
         result = f"Record of {self.name.value}, "
@@ -149,18 +166,18 @@ class AddressBook(UserDict):
 if __name__ == '__main__':
     # USAGE EXAMPLE:
     book = AddressBook()
-    book.add_record("seMeN", ["063 666 99 66", "048 722 22 22"], '01.12.2021')
-    book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], '01.01.1996')
-    book.add_record("vasya", ["777 666 55545", "999 111 33323"], '23.04.1976')
-    book.add_record("petya", ["111 222 333 444", "800 546 342"], '13.04.1996')
+    book.add_record("seMeN", ["063 666 99 66", "048 722 22", "123 456 789 1"], '01.12.2021')
+    # book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], '01.01.1996')
+    # book.add_record("vasya", ["777 666 55545", "999 111 33323"], '23.04.1976')
+    # book.add_record("petya", ["111 222 333 444", "800 546 342"], '13.04.1996')
 
-    for rec in book.iterator(2):
-        print(rec)
-
-    # record = book.find_record("semen")
-    # record.add_phone('344-55-678')
+    record = book.find_record("semen")
+    record.add_phone('344-55-678111')
     # #print(record)
     # book.delete_record("seMEN")
-    # record.delete_phone("048 722 22 22")
+    #record.delete_phone("344-55-678111")
     # record.add_phone('123-345-567')
-    # record.edit_phone("063 666 66 66", "067-666-66-66")
+    record.edit_phone("344-55-678111", "067-666-66-6")
+
+    for rec in book.iterator(2):
+            print(rec)

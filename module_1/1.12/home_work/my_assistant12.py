@@ -17,6 +17,9 @@ def check_if_present_phone_number(func):
     return inner
 
 
+class InvalidPhoneNumber(Exception):
+    ''''''
+
 class Field:
     '''Field class is parent for all fields in Record class'''
     def __init__(self, value):
@@ -47,7 +50,10 @@ class Phone(Field):
 
     @value.setter
     def value(self, value: str) -> None:
-        self._value = value if len(value) == 13 else ''
+        if len(value) == 13:
+            self._value = value
+        else:
+            raise InvalidPhoneNumber
 
     def __str__(self):
         return f"Phone: {self.value}"
@@ -78,10 +84,15 @@ class Record:
     Only one name but many phone numbers"""
 
     def __init__(self, name: str, phone: List[str] = None, birthday: str = None) -> None:
+        self.phone = []
         if phone is None:
             self.phone = []
         else:
-            self.phone = [Phone(p) for p in phone]
+            for p in phone:
+                try:
+                    self.phone.append(Phone(p))
+                except InvalidPhoneNumber:
+                    print(f"The phone number {p} is invalid")
         self.name = Name(name)
         self.birthday = Birthday(birthday)
 
@@ -101,7 +112,10 @@ class Record:
     @check_if_present_phone_number
     def add_phone(self, phone_number: str, idx=-1) -> None:
         if idx == -1:
-            self.phone.append(Phone(phone_number))
+            try:
+                self.phone.append(Phone(phone_number))
+            except InvalidPhoneNumber:
+                print(f'The phone number {phone_number} is invalid')
 
     @check_if_present_phone_number
     def delete_phone(self, phone: str, idx=-1) -> None:
@@ -111,7 +125,10 @@ class Record:
     @check_if_present_phone_number
     def edit_phone(self, old_phone: str, new_phone: str, idx=-1) -> None:
         if idx != -1:
-            self.phone[idx] = Phone(new_phone)
+            try:
+                self.phone[idx] = Phone(new_phone)
+            except InvalidPhoneNumber:
+                print(f'The phone number {new_phone} is invalid')
 
     def __str__(self):
         result = f"Record of {self.name.value}, "
@@ -123,9 +140,6 @@ class Record:
 
 class AddressBook(UserDict):
     '''Add new instance of Record class in AddressBook'''
-
-    def __init(self):
-        self.is_unpacking = False
 
     def add_record(self, name: str, phones: List[str] = None, birthday: str = None) -> None:
         new_record = Record(name, phones, birthday)
