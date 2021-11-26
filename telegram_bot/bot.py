@@ -1,10 +1,10 @@
+from itertools import groupby
 from urllib.parse import urlparse
 
 import telebot
 import validators
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from itertools import groupby
 
 from config_bot import config
 
