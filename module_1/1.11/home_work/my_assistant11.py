@@ -27,8 +27,6 @@ class Field:
 
 class Name(Field):
     '''Name class for storage name's field'''
-    def __init__(self, value):
-        super().__init__(value)
 
     @property
     def value(self):
@@ -41,8 +39,6 @@ class Name(Field):
 
 class Phone(Field):
     '''Phone class for storage phone's field'''
-    def __init__(self, value):
-        super().__init__(value)
 
     @property
     def value(self):
@@ -61,8 +57,6 @@ class Phone(Field):
 
 class Birthday(Field):
     '''Birthday class for storage birthday's field'''
-    def __init__(self, value):
-        super().__init__(value)
     
     @property
     def value(self):
@@ -88,11 +82,11 @@ class Record:
         if phone is None:
             self.phone = []
         else:
-            for p in phone:
+            for one_phone in phone:
                 try:
-                    self.phone.append(Phone(p))
+                    self.phone.append(Phone(one_phone))
                 except InvalidPhoneNumber:
-                    print(f"The phone number {p} is invalid")
+                    print(f"The phone number {one_phone} is invalid")
         self.name = Name(name)
         self.birthday = Birthday(birthday)
 
@@ -154,10 +148,8 @@ class AddressBook(UserDict):
             self.data.pop(value)
 
     def iterator(self, n: str = 1) -> List[str]:
-        start = 0
-        while start < len(self):
-            yield [f"{name}: {rec}" for name,rec in list(self.items())[start:start+n]]
-            start += n
+        for i in range(0, len(self), n):
+            yield [f"{name}: {rec}" for name,rec in list(self.items())[i:i+n]]
 
     def __str__(self):
         return str(self.data)
@@ -167,9 +159,9 @@ if __name__ == '__main__':
     # USAGE EXAMPLE:
     book = AddressBook()
     book.add_record("seMeN", ["063 666 99 66", "048 722 22", "123 456 789 1"], '01.12.2021')
-    # book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], '01.01.1996')
-    # book.add_record("vasya", ["777 666 55545", "999 111 33323"], '23.04.1976')
-    # book.add_record("petya", ["111 222 333 444", "800 546 342"], '13.04.1996')
+    book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], '01.01.1996')
+    book.add_record("vasya", ["777 666 55545", "999 111 33323"], '23.04.1976')
+    book.add_record("petya", ["111 222 333 444", "800 546 342"], '13.04.1996')
 
     record = book.find_record("semen")
     record.add_phone('344-55-678111')

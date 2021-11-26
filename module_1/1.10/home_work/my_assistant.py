@@ -41,7 +41,7 @@ class Record:
         if phone is None:
             self.phone = []
         else:
-            self.phone = [Phone(p) for p in phone]
+            self.phone = [Phone(one_phone) for one_phone in phone]
         self.name = Name(name)
 
     @check_if_present_phone_number
