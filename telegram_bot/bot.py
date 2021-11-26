@@ -1,10 +1,7 @@
-import os
-from io import BytesIO
 from urllib.parse import urlparse
 
 import telebot
 import validators
-from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -42,10 +39,7 @@ def get_screenshot(message):
         try:
             driver.get(url)
             png = driver.get_screenshot_as_png()
-            im = Image.open(BytesIO(png))
-            im.save(image_name, 'PNG')
-            bot.send_document(uid, open(image_name, 'rb'))
-            os.remove(image_name)
+            bot.send_document(uid, png, visible_file_name=image_name)
         except Exception as err:
             print(err)
         finally:
