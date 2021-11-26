@@ -157,7 +157,7 @@ class AddressBook(UserDict):
             self.data.pop(value)
 
     def find_info(self, search_info):
-        result = [f'Search results for string {search_info}:']
+        result = [f"Search results for string '{search_info}':"]
         for name, rec in self.data.items():
             if search_info.lower() in rec.__str__().lower():
                 result.append(f"{name}, {rec}")
@@ -188,21 +188,21 @@ if __name__ == '__main__':
     cur_dir = Path(sys.argv[0]).parent
     data_file = cur_dir.joinpath("data.bin")
     book = AddressBook()
-    #if data_file.is_file() and data_file.stat().st_size > 0:
-    #    book.load_data(data_file)
-    #else:
-    book.add_record("seMeN", ["063 666 99 66", "048 722 22 22"], '1.12.2021')
-    book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], '01.01.1996')
-    book.add_record("vasya", ["777 666 55545", "999 111 33323"], '23.04.1976')
-    book.add_record("semenovna", ["777 666 55545", "999 111 33323"], '23.04.1976')
+    if data_file.is_file() and data_file.stat().st_size > 0:
+        book.load_data(data_file)
+    else:
+        book.add_record("seMeN", ["063 666 99 66", "048 722 22 22"], '1.12.2021')
+        book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], '01.01.1996')
+        book.add_record("vasya", ["777 666 55545", "999 111 33323"], '23.04.1976')
+        book.add_record("semenovna", ["777 666 55545", "999 111 33323"], '23.04.1976')
 
-    # for rec in book.iterator(2):
-    #     print(rec)
+    for rec in book.iterator(2):
+        print(rec)
 
     record = book.find_record("Grysha")
     record.add_phone('344-55-678')
     record.delete_phone("048 722 22 22")
     record.add_phone('123-345-567')
     record.edit_phone("063 666 66 66", "067-666-66-66")
-    #book.save_data(data_file)
+    book.save_data(data_file)
     print( book.find_info("Semen") )
