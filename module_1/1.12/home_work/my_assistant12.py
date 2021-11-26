@@ -1,8 +1,11 @@
+import pickle
+import sys
 from collections import UserDict
 from datetime import datetime
 from inspect import getcallargs
+from pathlib import Path
 from typing import List, Optional
-import pickle, pathlib
+
 
 def check_if_present_phone_number(func):
     '''Decorator for checking if the phone number is present'''
@@ -175,7 +178,7 @@ class AddressBook(UserDict):
 
 if __name__ == '__main__':
     # USAGE EXAMPLE:
-    cur_dir = pathlib.Path().cwd()
+    cur_dir = Path(sys.argv[0]).parent
     data_file = cur_dir.joinpath("data.bin")
     book = AddressBook()
     if data_file.is_file() and data_file.stat().st_size > 0:
