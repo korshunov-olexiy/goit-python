@@ -1,8 +1,8 @@
 from collections import UserDict
-from typing import List, Optional, Union
+from typing import List, Optional
 
 
-def get_phone_index(phone_obj: object, check_number: str) -> Union[int, None]:
+def get_phone_index(phone_obj: object, check_number: str) -> Optional[int]:
     """The function checks the user's phone number. 
     If the number is found, it returns its index; otherwise, None is."""
     for i,phone in enumerate(phone_obj.phone):
