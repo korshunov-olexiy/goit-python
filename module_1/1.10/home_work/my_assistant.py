@@ -32,7 +32,7 @@ class Record:
     """Record class responsible for the logic of adding/removing/editing fields
     Only one name but many phone numbers"""
 
-    def __init__(self, name: str, phone: List[str] = None) -> None:
+    def __init__(self, name: str, phone: List[str] = None):
         if phone is None:
             self.phone = []
         else:
