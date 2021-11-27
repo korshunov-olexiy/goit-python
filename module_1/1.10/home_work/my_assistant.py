@@ -1,19 +1,14 @@
 from collections import UserDict
-from inspect import getcallargs
 from typing import List, Optional
 
 
-def check_if_present_phone_number(func):
-    """Decorator for checking if the phone number is present"""
-    def inner(*args, **kwargs):
-        # getting default named attribute 'idx'
-        kwargs['idx'] = getcallargs(func, *args, *kwargs)['idx']
-        for i,phone in enumerate(args[0].phone):
-            if phone.value == args[1]:
-                kwargs['idx'] = i
-                break
-        return func(*args, **kwargs)
-    return inner
+def get_phone_index(phone_obj: object, check_number: str) -> int:
+    """The function checks the user's phone number. 
+    If the number is found, it returns its index; otherwise, None is."""
+    for i,phone in enumerate(phone_obj.phone):
+        if phone.value == check_number:
+            return i
+    return None
 
 
 class Field:
@@ -44,20 +39,20 @@ class Record:
             self.phone = [Phone(one_phone) for one_phone in phone]
         self.name = Name(name)
 
-    @check_if_present_phone_number
-    def add_phone(self, phone_number: str, idx=-1) -> None:
-        if idx == -1:
+    def add_phone(self, phone_number: str) -> None:
+        index = get_phone_index(self, phone_number)
+        if index == None:
             self.phone.append(Phone(phone_number))
 
-    @check_if_present_phone_number
-    def delete_phone(self, phone: str, idx=-1) -> None:
-        if idx != -1:
-            self.phone.pop(idx)
+    def delete_phone(self, phone: str) -> None:
+        index = get_phone_index(self, phone)
+        if index != None:
+            self.phone.pop(index)
 
-    @check_if_present_phone_number
-    def edit_phone(self, old_phone: str, new_phone: str, idx=-1) -> None:
-        if idx != -1:
-            self.phone[idx] = Phone(new_phone)
+    def edit_phone(self, old_phone: str, new_phone: str) -> None:
+        index = get_phone_index(self, old_phone)
+        if  index != None and get_phone_index(self, new_phone) == None:
+            self.phone[index] = Phone(new_phone)
 
     def __str__(self):
         return f"Record of {self.name.value}, phones {[p.value for p in self.phone]}"
@@ -83,19 +78,16 @@ class AddressBook(UserDict):
 
 
 if __name__ == '__main__':
+
     # USAGE EXAMPLE:
     book = AddressBook()
     book.add_record('seMeN', ["063 666 99 66", "048 722 22 22"])
     book.add_record("grySha", ["063 666 66 66", "048 222 22 22"])
 
     record = book.find_record("semen")
-    print(111, record)
-    book.delete_record("grYsha")
+    #book.delete_record("grYsha")
 
-    print("#" * 10)
-    print(book)
-    print("#" * 10)
-    record.delete_phone("048 222 22 22")
+    record.delete_phone("048 722 22 22")
     record.add_phone('123-345-567')
-    record.edit_phone("063 666 66 66", "067-666-66-66")
+    record.edit_phone("063 666 99 66", "067-666-66-66")
     print(record)
