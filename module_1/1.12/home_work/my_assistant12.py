@@ -8,7 +8,7 @@ from typing import List, Optional
 
 
 def check_if_present_phone_number(func):
-    '''Decorator for checking if the phone number is present'''
+    """Decorator for checking if the phone number is present"""
     def inner(*args, **kwargs):
         # getting default named attribute 'idx'
         kwargs['idx'] = getcallargs(func, *args, *kwargs)['idx']
@@ -21,15 +21,15 @@ def check_if_present_phone_number(func):
 
 
 class InvalidPhoneNumber(Exception):
-    ''''''
+    """"""
 
 class Field:
-    '''Field class is parent for all fields in Record class'''
+    """Field class is parent for all fields in Record class"""
     def __init__(self, value):
         self.value = value
 
 class Name(Field):
-    '''Name class for storage name's field'''
+    """Name class for storage name's field"""
     def __init__(self, value):
         super().__init__(value)
 
@@ -43,7 +43,7 @@ class Name(Field):
 
 
 class Phone(Field):
-    '''Phone class for storage phone's field'''
+    """Phone class for storage phone's field"""
     def __init__(self, value):
         super().__init__(value)
 
@@ -63,7 +63,7 @@ class Phone(Field):
 
 
 class Birthday(Field):
-    '''Birthday class for storage birthday's field'''
+    """Birthday class for storage birthday's field"""
     def __init__(self, value):
         super().__init__(value)
     
@@ -100,7 +100,7 @@ class Record:
         self.birthday = Birthday(birthday)
 
     def days_to_birthday(self) -> Optional[str]:
-        '''return number of days until the next birthday'''
+        """return number of days until the next birthday"""
         
         if not isinstance(self.birthday.value, type(None)):
             current_date = datetime.today()
@@ -142,7 +142,7 @@ class Record:
         return result
 
 class AddressBook(UserDict):
-    '''Add new instance of Record class in AddressBook'''
+    """Add new instance of Record class in AddressBook"""
 
     def add_record(self, name: str, phones: List[str] = None, birthday: str = None) -> None:
         new_record = Record(name, phones, birthday)

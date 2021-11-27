@@ -4,7 +4,7 @@ from typing import List, Optional
 
 
 def check_if_present_phone_number(func):
-    '''Decorator for checking if the phone number is present'''
+    """Decorator for checking if the phone number is present"""
     def inner(*args, **kwargs):
         # getting default named attribute 'idx'
         kwargs['idx'] = getcallargs(func, *args, *kwargs)['idx']
@@ -17,17 +17,17 @@ def check_if_present_phone_number(func):
 
 
 class Field:
-    '''Field class is parent for all fields in Record class'''
+    """Field class is parent for all fields in Record class"""
     def __init__(self, value: str):
         self.value = value.capitalize()
 
 
 class Name(Field):
-    '''Name class for storage name's field'''
+    """Name class for storage name's field"""
 
 
 class Phone(Field):
-    '''Phone class for storage phone's field'''
+    """Phone class for storage phone's field"""
 
     def __str__(self):
         return f"Phone: {self.value}"
@@ -64,7 +64,7 @@ class Record:
 
 
 class AddressBook(UserDict):
-    '''Add new instance of Record class in AddressBook'''
+    """Add new instance of Record class in AddressBook"""
 
     def add_record(self, name: str, phones: list) -> None:
         new_record = Record(name, phones)
