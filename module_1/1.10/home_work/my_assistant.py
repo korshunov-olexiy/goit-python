@@ -33,10 +33,11 @@ class Record:
     def get_phone_index(self, check_number: str) -> Optional[int]:
         """The function checks the user's phone number. 
         If the number is found, it returns its index; otherwise, None is."""
-        for i,phone in enumerate(self.phone):
-            if phone.value == check_number:
-                return i
-        return None
+        try:
+            return [one_phone.value for one_phone in self.phone].index(check_number)
+        except ValueError:
+            return None
+
 
     def add_phone(self, phone_number: str) -> None:
         index = self.get_phone_index(phone_number)
@@ -88,5 +89,6 @@ if __name__ == '__main__':
 
     record.delete_phone("048 722 22 22")
     record.add_phone('123-345-567')
+    record.add_phone('123-345-567-134-12')
     record.edit_phone("063 666 99 66", "067-666-66-66")
     print(record)
