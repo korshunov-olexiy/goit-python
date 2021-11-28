@@ -2,15 +2,6 @@ from collections import UserDict
 from typing import List, Optional
 
 
-def get_phone_index(phone_obj: object, check_number: str) -> Optional[int]:
-    """The function checks the user's phone number. 
-    If the number is found, it returns its index; otherwise, None is."""
-    for i,phone in enumerate(phone_obj.phone):
-        if phone.value == check_number:
-            return i
-    return None
-
-
 class Field:
     """Field class is parent for all fields in Record class"""
     def __init__(self, value: str):
@@ -39,19 +30,27 @@ class Record:
             self.phone = [Phone(one_phone) for one_phone in phone]
         self.name = Name(name)
 
+    def get_phone_index(self, check_number: str) -> Optional[int]:
+        """The function checks the user's phone number. 
+        If the number is found, it returns its index; otherwise, None is."""
+        for i,phone in enumerate(self.phone):
+            if phone.value == check_number:
+                return i
+        return None
+
     def add_phone(self, phone_number: str) -> None:
-        index = get_phone_index(self, phone_number)
+        index = self.get_phone_index(phone_number)
         if index == None:
             self.phone.append(Phone(phone_number))
 
     def delete_phone(self, phone: str) -> None:
-        index = get_phone_index(self, phone)
+        index = self.get_phone_index(phone)
         if index != None:
             self.phone.pop(index)
 
     def edit_phone(self, old_phone: str, new_phone: str) -> None:
-        index = get_phone_index(self, old_phone)
-        if  index != None and get_phone_index(self, new_phone) == None:
+        index = self.get_phone_index(old_phone)
+        if  index != None and self.get_phone_index(new_phone) == None:
             self.phone[index] = Phone(new_phone)
 
     def __str__(self):
