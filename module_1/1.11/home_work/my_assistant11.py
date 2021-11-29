@@ -84,7 +84,7 @@ class Record:
         except ValueError:
             return None
 
-    def days_to_birthday(self) -> Optional[str]:
+    def days_to_birthday(self) -> str:
         """return number of days until the next birthday"""
         
         if not isinstance(self.birthday.value, type(None)):
@@ -120,7 +120,7 @@ class Record:
 
     def __str__(self):
         result = f"Record of {self.name.value}, "
-        result += f"phones: {[p.value for p in self.phone]}"
+        result += f"phones: {[one_phone.value for one_phone in self.phone]}"
         if not isinstance(self.birthday.value, type(None)):
             result += f", birthday: {self.birthday.value}"
             result += f", to birthday: {self.days_to_birthday()}"
