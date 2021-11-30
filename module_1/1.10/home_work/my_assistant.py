@@ -51,7 +51,7 @@ class Record:
 
     def edit_phone(self, old_phone: str, new_phone: str) -> None:
         index = self.get_phone_index(old_phone)
-        if  index and self.get_phone_index(new_phone) == None:
+        if  index and not self.get_phone_index(new_phone):
             self.phone[index] = Phone(new_phone)
 
     def __str__(self):

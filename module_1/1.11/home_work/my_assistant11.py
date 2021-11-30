@@ -112,7 +112,7 @@ class Record:
 
     def edit_phone(self, old_phone: str, new_phone: str) -> None:
         index = self.get_phone_index(old_phone)
-        if index:
+        if index and not self.get_phone_index(new_phone):
             try:
                 self.phone[index] = Phone(new_phone)
             except InvalidPhoneNumber:
