@@ -41,17 +41,17 @@ class Record:
 
     def add_phone(self, phone_number: str) -> None:
         index = self.get_phone_index(phone_number)
-        if index == None:
+        if not index:
             self.phone.append(Phone(phone_number))
 
     def delete_phone(self, phone: str) -> None:
         index = self.get_phone_index(phone)
-        if index != None:
+        if index:
             self.phone.pop(index)
 
     def edit_phone(self, old_phone: str, new_phone: str) -> None:
         index = self.get_phone_index(old_phone)
-        if  index != None and self.get_phone_index(new_phone) == None:
+        if  index and self.get_phone_index(new_phone) == None:
             self.phone[index] = Phone(new_phone)
 
     def __str__(self):

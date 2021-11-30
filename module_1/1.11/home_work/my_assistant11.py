@@ -93,13 +93,13 @@ class Record:
             birthday = datetime.strptime(f"{self.birthday.value[:6]}{current_year}", "%d.%m.%Y")
             if  birthday < current_date:
                 birthday = birthday.replace(year=current_year+1)
-            days = (birthday - current_date).days
+            days = (birthday.date() - current_date.date()).days
             return f"{days} day(s)"
         return ""
 
     def add_phone(self, phone_number: str) -> None:
         index = self.get_phone_index(phone_number)
-        if index == None:
+        if not index:
             try:
                 self.phone.append(Phone(phone_number))
             except InvalidPhoneNumber:
@@ -107,12 +107,12 @@ class Record:
 
     def delete_phone(self, phone: str) -> None:
         index = self.get_phone_index(phone)
-        if index != None:
+        if index:
             self.phone.pop(index)
 
     def edit_phone(self, old_phone: str, new_phone: str) -> None:
         index = self.get_phone_index(old_phone)
-        if index == None:
+        if index:
             try:
                 self.phone[index] = Phone(new_phone)
             except InvalidPhoneNumber:
@@ -153,9 +153,9 @@ if __name__ == "__main__":
     # USAGE EXAMPLE:
     book = AddressBook()
     book.add_record("seMeN", ["063 666 99 66", "048 722 22", "123 456 789 1"], "01.12.2021")
-    book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], "01.01.1996")
-    book.add_record("vasya", ["777 666 55545", "999 111 33323"], "23.04.1976")
-    book.add_record("petya", ["111 222 333 444", "800 546 342"], "13.04.1996")
+    # book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], "01.01.1996")
+    # book.add_record("vasya", ["777 666 55545", "999 111 33323"], "23.04.1976")
+    # book.add_record("petya", ["111 222 333 444", "800 546 342"], "13.04.1996")
 
     record = book.find_record("semen")
     record.add_phone("344-55-678111")
@@ -163,7 +163,8 @@ if __name__ == "__main__":
     # book.delete_record("seMEN")
     #record.delete_phone("344-55-678111")
     # record.add_phone("123-345-567")
-    record.edit_phone("344-55-678111", "067-666-66-6")
+    record.edit_phone("344-55-678111", "067-666-66-66")
+    print(record)
 
-    for rec in book.iterator(2):
-            print(rec)
+    # for rec in book.iterator(2):
+    #         print(rec)
