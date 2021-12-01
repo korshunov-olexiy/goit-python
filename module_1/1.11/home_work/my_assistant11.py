@@ -53,8 +53,8 @@ class Birthday(Field):
     @value.setter
     def value(self, value):
         try:
-            dt = value.split(".")
-            value = f"{int(dt[0]):02d}.{int(dt[1]):02d}.{int(dt[2])}"
+            value_parts = value.split(".")
+            value = f"{int(value_parts[0]):02d}.{int(value_parts[1]):02d}.{int(value_parts[2])}"
             datetime.strptime(value, "%d.%m.%Y")
             self._value = value
         except (IndexError, ValueError):
