@@ -87,13 +87,13 @@ class Record:
     def days_to_birthday(self) -> str:
         """return number of days until the next birthday"""
         
-        if not isinstance(self.birthday.value, type(None)):
-            current_date = datetime.today()
+        if self.birthday.value:
+            current_date = datetime.today().date()
             current_year = current_date.year
-            birthday = datetime.strptime(f"{self.birthday.value[:6]}{current_year}", "%d.%m.%Y")
+            birthday = datetime.strptime(f"{self.birthday.value[:6]}{current_year}", "%d.%m.%Y").date()
             if  birthday < current_date:
                 birthday = birthday.replace(year=current_year+1)
-            days = (birthday.date() - current_date.date()).days
+            days = (birthday - current_date).days
             return f"{days} day(s)"
         return ""
 
@@ -119,10 +119,10 @@ class Record:
                 print(f"The phone number {new_phone} is invalid")
 
     def __str__(self):
-        result = f"Record of {self.name.value}, "
+        result = f"Record of {self.name.value}"
         if self.phone:
-           result += f"phones: {[one_phone.value for one_phone in self.phone]}"
-        if hasattr(self, 'birthday') and not isinstance(self.birthday.value, type(None)):
+           result += f", phones: {[one_phone.value for one_phone in self.phone]}"
+        if self.birthday.value:
             result += f", birthday: {self.birthday.value}"
             result += f", to birthday: {self.days_to_birthday()}"
         return result
