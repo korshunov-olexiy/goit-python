@@ -4,12 +4,14 @@ from typing import List, Optional
 
 
 class InvalidPhoneNumber(Exception):
-    """"""
+    """Exception for phone number verification."""
+
 
 class Field:
     """Field class is parent for all fields in Record class"""
     def __init__(self, value):
         self.value = value
+
 
 class Name(Field):
     """Name class for storage name"s field"""
@@ -55,7 +57,7 @@ class Birthday(Field):
             value = f"{int(dt[0]):02d}.{int(dt[1]):02d}.{int(dt[2])}"
             datetime.strptime(value, "%d.%m.%Y")
             self._value = value
-        except:
+        except (IndexError, ValueError):
             self._value = None
 
 
@@ -63,18 +65,16 @@ class Record:
     """Record class responsible for the logic of adding/removing/editing fields
     Only one name but many phone numbers"""
 
-    def __init__(self, name: str, phone: List[str] = None, birthday: str = None) -> None:
+    def __init__(self, name: str, phone: List[str] = None, birthday: Optional[str] = None) -> None:
         self.phone = []
-        if phone is None:
-            self.phone = []
-        else:
-            for one_phone in phone:
-                try:
-                    self.phone.append(Phone(one_phone))
-                except InvalidPhoneNumber:
-                    print(f"The phone number {one_phone} is invalid")
+        for one_phone in phone:
+            try:
+                self.phone.append(Phone(one_phone))
+            except InvalidPhoneNumber:
+                print(f"The phone number {one_phone} is invalid")
         self.name = Name(name)
-        self.birthday = Birthday(birthday)
+        if birthday:
+            self.birthday = Birthday(birthday)
 
     def get_phone_index(self, check_number: str) -> Optional[int]:
         """The function checks the user"s phone number. 
@@ -120,16 +120,18 @@ class Record:
 
     def __str__(self):
         result = f"Record of {self.name.value}, "
-        result += f"phones: {[one_phone.value for one_phone in self.phone]}"
-        if not isinstance(self.birthday.value, type(None)):
+        if self.phone:
+           result += f"phones: {[one_phone.value for one_phone in self.phone]}"
+        if hasattr(self, 'birthday') and not isinstance(self.birthday.value, type(None)):
             result += f", birthday: {self.birthday.value}"
             result += f", to birthday: {self.days_to_birthday()}"
         return result
 
+
 class AddressBook(UserDict):
     """Add new instance of Record class in AddressBook"""
 
-    def add_record(self, name: str, phones: List[str] = None, birthday: str = None) -> None:
+    def add_record(self, name: str, phones: List[str] = None, birthday: Optional[str] = None) -> None:
         new_record = Record(name, phones, birthday)
         self.data[new_record.name.value] = new_record
 
@@ -142,8 +144,7 @@ class AddressBook(UserDict):
             self.data.pop(value)
 
     def iterator(self, n: str = 1) -> List[str]:
-        for i in range(0, len(self), n):
-            yield [f"{name}: {rec}" for name,rec in list(self.items())[i:i+n]]
+        yield from ([f"{name}: {rec}" for name,rec in list(self.items())[i:i+n]] for i in range(0, len(self), n))
 
     def __str__(self):
         return str(self.data)
@@ -152,19 +153,19 @@ class AddressBook(UserDict):
 if __name__ == "__main__":
     # USAGE EXAMPLE:
     book = AddressBook()
-    book.add_record("seMeN", ["063 666 99 66", "048 722 22", "123 456 789 1"], "01.12.2021")
-    # book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], "01.01.1996")
-    # book.add_record("vasya", ["777 666 55545", "999 111 33323"], "23.04.1976")
-    # book.add_record("petya", ["111 222 333 444", "800 546 342"], "13.04.1996")
+    book.add_record("seMeN", ["063 666 99 66", "048 722 22", "123 456 789 1"], '01.01.2019')
+    book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], "01.01.1996")
+    book.add_record("vasya", ["777 666 55545", "999 111 33323"], "23.04.1976")
+    book.add_record("petya", ["111 222 333 444", "800 546 342"], "13.04.1996")
 
     record = book.find_record("semen")
     record.add_phone("344-55-678111")
     # #print(record)
-    # book.delete_record("seMEN")
-    #record.delete_phone("344-55-678111")
-    # record.add_phone("123-345-567")
+    #book.delete_record("seMEN")
+    record.delete_phone("344-55-678111")
+    record.add_phone("123-567-90123")
     record.edit_phone("344-55-678111", "067-666-66-66")
-    print(record)
+    #print(record)
 
-    # for rec in book.iterator(2):
-    #         print(rec)
+    for rec in book.iterator(2):
+            print(rec)
