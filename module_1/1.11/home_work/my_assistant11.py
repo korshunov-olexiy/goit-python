@@ -118,7 +118,7 @@ class Record:
             except InvalidPhoneNumber:
                 print(f"The phone number {new_phone} is invalid")
         else:
-            print(f"Old phone \"{old_phone}\" not found or new phone \"{new_phone}\" is invalid")
+            print(f"Old phone \"{old_phone}\" not found or new phone \"{new_phone}\" is present")
 
     def __str__(self):
         result = f"Record of {self.name.value}"
