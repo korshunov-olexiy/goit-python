@@ -166,7 +166,7 @@ if __name__ == "__main__":
     #book.delete_record("seMEN")
     record.delete_phone("344-55-678111")
     record.add_phone("123-567-90123")
-    record.edit_phone("344-55-678111", "067-666-66-66")
+    record.edit_phone("123-567-90123", "123 456 789 1")
     #print(record)
 
     for rec in book.iterator(2):
