@@ -48,11 +48,11 @@ class Phone(Field):
 
 class Birthday(Field):
     """Birthday class for storage birthday"s field"""
-    
+
     @property
     def value(self):
         return self._value
-    
+
     @value.setter
     def value(self, value):
         value_parts = value.split(".")
@@ -83,8 +83,7 @@ class Record:
             self.birthday = Birthday(birthday)
 
     def get_phone_index(self, check_number: str) -> Optional[int]:
-        """The function checks the user"s phone number. 
-        If the number is found, it returns its index; otherwise, None is."""
+        """The function checks the user"s phone number. If the number is found, it returns its index; otherwise, None is."""
         try:
             return [one_phone.value for one_phone in self.phone].index(check_number)
         except ValueError:
@@ -92,12 +91,12 @@ class Record:
 
     def days_to_birthday(self) -> str:
         """return number of days until the next birthday"""
-        
+
         if self.birthday.value:
             current_date = datetime.today().date()
             current_year = current_date.year
             birthday = datetime.strptime(f"{self.birthday.value[:6]}{current_year}", "%d.%m.%Y").date()
-            if  birthday < current_date:
+            if birthday < current_date:
                 birthday = birthday.replace(year=current_year+1)
             days = (birthday - current_date).days
             return f"{days} day(s)"
@@ -129,7 +128,7 @@ class Record:
     def __str__(self):
         result = f"Record of {self.name.value}"
         if self.phone:
-           result += f", phones: {[one_phone.value for one_phone in self.phone]}"
+            result += f", phones: {[one_phone.value for one_phone in self.phone]}"
         if self.birthday.value:
             result += f", birthday: {self.birthday.value}"
             result += f", to birthday: {self.days_to_birthday()}"
@@ -167,7 +166,7 @@ class AddressBook(UserDict):
         return '\n'.join(result)
 
     def iterator(self, n: str = 1) -> List[str]:
-        yield from ([f"{name}: {rec}" for name,rec in list(self.items())[i:i+n]] for i in range(0, len(self), n))
+        yield from ([f"{name}: {rec}" for name, rec in list(self.items())[i:i+n]] for i in range(0, len(self), n))
 
     def save_data(self, filename: str) -> None:
         try:
@@ -184,7 +183,6 @@ class AddressBook(UserDict):
             print(f"Loading from file \"{filename}\" is successfully")
         except (FileNotFoundError, AttributeError, MemoryError):
             print(f"An error occurred while opening the file \"{filename}\"")
-        
 
     def __str__(self):
         return str(self.data)
@@ -195,8 +193,8 @@ if __name__ == "__main__":
     cur_script = Path(sys.argv[0])
     file_bin_name = f"{cur_script.stem}.bin"
     book = AddressBook()
-    #data_file = cur_script.parent.joinpath(file_bin_name)
-    #book.load_data(data_file)
+    """data_file = cur_script.parent.joinpath(file_bin_name)
+    book.load_data(data_file)"""
     book.add_record("seMeN", ["063 666 99 66", "048 722 22", "123 456 789 1"], '01.01.2019')
     book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], "01.01.1996")
     book.add_record("vasya", ["777 666 55545", "999 111 33323"], "23.04.1976")
@@ -204,15 +202,15 @@ if __name__ == "__main__":
 
     record = book.find_record("semen")
     record.add_phone("344-55-678111")
-    # #print(record)
-    #book.delete_record("seMEN")
+    """print(record)
+    book.delete_record("seMEN")"""
     record.delete_phone("344-55-678111")
     record.add_phone("123-567-90123")
     record.edit_phone("123-567-90123", "123 456 789 1")
-    #print(record)
+    """print(record)
 
-    # for rec in book.iterator(2):
-    #         print(rec)
+    for rec in book.iterator(2):
+            print(rec)
 
-    # book.save_data(data_file)
-    print( book.find_info("063") )
+    book.save_data(data_file)"""
+    print(book.find_info("063"))
