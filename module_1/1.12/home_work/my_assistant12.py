@@ -97,7 +97,7 @@ class Record:
             current_year = current_date.year
             birthday = datetime.strptime(f"{self.birthday.value[:6]}{current_year}", "%d.%m.%Y").date()
             if birthday < current_date:
-                birthday = birthday.replace(year=current_year+1)
+                birthday = birthday.replace(year=current_year + 1)
             days = (birthday - current_date).days
             return f"{days} day(s)"
         return ""
@@ -166,7 +166,7 @@ class AddressBook(UserDict):
         return '\n'.join(result)
 
     def iterator(self, n: str = 1) -> List[str]:
-        yield from ([f"{name}: {rec}" for name, rec in list(self.items())[i:i+n]] for i in range(0, len(self), n))
+        yield from ([f"{name}: {rec}" for name, rec in list(self.items())[i: i + n]] for i in range(0, len(self), n))
 
     def save_data(self, filename: str) -> None:
         try:
