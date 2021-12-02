@@ -21,9 +21,10 @@ def is_valid_password(password):
 
 
 def get_password():
-    for _ in range(100):
+    pwd = get_random_password()
+    while not is_valid_password(pwd):
         pwd = get_random_password()
-        if is_valid_password(pwd):
-            return pwd
+    return pwd
+
 
 print( get_password() )

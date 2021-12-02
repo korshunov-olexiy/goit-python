@@ -9,7 +9,7 @@
 def formatted_numbers():
     num_list = list(range(16))
     for n in num_list:
-        num_list[n] = "|{0: <#10d}|{0: ^10x}|{0: >10b}|".format(n)
+        num_list[n] = f"|{n: <#10d}|{n: ^10x}|{n: >10b}|"
     num_list.insert(0, f"|{'decimal':^10}|{'hex':^10}|{'binary':^10}|")
     return num_list
 

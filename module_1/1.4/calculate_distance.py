@@ -9,8 +9,11 @@ points = {
 
 
 def calculate_distance(coordinates):
-    dist = [tuple(sorted((c, coordinates[idx+1]))) for idx, c in enumerate(coordinates[:-1])]
-    return sum([points.get(d) for d in dist if d in points])
+    result = 0
+    for coord in zip(coordinates, coordinates[1:]):
+        coord = *sorted(coord),
+        result += points[coord]
+    return result
 
 
 print( calculate_distance([0, 1, 3, 2, 0, 2]) )

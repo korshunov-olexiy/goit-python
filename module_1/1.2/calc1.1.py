@@ -37,7 +37,7 @@ while True:
     inp = input("")
     if wait_for_number:
         try:
-            if operator is None:
+            if not operator:
                 result = float(inp)
                 wait_for_number = not wait_for_number
             else:
