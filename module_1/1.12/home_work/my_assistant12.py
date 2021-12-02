@@ -155,7 +155,9 @@ class AddressBook(UserDict):
         result = [f"Search results for string \"{search_info}\":"]
         flag_found = False
         for name, rec in self.data.items():
-            if search_info in [one_phone.value for one_phone in rec.phone] or \
+            phones = [one_phone.value for one_phone in rec.phone]
+            if search_info in phones or \
+                    len(list(filter(lambda one_phone: one_phone.startswith(search_info), phones))) > 0 or \
                     search_info.capitalize() in name or \
                     search_info in rec.birthday.value:
                 result.append(f"{name}, {rec}")
@@ -192,9 +194,9 @@ if __name__ == "__main__":
     # USAGE EXAMPLE:
     cur_script = Path(sys.argv[0])
     file_bin_name = f"{cur_script.stem}.bin"
-    data_file = cur_script.parent.joinpath(file_bin_name)
     book = AddressBook()
-    book.load_data(data_file)
+    #data_file = cur_script.parent.joinpath(file_bin_name)
+    #book.load_data(data_file)
     book.add_record("seMeN", ["063 666 99 66", "048 722 22", "123 456 789 1"], '01.01.2019')
     book.add_record("grySha", ["063 666 66 66", "048 222 22 22"], "01.01.1996")
     book.add_record("vasya", ["777 666 55545", "999 111 33323"], "23.04.1976")
@@ -213,4 +215,4 @@ if __name__ == "__main__":
     #         print(rec)
 
     # book.save_data(data_file)
-    print( book.find_info("01") )
+    print( book.find_info("123") )
