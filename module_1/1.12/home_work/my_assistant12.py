@@ -157,7 +157,7 @@ class AddressBook(UserDict):
         for name, rec in self.data.items():
             phones = [one_phone.value for one_phone in rec.phone]
             if search_info in phones or \
-                    len(list(filter(lambda one_phone: one_phone.startswith(search_info), phones))) > 0 or \
+                    len(list(filter(lambda one_phone: one_phone.startswith(search_info), phones))) or \
                     search_info.capitalize() in name or \
                     search_info in rec.birthday.value:
                 result.append(f"{name}, {rec}")
@@ -215,4 +215,4 @@ if __name__ == "__main__":
     #         print(rec)
 
     # book.save_data(data_file)
-    print( book.find_info("123") )
+    print( book.find_info("063") )
