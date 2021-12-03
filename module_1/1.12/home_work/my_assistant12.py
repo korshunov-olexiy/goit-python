@@ -87,10 +87,9 @@ class Record:
 
         if self.birthday.value:
             current_date = datetime.today().date()
-            current_year = current_date.year
-            birthday = datetime.strptime(f"{self.birthday.value[:6]}{current_year}", "%d.%m.%Y").date()
+            birthday = datetime.strptime(self.birthday.value, "%d.%m.%Y").replace(year=current_date.year).date()
             if birthday < current_date:
-                birthday = birthday.replace(year=current_year + 1)
+                birthday = birthday.replace(year=birthday.year + 1)
             days = (birthday - current_date).days
             return f"{days} day(s)"
         return ""
