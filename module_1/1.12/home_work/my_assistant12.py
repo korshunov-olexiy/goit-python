@@ -1,5 +1,4 @@
 import pickle
-import sys
 from collections import UserDict
 from datetime import datetime
 from pathlib import Path
@@ -55,16 +54,10 @@ class Birthday(Field):
 
     @value.setter
     def value(self, value):
-        value_parts = value.split(".")
-        flag_err = False
         try:
-            value = f"{int(value_parts[0]):02d}.{int(value_parts[1]):02d}.{int(value_parts[2])}"
-        except (IndexError, ValueError):
-            flag_err = True
+            self._value = datetime.strptime(value, "%d.%m.%Y").strftime("%d.%m.%Y")
+        except ValueError:
             self._value = ''
-        if not flag_err:
-            datetime.strptime(value, "%d.%m.%Y")
-            self._value = value
 
 
 class Record:
@@ -190,8 +183,8 @@ class AddressBook(UserDict):
 
 if __name__ == "__main__":
     # USAGE EXAMPLE:
-    cur_script = Path(sys.argv[0])
-    file_bin_name = f"{cur_script.stem}.bin"
+    current_script_path = Path(__file__).absolute()
+    file_bin_name = f"{current_script_path.stem}.bin"
     book = AddressBook()
     """data_file = cur_script.parent.joinpath(file_bin_name)
     book.load_data(data_file)"""
