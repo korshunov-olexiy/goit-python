@@ -1,12 +1,13 @@
 # --*-- coding: utf-8 --*--
+from typing import Callable
 
 
-def input_error(func):
+def input_error(func: Callable[[str]]) -> Callable[[str]]:
     """Decorator for error handling.
-    
+
     Args:
     func - Decorated function."""
-    def check_error(input_str):
+    def check_error(input_str: str) -> str:
         # If we perform the functions cmd_help, cmd_hello, cmd_show_all,
         # they do not require parameters.
         if func.__name__ in ['cmd_help', 'cmd_hello', 'cmd_show_all']:
@@ -23,21 +24,21 @@ def input_error(func):
 
 
 @input_error
-def cmd_help():
+def cmd_help() -> str:
     """Gives a list of commands that the bot understands."""
     return f"Sorry, the bot understands the following commands: {', '.join(commands_list[:-1])} and {commands_list[-1]}"
 
 
 @input_error
-def cmd_hello():
+def cmd_hello() -> str:
     """Gives a welcome message to the console."""
     return "How can I help you?"
 
 
 @input_error
-def cmd_add(input_str):
+def cmd_add(input_str: str) -> str:
     """Save the user name and phone number entered in address_book.
-    
+
     Args:
     input_str - Input string from a user without a passed command."""
     name, phone = input_str.split()
@@ -46,9 +47,9 @@ def cmd_add(input_str):
 
 
 @input_error
-def cmd_change(input_str):
+def cmd_change(input_str: str) -> str:
     """Change the transmitted phone number of the specified user.
-    
+
     Args:
     input_str - Input string from a user without a passed command."""
     name, phone = input_str.split()
@@ -57,7 +58,7 @@ def cmd_change(input_str):
 
 
 @input_error
-def cmd_phone(input_str):
+def cmd_phone(input_str: str) -> str:
     """Find a user by name in the database.
 
     Args:
@@ -71,13 +72,13 @@ def cmd_phone(input_str):
 
 
 @input_error
-def cmd_show_all():
+def cmd_show_all() -> str:
     """Show all records from the database."""
     return "\n".join(f"{k}: {v}" for k, v in address_book.items())
 
 
 @input_error
-def get_input_command(input_str):
+def get_input_command(input_str: str) -> str:
     """Attempts to find a command in the passed line
 
     Args:
@@ -103,6 +104,5 @@ if __name__ == "__main__":
     while input_msg not in ['good bye', 'close', 'exit']:
         get_input_command(input_msg)
         input_msg = input("Please enter the command: ").lower().strip()
-    
-    print("Have a nice day... Good bye!")
 
+    print("Have a nice day... Good bye!")

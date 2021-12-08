@@ -3,7 +3,7 @@
 
 def input_error(func):
     """Decorator for error handling.
-    
+
     Args:
     func - Decorated function."""
     def check_error(input_str):
@@ -37,7 +37,7 @@ def cmd_hello():
 @input_error
 def cmd_add(input_str):
     """Save the user name and phone number entered in address_book.
-    
+
     Args:
     input_str - Input string from a user without a passed command."""
     name, phone = input_str.split()
@@ -48,7 +48,7 @@ def cmd_add(input_str):
 @input_error
 def cmd_change(input_str):
     """Change the transmitted phone number of the specified user.
-    
+
     Args:
     input_str - Input string from a user without a passed command."""
     name, phone = input_str.split()
@@ -103,6 +103,5 @@ if __name__ == "__main__":
     while input_msg not in ['good bye', 'close', 'exit']:
         get_input_command(input_msg)
         input_msg = input("Please enter the command: ").lower().strip()
-    
-    print("Have a nice day... Good bye!")
 
+    print("Have a nice day... Good bye!")
