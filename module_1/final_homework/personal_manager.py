@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from difflib import get_close_matches
 from pathlib import Path
 from typing import Dict, List, Optional
+import codecs
 
 from pick import pick
 
@@ -92,12 +93,20 @@ class Tag(Field):
 class Note(Field):
     """Note class for storage note's field"""
     def __init__(self, value, tags: Optional[List[str]] = None):
-        super().__init__(value)
         self._created_at = datetime.today()
         self.tag = []
         if tags:
             for one_tag in tags:
                 self.tag.append(Tag(one_tag))
+        super().__init__(value)
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        self._value = value
 
     def __str__(self) -> str:
         if self.tag:
@@ -234,9 +243,9 @@ class AddressBook(UserDict):
             """If one of the parameters specified in the array is requested, 
             the input string must be split by the ";" and convert to array."""
             if obj_name in ["phones", "addresses", "emails", "notes", "tags"]:
-                params[obj_name] = input(f"{msg}{obj_name}. Separator symbol for {obj_name} is \";\": ").split(";")
+                params[obj_name] = input(f"{msg}{obj_name}. Separator symbol for {obj_name} is \";\":\n").split(";")
             else:
-                params[obj_name] = input(f"{msg}{obj_name}: ")
+                params[obj_name] = input(f"{msg}{obj_name}:\n")
         return params.values()
 
     def add_record(self) -> None:
@@ -319,21 +328,24 @@ class AddressBook(UserDict):
                 record.note[note_index].tag.append(Tag(new_tag))
 
     def edit_record(self) -> None:
-        option = pick([name for name in self.data], \
-            "Select the name of the user whose data you want to edit.", indicator="=>")[0]
-        contact = self.data.get(option)
-        if contact:
-            function_names = [self._edit_name, self._edit_phone, self._edit_birthday, \
-                self._edit_address, self._edit_email, self.edit_note, self._edit_tag]
-            description_function = ["Edit user name", "Edit phone", \
-                "Edit birthday", "Edit addresses", "Edit emails", \
-                "Edit notes", "Edit tags", "FINISH EDITING"]
-            base_msg = f"Select what information for the user {contact.name.value} you would like to change.\n{'='*60}"
-            option, index = pick(description_function, base_msg, indicator="=>")
-            while index != len(description_function)-1:
-                print(f"You have selected an {option} option.\nLet's continue.\n{'='*60}")
-                function_names[index](contact)
+        if self.data:
+            option = pick([name for name in self.data], \
+                "Select the name of the user whose data you want to edit.", indicator="=>")[0]
+            contact = self.data.get(option)
+            if contact:
+                function_names = [self._edit_name, self._edit_phone, self._edit_birthday, \
+                    self._edit_address, self._edit_email, self.edit_note, self._edit_tag]
+                description_function = ["Edit user name", "Edit phone", \
+                    "Edit birthday", "Edit addresses", "Edit emails", \
+                    "Edit notes", "Edit tags", "FINISH EDITING"]
+                base_msg = f"Select what information for the user {contact.name.value} you would like to change.\n{'='*60}"
                 option, index = pick(description_function, base_msg, indicator="=>")
+                while index != len(description_function)-1:
+                    print(f"You have selected an {option} option.\nLet's continue.\n{'='*60}")
+                    function_names[index](contact)
+                    option, index = pick(description_function, base_msg, indicator="=>")
+        else:
+            print(f"Your address book does not contain any contacts.")
 
     def add_tags(self) -> None:
         name_contact = ''.join(self.__get_params({"name of contact": ""})).capitalize()
@@ -345,9 +357,9 @@ class AddressBook(UserDict):
             end_msg = f"Separator character for tags is \";\": "
             if tags:
                 middle_msg = f"This note already contains the following tags: {[tag.value for tag in tags]}. "
-                tags = input(f"{base_msg}{middle_msg}{end_msg}").split(";")
+                tags = input(f"{base_msg}{middle_msg}{end_msg}\n").split(";")
             else:
-                tags = input(f"{base_msg}{end_msg}").split(";")
+                tags = input(f"{base_msg}{end_msg}\n").split(";")
             for tag in tags:
                 contact.note[note_index].tag.append(Tag(tag))
         else:
@@ -362,29 +374,29 @@ class AddressBook(UserDict):
             print(f"Contact {name_contact} not found!")
 
     def holidays_period(self) -> None:
-        result = []
-        try:
-            period = int(''.join(self.__get_params({"period": ""})))
-        except ValueError:
-            print('Only number allowed!')
+        today = datetime.today()
+        holidays_dates = {f"{datetime.strptime(rec.birthday.value[:6] + str(today.year), '%d.%m.%Y').date()}": rec for rec in self.data.values()}
+        if holidays_dates:
+            try:
+                period = int(''.join(self.__get_params({"period": ""})))
+            except ValueError:
+                print(f"The period is not correct. Please enter a period from 0 to 365 days.")
+                return None
+            not_found_period = True
+            period = 365 if period > 365 else period
+            print(f"Search results for birthdays for a period of \"{period}\" days:\n{'-'*60}")
+            for count_days in range(period+1):
+                today_period = (today + timedelta(days=count_days)).date()
+                for rec in self.data.values():
+                    holiday_date = datetime.strptime(rec.birthday.value[:6] + str(today_period.year), '%d.%m.%Y').date()
+                    if today_period == holiday_date:
+                        print(rec)
+                        not_found_period = False
+                        break
+            if not_found_period:
+                print("No contacts with birthdays for this period.")
         else:
-            if period > 365:
-                period = 365
-            day_today = datetime.now()
-            day_today_year = day_today.year
-            end_period = day_today + timedelta(days=period+1)
-            print(f"Found birthdays for {period} days period: ")
-            for name, rec in self.data.items():
-                date = datetime.strptime(rec.birthday.value, '%d.%m.%Y').replace(year=end_period.year)
-                if day_today_year < end_period.year:
-                    if day_today <= date.replace(year=day_today_year) or date <= end_period:
-                        result.append(f"{name}: {rec}")
-                else:
-                    if day_today <= date.replace(year=day_today_year) <= end_period:
-                        result.append(f"{name}: {rec}")
-            if not result:
-                result.append(f"No contacts with birthdays for this period.")
-            print('\n'.join(result))
+            print("Address book users do not have birth dates yet.")
 
     def find_contact(self) -> None:
         search_info = ''.join(self.__get_params({"search info": ""}))
@@ -549,9 +561,8 @@ if __name__ == "__main__":
     """get data file from current directory"""
     book.load_data(data_file)
     command = CommandHandler()
-    input_msg = input("Hello, please enter the command: ").lower().strip()
+    input_msg = input("Hello, please enter the command:\n").lower().strip()
     while command(input_msg):
-        input_msg = input("Please enter the command: ").lower().strip()
+        input_msg = input("Please enter the command:\n").lower().strip()
     book.save_data(data_file)
     print("Have a nice day... Good bye!")
-
