@@ -56,7 +56,7 @@ def move_archives(root_dir, file_name):
 
 def move_media(root_dir, file_name):
     """Transferring the file using the 'media' tag to the root_dir directory.
-    
+
     Key arguments:
     root_dir is the directory into which the archive will be unpacked.
     file_name is the name of the source file.

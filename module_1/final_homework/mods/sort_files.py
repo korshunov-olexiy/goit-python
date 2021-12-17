@@ -18,6 +18,7 @@ def folder_path(path):
 def rename_exists_files(name):
     return name + '_edit_' + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S.%f')
 
+
 def log():
     final_dict = {}
     for i in file_log:
@@ -28,11 +29,13 @@ def log():
         print(', '.join(v))
     print(f"Sorting in the {base_path} catalog has been completed successfully.")
 
+
 def ignore_list():
     ignore = []
     for k in CATEGORIES.keys():
         ignore.append(k)
     return ignore
+
 
 def remove_folders(path):
     folders = list(os.walk(path))
@@ -40,19 +43,21 @@ def remove_folders(path):
         if len(os.listdir(path)) == 0:
             os.rmdir(path)
 
+
 def move_files(file_path):
-    dirname, fname = os.path.split(file_path)
+    fname = os.path.split(file_path)[1]
     extension = os.path.splitext(fname)[1].upper().replace('.', '')
-    for k, v in CATEGORIES.items():
-        if extension in v:
-            os.makedirs(base_path + '/' + k, exist_ok=True)
-            if os.path.exists(os.path.join(base_path + '/' + k, fname)):
+    for key, value in CATEGORIES.items():
+        if extension in value:
+            os.makedirs(base_path + '/' + key, exist_ok=True)
+            if os.path.exists(os.path.join(base_path + '/' + key, fname)):
                 new_f_renamed = rename_exists_files(os.path.splitext(fname)[0]) + os.path.splitext(fname)[1]
-                shutil.move(os.path.join(file_path), os.path.join(base_path + '/' + k, new_f_renamed))
-                file_log.append({k: new_f_renamed})
+                shutil.move(os.path.join(file_path), os.path.join(base_path + '/' + key, new_f_renamed))
+                file_log.append({key: new_f_renamed})
             else:
-                shutil.move(os.path.join(file_path), os.path.join(base_path + '/' + k, fname))
-                file_log.append({k: fname})
+                shutil.move(os.path.join(file_path), os.path.join(base_path + '/' + key, fname))
+                file_log.append({key: fname})
+
 
 def sort_files(path):
     subfolders = []

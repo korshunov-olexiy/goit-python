@@ -1,153 +1,14 @@
 import pickle
-import re
 from collections import UserDict
 from datetime import datetime, timedelta
 from difflib import get_close_matches
 from pathlib import Path
 from typing import Dict, List, Optional
-import codecs
 
 from pick import pick
 
-from sort_files import sort_files_entry_point
-
-
-class InvalidPhoneNumber(Exception):
-    """Exception in case of incorrect phone number input"""
-
-
-class InvalidEmailAddress(Exception):
-    """Exception in case of incorrect E-mail input"""
-
-
-class Field:
-    """Field class is a parent for all fields in Record class"""
-    def __init__(self, value):
-        self.value = value
-
-
-class Name(Field):
-    """Name class for storage name's field"""
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        self._value = value.capitalize()
-
-
-class Phone(Field):
-    """Phone class for storage phone's field"""
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        if len(value) == 13:
-            self._value = value
-        else:
-            raise InvalidPhoneNumber
-
-    def __str__(self) -> str:
-        return self.value
-
-
-class Email(Field):
-    """Email class for storage email's field"""
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        if self.__check_email(value):
-            self._value = value
-        else:
-            raise InvalidEmailAddress
-
-    def __check_email(self, email: str) -> bool:
-        matched = re.match(r"[a-z][a-z|\d._]{1,}@[a-z]{1,}\.\w{2,}", email, re.IGNORECASE)
-        return bool(matched)
-
-    def __str__(self) -> str:
-        return self.value
-
-
-class Tag(Field):
-    """Tag class for storage tag's field"""
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        self._value = value
-
-
-class Note(Field):
-    """Note class for storage note's field"""
-    def __init__(self, value, tags: Optional[List[str]] = None):
-        self._created_at = datetime.today()
-        self.tag = []
-        if tags:
-            for one_tag in tags:
-                self.tag.append(Tag(one_tag))
-        super().__init__(value)
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        self._value = value
-
-    def __str__(self) -> str:
-        if self.tag:
-            return ", ".join([f"created at {str(self._created_at)}:", \
-                self.value, f"tags: {', '.join([tag.value for tag in self.tag])}"])
-        else:
-            return f"created at {str(self._created_at)}: {self.value}"
-
-
-class Address(Field):
-    """Address class for storage address's field"""
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        self._value = value
-
-    def __str__(self) -> str:
-        return self.value
-
-
-class Birthday(Field):
-    """Birthday class for storage birthday's field"""
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        try:
-            self._value = datetime.strptime(value, "%d.%m.%Y").strftime("%d.%m.%Y")
-        except ValueError:
-            print(f" \"{value}\" --> Incorrect input format. Record can’t be made.")
-            self._value = ''
-
-    def __str__(self) -> str:
-        return self.value
+from mods.sort_files import sort_files_entry_point
+from mods.base_classes import *
 
 
 class Record:
@@ -275,9 +136,14 @@ class AddressBook(UserDict):
             print("You have not provided a new username.")
 
     def _edit_phone(self, record: Record) -> None:
-        option, index = pick([phone.value for phone in record.phone], \
-            "Select the phone number you want to edit.", indicator="=>")
-        print(f"You have selected: {option}")
+        phones = [phone.value for phone in record.phone]
+        if phones:
+            option, index = pick(phones, \
+                "Select the phone number you want to edit.", indicator="=>")
+            print(f"You have selected: {option}")
+        else:
+            print("Users in your address book do not have phone numbers.")
+            return None
         new_number = ''.join(self.__get_params({"new phone number": ""})).strip()
         if new_number:
             try:
@@ -487,7 +353,7 @@ class AddressBook(UserDict):
     def find_sort_note(self) -> None:
         found_tag = False
         tag_name = "".join(self.__get_params({"tag name": ""}))
-        for name, rec in self.data.items():
+        for rec in self.data.values():
             filtered_notes = []
             for note in rec.note:
                 if tag_name in [tag.value for tag in note.tag]:
@@ -529,7 +395,7 @@ class CommandHandler:
                 commands_func[command[0]]()
             elif len(command) > 1:
                 command = pick(command, TITLE, indicator="=>")[0]
-                print(f"You have selected the {command} command. Let's continue.")
+                print(f"You have selected the {command} command")
                 commands_func[command]()
         else:
             print("Sorry, I could not recognize this command!")
