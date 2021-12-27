@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>Python</ID>
+  <OriginalElement>#D:/GOIT/DZ/TechSkills/goit-python/module_1/final_homework/personal_manager.py</OriginalElement>
+  <nodes>
+    <node x="0.0" y="1090.0">module_1.final_homework.mods.base_classes.Email</node>
+    <node x="394.0000000000002" y="1101.0">module_1.final_homework.mods.base_classes.Phone</node>
+    <node x="792.0000000000002" y="1101.0">module_1.final_homework.mods.base_classes.Birthday</node>
+    <node x="2082.5" y="697.0">module_1.final_homework.personal_manager.Record</node>
+    <node x="2401.0" y="1112.0">module_1.final_homework.mods.base_classes.Tag</node>
+    <node x="1614.0000000000002" y="1112.0">module_1.final_homework.mods.base_classes.Name</node>
+    <node x="0.0" y="1607.0">module_1.final_homework.personal_manager.AddressBook</node>
+    <node x="1603.5000000000002" y="829.5">module_1.final_homework.personal_manager.CommandHandler</node>
+    <node x="8.0" y="1302.0">collections.UserDict</node>
+    <node x="469.0" y="1302.0">typing.Mapping</node>
+    <node x="783.0" y="1302.0">typing.Collection</node>
+    <node x="1214.5000000000002" y="818.0">module_1.final_homework.mods.base_classes.Field</node>
+    <node x="1204.0000000000002" y="1101.0">module_1.final_homework.mods.base_classes.Address</node>
+    <node x="1761.5" y="0.0">typing.Hashable</node>
+    <node x="2011.0000000000002" y="1068.0">module_1.final_homework.mods.base_classes.Note</node>
+    <node x="1717.5" y="106.0">object</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="module_1.final_homework.mods.base_classes.Email" target="module_1.final_homework.mods.base_classes.Field" relationship="REALIZATION">
+      <point x="0.0" y="-72.5" />
+      <point x="187.0" y="1043.0" />
+      <point x="1399.0" y="1043.0" />
+      <point x="-2.2737367544323206E-13" y="39.5" />
+    </edge>
+    <edge source="module_1.final_homework.mods.base_classes.Note" target="module_1.final_homework.mods.base_classes.Field" relationship="REALIZATION">
+      <point x="0.0" y="-94.5" />
+      <point x="2196.0" y="1043.0" />
+      <point x="1399.0" y="1043.0" />
+      <point x="-2.2737367544323206E-13" y="39.5" />
+    </edge>
+    <edge source="module_1.final_homework.mods.base_classes.Tag" target="module_1.final_homework.mods.base_classes.Field" relationship="REALIZATION">
+      <point x="0.0" y="-50.5" />
+      <point x="2582.0" y="1043.0" />
+      <point x="1399.0" y="1043.0" />
+      <point x="-2.2737367544323206E-13" y="39.5" />
+    </edge>
+    <edge source="module_1.final_homework.personal_manager.AddressBook" target="collections.UserDict" relationship="REALIZATION">
+      <point x="0.0" y="-314.5" />
+      <point x="0.0" y="127.5" />
+    </edge>
+    <edge source="module_1.final_homework.mods.base_classes.Field" target="object" relationship="REALIZATION">
+      <point x="-2.2737367544323206E-13" y="-39.5" />
+      <point x="1399.0" y="743.0" />
+      <point x="1833.0" y="743.0" />
+      <point x="0.0" y="270.5" />
+    </edge>
+    <edge source="module_1.final_homework.personal_manager.Record" target="object" relationship="REALIZATION">
+      <point x="-545.5" y="-134.0" />
+      <point x="1848.0" y="723.5" />
+      <point x="1848.0" y="743.0" />
+      <point x="1833.0" y="743.0" />
+      <point x="0.0" y="270.5" />
+    </edge>
+    <edge source="object" target="typing.Hashable" relationship="INTERFACE">
+      <point x="0.0" y="-270.5" />
+      <point x="0.0" y="28.0" />
+    </edge>
+    <edge source="module_1.final_homework.mods.base_classes.Phone" target="module_1.final_homework.mods.base_classes.Field" relationship="REALIZATION">
+      <point x="-2.2737367544323206E-13" y="-61.5" />
+      <point x="583.0" y="1081.0" />
+      <point x="1192.5" y="1081.0" />
+      <point x="1192.5" y="1043.0" />
+      <point x="1399.0" y="1043.0" />
+      <point x="-2.2737367544323206E-13" y="39.5" />
+    </edge>
+    <edge source="module_1.final_homework.mods.base_classes.Name" target="module_1.final_homework.mods.base_classes.Field" relationship="REALIZATION">
+      <point x="-2.2737367544323206E-13" y="-50.5" />
+      <point x="1802.5" y="1081.0" />
+      <point x="1192.5" y="1081.0" />
+      <point x="1192.5" y="1043.0" />
+      <point x="1399.0" y="1043.0" />
+      <point x="-2.2737367544323206E-13" y="39.5" />
+    </edge>
+    <edge source="module_1.final_homework.mods.base_classes.Birthday" target="module_1.final_homework.mods.base_classes.Field" relationship="REALIZATION">
+      <point x="-2.2737367544323206E-13" y="-61.5" />
+      <point x="988.0" y="1081.0" />
+      <point x="1192.5" y="1081.0" />
+      <point x="1192.5" y="1043.0" />
+      <point x="1399.0" y="1043.0" />
+      <point x="-2.2737367544323206E-13" y="39.5" />
+    </edge>
+    <edge source="module_1.final_homework.mods.base_classes.Address" target="module_1.final_homework.mods.base_classes.Field" relationship="REALIZATION">
+      <point x="-2.2737367544323206E-13" y="-61.5" />
+      <point x="1399.0" y="1081.0" />
+      <point x="1192.5" y="1081.0" />
+      <point x="1192.5" y="1043.0" />
+      <point x="1399.0" y="1043.0" />
+      <point x="-2.2737367544323206E-13" y="39.5" />
+    </edge>
+    <edge source="module_1.final_homework.personal_manager.CommandHandler" target="object" relationship="REALIZATION">
+      <point x="-2.2737367544323206E-13" y="-28.0" />
+      <point x="0.0" y="270.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="0.3967198581560284" showDependencies="false" x="1587.0" y="1137.0" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Inner Classes</Category>
+    <Category>Methods</Category>
+  </Categories>
+</Diagram>
+
