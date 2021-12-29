@@ -7,9 +7,9 @@ from typing import Dict, List, Optional
 
 from pick import pick
 
-from mods.sort_files import sort_files_entry_point
-from mods.base_classes import *
-
+"""Be sure to specify the directory!"""
+from personal_manager.sort_files import sort_files_entry_point
+from personal_manager.base_classes import *
 
 class Record:
     """Record class responsible for the logic of adding/removing/editing fields
@@ -401,7 +401,6 @@ class CommandHandler:
             print("Sorry, I could not recognize this command!")
         return True
 
-
 book = AddressBook()
 TITLE = "We have chosen several options from the command you provided.\nPlease choose the one that you need."
 action_commands = ["help", "add_contact", "edit_record", "holidays_period", "print_notes", "add_note", \
@@ -420,10 +419,11 @@ functions_list = [book.show_commands, book.add_record, book.edit_record, book.ho
 commands_func = {cmd: func for cmd, func in zip(action_commands, functions_list)}
 commands_desc = [f"{cmd:<15} -  {desc}" for cmd, desc in zip(action_commands + [', '.join(exit_commands)], description_commands)]
 
-if __name__ == "__main__":
-    current_script_path = Path(__file__).absolute()
-    file_bin_name = f"{current_script_path.stem}.bin"
-    data_file = current_script_path.parent.joinpath(file_bin_name)
+current_script_path = Path(__file__).absolute()
+file_bin_name = f"{current_script_path.stem}.bin"
+data_file = current_script_path.parent.joinpath(file_bin_name)
+
+def main():
     """get data file from current directory"""
     book.load_data(data_file)
     command = CommandHandler()
@@ -432,3 +432,6 @@ if __name__ == "__main__":
         input_msg = input("Please enter the command:\n").lower().strip()
     book.save_data(data_file)
     print("Have a nice day... Good bye!")
+
+if __name__ == "__main__":
+    main()
