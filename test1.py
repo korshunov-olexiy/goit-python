@@ -1,12 +1,20 @@
-action_commands = ['help', 'hello', 'add', 'change', 'phone', 'show all']
-exit_commands = ['good bye', 'close', 'exit']
+from typing import Any
 
-action_commands = set(action_commands)
-exit_commands = set(exit_commands)
-user_commands = set(['good bye', 'help', 'add'])
 
-#print(exit_commands.isdisjoint(user_commands))
+def decorator_class(cls):
+    class NewClass:
+        def __init__(self, *args, **kwargs) -> None:
+            self._obj = cls(*args, **kwargs)
+        def __getattribute__(self, __name: str) -> Any:
+            attr = self._obj.__getattribute__(self, __name)
+            print(attr)
+            #if isinstance(__name, type(__name.__init__)):
+            #    print("callable")
+    return NewClass
 
-print(bool(user_commands.difference(exit_commands)) & bool(user_commands.difference(action_commands)))
 
-print([1] == [])
+@decorator_class
+def func(a):
+    print(f"test {a}")
+
+f = func(3)

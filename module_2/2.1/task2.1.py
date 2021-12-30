@@ -19,31 +19,33 @@ class SerializationInterface(metaclass=ABCMeta):
     def load_data(self, filename: str) -> UserDict:
         """load_data abstract method """
 
-class SaveLoadData(SerializationInterface):
+
+class SaveLoadBin(SerializationInterface):
 
     def save_data(self, data: UserDict, filename: str) -> None:
-        file_ext = filename.split(".")[1].lower()
-        if file_ext == "bin":
-            with open(filename, "wb") as fn:
-                pickle.dump(data, fn)
-        elif file_ext == "json":
-            with open(filename, "w") as fn:
-                json.dump(data, fn)
+        with open(filename, "wb") as fn:
+            pickle.dump(data, fn)
 
     def load_data(self, filename: str) -> UserDict:
-        file_ext = filename.split(".")[1].lower()
-        if file_ext == "bin":
-            with open(filename, 'rb') as fn:
-                return pickle.load(fn)
-        elif file_ext == "json":
-            with open(filename, "r") as fn:
-                return json.load(fn)
+        with open(filename, 'rb') as fn:
+            return pickle.load(fn)
+
+class SaveLoadJson(SerializationInterface):
+
+    def save_data(self, data: UserDict, filename: str) -> None:
+        with open(filename, "w") as fn:
+            json.dump(data, fn)
+
+    def load_data(self, filename: str) -> UserDict:
+        with open(filename, "r") as fn:
+            return json.load(fn)
+
 
 # example of usage
-saveloaddata = SaveLoadData()
+saveload_bin = SaveLoadBin()
 my_data = {"param1": 340, "param2": 341}
-saveloaddata.save_data(my_data, "my_data.json")
-my_data = saveloaddata.load_data("my_data.json")
+saveload_bin.save_data(my_data, "my_data.bin")
+my_data = saveload_bin.load_data("my_data.bin")
 print(my_data)
 
 
