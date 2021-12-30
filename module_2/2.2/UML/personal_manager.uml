@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>Python</ID>
+  <OriginalElement>#D:/myCode/goit-python/module_2/2.2/src/personal_manager/personal_manager.py</OriginalElement>
+  <nodes>
+    <node x="1439.7920604914934" y="581.007561436673">module_1.final_homework.src.personal_manager.base_classes.Tag</node>
+    <node x="817.7920604914934" y="190.00567107750476">module_1.final_homework.src.personal_manager.base_classes.Field</node>
+    <node x="1410.7920604914934" y="261.1587901701324">module_1.final_homework.src.personal_manager.base_classes.Birthday</node>
+    <node x="774.2403468862476" y="658.8695652173913">module_1.final_homework.src.personal_manager.base_classes.Note</node>
+    <node x="1423.7920604914934" y="721.0">module_1.final_homework.src.personal_manager.base_classes.Phone</node>
+    <node x="402.03213610586" y="884.1606805293002">module_1.final_homework.src.personal_manager.base_classes.InvalidPhoneNumber</node>
+    <node x="1411.7920604914934" y="421.0831758034027">module_1.final_homework.src.personal_manager.base_classes.Address</node>
+    <node x="1027.03213610586" y="884.1606805293002">module_1.final_homework.src.personal_manager.base_classes.InvalidEmailAddress</node>
+    <node x="770.2403468862474" y="341.01512287334606">module_1.final_homework.src.personal_manager.base_classes.Name</node>
+    <node x="772.2403468862475" y="477.5784499054823">module_1.final_homework.src.personal_manager.base_classes.Email</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="module_1.final_homework.src.personal_manager.base_classes.Email" target="module_1.final_homework.src.personal_manager.base_classes.Field" relationship="REALIZATION">
+      <point x="239.99965311375252" y="-4.4990548235546157E-4" />
+      <point x="1289.0" y="549.078" />
+      <point x="1289.0" y="525.0" />
+      <point x="1352.0" y="525.0" />
+      <point x="1352.0" y="228.506" />
+      <point x="237.4999395085065" y="3.2892249524252293E-4" />
+    </edge>
+    <edge source="module_1.final_homework.src.personal_manager.base_classes.Name" target="module_1.final_homework.src.personal_manager.base_classes.Field" relationship="REALIZATION">
+      <point x="241.49965311375263" y="-1.2287334607208322E-4" />
+      <point x="1289.0" y="390.515" />
+      <point x="1289.0" y="525.0" />
+      <point x="1352.0" y="525.0" />
+      <point x="1352.0" y="228.506" />
+      <point x="237.4999395085065" y="3.2892249524252293E-4" />
+    </edge>
+    <edge source="module_1.final_homework.src.personal_manager.base_classes.Tag" target="module_1.final_homework.src.personal_manager.base_classes.Field" relationship="REALIZATION">
+      <point x="-234.0000604914935" y="4.385633270658218E-4" />
+      <point x="1397.0" y="630.508" />
+      <point x="1397.0" y="525.0" />
+      <point x="1352.0" y="525.0" />
+      <point x="1352.0" y="228.506" />
+      <point x="237.4999395085065" y="3.2892249524252293E-4" />
+    </edge>
+    <edge source="module_1.final_homework.src.personal_manager.base_classes.Address" target="module_1.final_homework.src.personal_manager.base_classes.Field" relationship="REALIZATION">
+      <point x="-248.0000604914935" y="-1.758034026693167E-4" />
+      <point x="1397.0" y="481.583" />
+      <point x="1397.0" y="525.0" />
+      <point x="1352.0" y="525.0" />
+      <point x="1352.0" y="228.506" />
+      <point x="237.4999395085065" y="3.2892249524252293E-4" />
+    </edge>
+    <edge source="module_1.final_homework.src.personal_manager.base_classes.Note" target="module_1.final_homework.src.personal_manager.base_classes.Field" relationship="REALIZATION">
+      <point x="237.9996531137524" y="4.347826087496287E-4" />
+      <point x="1289.0" y="752.37" />
+      <point x="1289.0" y="525.0" />
+      <point x="1352.0" y="525.0" />
+      <point x="1352.0" y="228.506" />
+      <point x="237.4999395085065" y="3.2892249524252293E-4" />
+    </edge>
+    <edge source="module_1.final_homework.src.personal_manager.base_classes.Phone" target="module_1.final_homework.src.personal_manager.base_classes.Field" relationship="REALIZATION">
+      <point x="-242.0000604914935" y="0.0" />
+      <point x="1397.0" y="781.5" />
+      <point x="1397.0" y="525.0" />
+      <point x="1352.0" y="525.0" />
+      <point x="1352.0" y="228.506" />
+      <point x="237.4999395085065" y="3.2892249524252293E-4" />
+    </edge>
+    <edge source="module_1.final_homework.src.personal_manager.base_classes.Birthday" target="module_1.final_homework.src.personal_manager.base_classes.Field" relationship="REALIZATION">
+      <point x="-249.0000604914935" y="2.0982986757189792E-4" />
+      <point x="1352.0" y="321.659" />
+      <point x="1352.0" y="228.506" />
+      <point x="237.4999395085065" y="3.2892249524252293E-4" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="0.7662337662337663" showDependencies="false" x="1155.5" y="413.5" />
+  <SelectedNodes>
+    <node>module_1.final_homework.src.personal_manager.base_classes.Field</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Methods</Category>
+  </Categories>
+</Diagram>
+
