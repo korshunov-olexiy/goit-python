@@ -1,20 +1,53 @@
-from typing import Any
+from abc import ABC, abstractmethod
 
 
-def decorator_class(cls):
-    class NewClass:
-        def __init__(self, *args, **kwargs) -> None:
-            self._obj = cls(*args, **kwargs)
-        def __getattribute__(self, __name: str) -> Any:
-            attr = self._obj.__getattribute__(self, __name)
-            print(attr)
-            #if isinstance(__name, type(__name.__init__)):
-            #    print("callable")
-    return NewClass
+class Creator(ABC):
+    @abstractmethod
+    def create(self):
+        pass
+
+    def send_messages(self, value) -> str:
+        product = self.create()
+        result = product.sending(value)
+        return result
 
 
-@decorator_class
-def func(a):
-    print(f"test {a}")
+class SendingMessages(ABC):
+    @abstractmethod
+    def sending(self, value) -> str:
+        pass
 
-f = func(3)
+
+class CreatorPush(Creator):
+    def create(self) -> SendingMessages:
+        return SendingPushMessages()
+
+
+class CreatorSMS(Creator):
+    def create(self) -> SendingMessages:
+        return SendingSMSMessages()
+
+
+class SendingPushMessages(SendingMessages):
+    def sending(self, value) -> str:
+        return f"Выполнена Push рассылка сообщения: {value}"
+
+
+class SendingSMSMessages(SendingMessages):
+    def sending(self, value) -> str:
+        return f"Выполнена SMS рассылка сообщения: {value}"
+
+
+def client_code(creator: Creator) -> None:
+    print(f"Мы ничего не знаем про код создателя, который работает")
+    result = creator.send_messages("my message")
+    print(f"Результат: {result}")
+
+
+if __name__ == "__main__":
+    print("Приложение выполняет Push рассылки.")
+    client_code(CreatorPush())
+    print("\n")
+
+    print("Приложение выполняет SMS рассылки")
+    client_code(CreatorSMS())
