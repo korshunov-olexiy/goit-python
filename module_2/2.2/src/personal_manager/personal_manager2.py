@@ -34,4 +34,4 @@ class SendDataCMD(SendData):
 def client_code(creator: Creator, *info: Iterable):
     return creator.output_data(*info)
 
-cli = client_code(CreatorCMD(), "iterable object")
+cli = client_code(CreatorCMD(), [1,2,3,4])

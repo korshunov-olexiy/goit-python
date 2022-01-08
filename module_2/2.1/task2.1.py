@@ -7,7 +7,7 @@ from abc import ABCMeta, abstractclassmethod
 from collections import UserDict
 import pickle, json
 
-# solve #2.1
+# solution #2.1
 
 class SerializationInterface(metaclass=ABCMeta):
 
@@ -49,7 +49,7 @@ my_data = saveload_bin.load_data("my_data.bin")
 print(my_data)
 
 
-# solve #2.2
+# solution #2.2
 
 class Meta(type):
     children_number = 0
