@@ -11,6 +11,14 @@ class InvalidEmailAddress(Exception):
     """Exception in case of incorrect E-mail input"""
 
 
+class InvalidNoteValue(Exception):
+    """Exception in case of incorrect Note input"""
+
+
+class InvalidBirthdayValue(Exception):
+    """Exception in case of incorrect Birthday input"""
+
+
 class Field:
     """Field class is a parent for all fields in Record class"""
     def __init__(self, value):
@@ -38,10 +46,11 @@ class Phone(Field):
 
     @value.setter
     def value(self, value):
-        if len(value) == 13:
+        pattern_len = 13
+        if len(value) == pattern_len:
             self._value = value
         else:
-            raise InvalidPhoneNumber
+            raise InvalidPhoneNumber(f"Phone number not created. Number \"{value}\" does not match the template. (must be exactly {pattern_len} characters long).")
 
     def __str__(self) -> str:
         return self.value
@@ -59,7 +68,7 @@ class Email(Field):
         if self.__check_email(value):
             self._value = value
         else:
-            raise InvalidEmailAddress
+            raise InvalidEmailAddress(f"Email not created. The email address \"{value}\" is incorrect.")
 
     def __check_email(self, email: str) -> bool:
         matched = re.match(r"[a-z][a-z|\d._]{1,}@[a-z]{1,}\.\w{2,}", email, re.IGNORECASE)
@@ -97,7 +106,11 @@ class Note(Field):
 
     @value.setter
     def value(self, value):
-        self._value = value
+        pattern_len = 255
+        if 0 < len(value) <= pattern_len:
+            self._value = value
+        else:
+            raise InvalidNoteValue(f"Note not created. The length of a note must not exceed \"{pattern_len}\" characters.")
 
     def __str__(self) -> str:
         if self.tag:
@@ -131,10 +144,18 @@ class Birthday(Field):
 
     @value.setter
     def value(self, value):
+        check_value = self.validate(value)
+        if check_value:
+            self._value = check_value
+        else:
+            raise InvalidBirthdayValue(f"Birthday \"{value}\" not created. Wrong format.")
+
+    def validate(self, date_text: str) -> str:
         try:
-            self._value = datetime.strptime(value, "%d.%m.%Y").strftime("%d.%m.%Y")
+            value = datetime.strptime(date_text, "%d.%m.%Y").strftime("%d.%m.%Y")
+            return value
         except (ValueError, TypeError):
-            self._value = ''
+            return ""
 
     def __str__(self) -> str:
         return self.value

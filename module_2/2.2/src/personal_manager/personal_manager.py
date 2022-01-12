@@ -23,25 +23,29 @@ class Record:
         email: Optional[List[str]] = None, note: Optional[List[str]] = None) -> None:
         self.name = Name(name)
         self.phone = []
-        for one_phone in phone:
-            try:
-                self.phone.append(Phone(one_phone))
-            except InvalidPhoneNumber:
-                print(f"The phone number \"{one_phone}\" is invalid. Record can't be made.")
+        if phone:
+            for one_phone in phone:
+                try:
+                    self.phone.append(Phone(one_phone))
+                except InvalidPhoneNumber:
+                    print(f"The phone number \"{one_phone}\" is invalid. Record can't be made.")
         self.address = []
-        for one_address in address:
-            self.address.append(Address(one_address))
+        if address:
+            for one_address in address:
+                self.address.append(Address(one_address))
         self.email = []
-        for one_email in email:
-            try:
-                self.email.append(Email(one_email))
-            except InvalidEmailAddress:
-                print(f"The email \"{one_email}\" is invalid. Record can't be made.")
-        if birthday:
-            self.birthday = Birthday(birthday)
+        if email:
+            for one_email in email:
+                try:
+                    self.email.append(Email(one_email))
+                except InvalidEmailAddress:
+                    print(f"The email \"{one_email}\" is invalid. Record can't be made.")
+        #if birthday:
+        self.birthday = Birthday(birthday)
         self.note = []
-        for one_note in note:
-            self.note.append(Note(one_note))
+        if note:
+            for one_note in note:
+                self.note.append(Note(one_note))
 
     def get_phone_index(self, check_number: str) -> Optional[int]:
         """This function returns phone number's index. If number not found - returns None"""
