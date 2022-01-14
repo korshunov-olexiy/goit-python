@@ -8,11 +8,11 @@ from typing import Dict, List, Optional
 from pick import pick
 
 """Be sure to specify the directory!"""
-# from personal_manager.sort_files import sort_files_entry_point
-# from personal_manager.base_classes import *
+from personal_manager.sort_files import sort_files_entry_point
+from personal_manager.base_classes import *
 
-from sort_files import sort_files_entry_point
-from base_classes import *
+# from sort_files import sort_files_entry_point
+# from base_classes import *
 
 class Record:
     """Record class responsible for the logic of adding/removing/editing fields
