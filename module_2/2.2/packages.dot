@@ -1,9 +1,0 @@
-digraph "packages" {
-rankdir=BT
-charset="utf-8"
-"personal_manager" [color="black", label="personal_manager", shape="box", style="solid"];
-"personal_manager.base_classes" [color="black", label="personal_manager.base_classes", shape="box", style="solid"];
-"personal_manager.personal_manager" [color="black", label="personal_manager.personal_manager", shape="box", style="solid"];
-"personal_manager.sort_files" [color="black", label="personal_manager.sort_files", shape="box", style="solid"];
-"personal_manager.personal_manager" -> "personal_manager.sort_files" [arrowhead="open", arrowtail="none"];
-}
