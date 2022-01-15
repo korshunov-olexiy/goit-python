@@ -3,13 +3,14 @@ from collections import UserDict
 from datetime import datetime, timedelta
 from difflib import get_close_matches
 from pathlib import Path
+from sys import exit
 from typing import Dict, List, Optional
 
 from pick import pick
 
 """Be sure to specify the directory!"""
-from personal_manager.sort_files import sort_files_entry_point
 from personal_manager.base_classes import *
+from personal_manager.sort_files import sort_files_entry_point
 
 # from sort_files import sort_files_entry_point
 # from base_classes import *
