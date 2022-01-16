@@ -2,11 +2,16 @@
 FROM python:3.9.9-slim-buster
 WORKDIR /
 COPY src/ /src/
+RUN python3 -m venv env
+RUN . ./env/bin/activate
 RUN pip3 install -r /src/personal_manager/requirements.txt
-COPY pyproject.toml .
-COPY setup.cfg .
-COPY MANIFEST.in .
+ADD pyproject.toml /
+ADD setup.cfg /
+ADD MANIFEST.in /
 RUN python3 -m pip install build
 RUN python3 -m build
-RUN pip3 install dist/personal-manager-0.7.tar.gz
-CMD [ "personal-manager" ]
+RUN python3 -m pip install dist/personal-manager-0.7.tar.gz
+
+# ADD start.sh /
+# RUN chmod +x /start.sh
+# CMD [ "/start.sh" ]
