@@ -11,7 +11,6 @@ ADD MANIFEST.in /
 RUN python3 -m pip install build
 RUN python3 -m build
 RUN python3 -m pip install dist/personal-manager-0.7.tar.gz
-
-# ADD start.sh /
-# RUN chmod +x /start.sh
-# CMD [ "/start.sh" ]
+ADD start.sh /
+RUN chmod +x /start.sh
+CMD [ "/start.sh" ]

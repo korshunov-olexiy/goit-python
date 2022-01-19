@@ -8,13 +8,9 @@ from typing import Dict, List, Optional
 
 from pick import pick
 
-if __name__ == "__package__":
-    """ If run script as package """
-    from personal_manager.base_classes import *
-    from personal_manager.sort_files import sort_files_entry_point
-else:
-    from sort_files import sort_files_entry_point
-    from base_classes import *
+from personal_manager.base_classes import *
+from personal_manager.sort_files import sort_files_entry_point
+
 
 class Record:
     """Record class responsible for the logic of adding/removing/editing fields
