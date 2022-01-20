@@ -33,7 +33,7 @@ typeObj = TypeOfShowObject()
 
 class ProcThread(Thread):
 
-    def __init__(self, wrapper: Callable[[Path, str], None], root_dir: Path, file_name: str, locker: Union[object, None] = None) -> None:
+    def __init__(self, wrapper: Callable[[Type[Path], str], None], root_dir: Type[Path], file_name: str, locker: Union[object, None] = None) -> None:
         super().__init__()
         self.locker = locker
         self.root_dir = root_dir
@@ -48,7 +48,7 @@ class ProcThread(Thread):
             self.locker.release()
 
 
-def del_empty_dirs(path: Path, sort_dirs: List[str]):
+def del_empty_dirs(path: Type[Path], sort_dirs: List[str]):
     """Recursively deleting empty directories in the target directory path.
 
     Key arguments:
@@ -61,7 +61,7 @@ def del_empty_dirs(path: Path, sort_dirs: List[str]):
             return del_empty_dirs(path, sort_dirs)
 
 
-def move_archives(root_dir: Path, file_name: str):
+def move_archives(root_dir: Type[Path], file_name: str):
     """Unpacking the archive into the root_dir directory and then deleting the original archive.
 
     Key arguments:
@@ -76,7 +76,7 @@ def move_archives(root_dir: Path, file_name: str):
     file_name.unlink()
 
 
-def move_media(root_dir: Path, file_name: str):
+def move_media(root_dir: Type[Path], file_name: str):
     """Transferring the file using the 'media' tag to the root_dir directory.
 
     Key arguments:
@@ -103,7 +103,7 @@ def normalize(in_str: str):
     return rx.sub('_', in_str.translate(map_cyr_to_latin))
 
 
-def get_dir_obj(path: Path, ext: str = '*', show_all_files_dirs: Type[typeObj] = typeObj.ALL, categories_list: List[str] = []):
+def get_dir_obj(path: Type[Path], ext: str = '*', show_all_files_dirs: Type[typeObj] = typeObj.ALL, categories_list: List[str] = []):
     """We search recursively in the passed directory for files, directories or files or directories,
     skipping directory names from the passed categories.
 
@@ -134,7 +134,7 @@ def get_dir_obj(path: Path, ext: str = '*', show_all_files_dirs: Type[typeObj] =
 
 
 @timebudget
-def sort_dir(_dir: Path):
+def sort_dir(_dir: Type[Path]):
     """Sorting files in the passed directory.
 
     Key arguments:
