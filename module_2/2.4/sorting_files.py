@@ -3,11 +3,8 @@ from datetime import datetime
 from pathlib import Path, PosixPath, WindowsPath
 from shutil import unpack_archive
 from sys import argv
-from threading import RLock, Thread
 from typing import Callable, List, Type, Union
-
 from timebudget import timebudget
-
 
 
 # Decorator for file type constants.
@@ -31,24 +28,7 @@ class TypeOfShowObject(object):
 
 typeObj = TypeOfShowObject()
 
-class ProcThread(Thread):
-
-    def __init__(self, wrapper: Callable[[Path, str], None], root_dir: Path, file_name: str, locker: Union[object, None] = None) -> None:
-        super().__init__()
-        self.locker = locker
-        self.root_dir = root_dir
-        self.file_name = file_name
-        self.wrapper = wrapper
-
-    def run(self):
-        if self.locker:
-            self.locker.acquire()
-        self.wrapper(self.root_dir, self.file_name)
-        if self.locker:
-            self.locker.release()
-
-
-def del_empty_dirs(path: Path, sort_dirs: List[str]):
+def del_empty_dirs(path: Union[Type[PosixPath], Type[WindowsPath]], sort_dirs: List[str]):
     """Recursively deleting empty directories in the target directory path.
 
     Key arguments:
@@ -61,9 +41,9 @@ def del_empty_dirs(path: Path, sort_dirs: List[str]):
             return del_empty_dirs(path, sort_dirs)
 
 
-def move_archives(root_dir: Path, file_name: str):
+def move_archives(root_dir: Union[Type[PosixPath], Type[WindowsPath]], file_name: str):
     """Unpacking the archive into the root_dir directory and then deleting the original archive.
-
+    
     Key arguments:
     root_dir is the directory into which the archive will be unpacked.
     file_name is the name of the archive. 
@@ -76,7 +56,7 @@ def move_archives(root_dir: Path, file_name: str):
     file_name.unlink()
 
 
-def move_media(root_dir: Path, file_name: str):
+def move_media(root_dir: Union[Type[PosixPath], Type[WindowsPath]], file_name: str):
     """Transferring the file using the 'media' tag to the root_dir directory.
 
     Key arguments:
@@ -90,7 +70,7 @@ def move_media(root_dir: Path, file_name: str):
         file_name.replace(root_dir.joinpath(file_name.name))
 
 
-def normalize(in_str: str):
+def normalize(in_str):
     """Replacing all characters except Latin and numbers in the transmitted string with Latin and '_'.
     
     Key arguments:
@@ -103,7 +83,7 @@ def normalize(in_str: str):
     return rx.sub('_', in_str.translate(map_cyr_to_latin))
 
 
-def get_dir_obj(path: Path, ext: str = '*', show_all_files_dirs: Type[typeObj] = typeObj.ALL, categories_list: List[str] = []):
+def get_dir_obj(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=[]):
     """We search recursively in the passed directory for files, directories or files or directories,
     skipping directory names from the passed categories.
 
@@ -134,7 +114,7 @@ def get_dir_obj(path: Path, ext: str = '*', show_all_files_dirs: Type[typeObj] =
 
 
 @timebudget
-def sort_dir(_dir: Path):
+def sort_dir(_dir):
     """Sorting files in the passed directory.
 
     Key arguments:
@@ -144,7 +124,6 @@ def sort_dir(_dir: Path):
     ext_media_list = []
     # List of extensions by tag 'archive' from the category dictionary.
     ext_archive_list = []
-    lock = RLock()
     for cat in categories:
         tag = cat['tag']
         for c in cat['ext']:
@@ -177,13 +156,10 @@ def sort_dir(_dir: Path):
             if cat_dir:
                 # If it is a file from the 'media' tag (document, music, video, image).
                 if ext in ext_media_list:
-                    move_mdi = ProcThread(move_media, _dir.joinpath(cat_dir), path_name, lock)
-                    # Start the thread
-                    move_mdi.start()
+                    move_media(_dir.joinpath(cat_dir), path_name)
                 # If it is an archive (tag 'archive').
                 elif ext in ext_archive_list:
-                    move_arch = ProcThread(move_archives, _dir.joinpath(cat_dir), path_name)
-                    move_arch.start()
+                    move_archives(_dir.joinpath(cat_dir), path_name)
                 if ext not in extensions_list['known']:
                     extensions_list['known'].append(ext)
             # If you find a file with an unknown extension.
@@ -193,8 +169,7 @@ def sort_dir(_dir: Path):
                     extensions_list['unknown'].append(ext)
     # We delete empty directories in the target directory
     # (except directories for categories).
-    del_dirs = ProcThread(del_empty_dirs, _dir, cat_dirs.keys())
-    del_dirs.start()
+    del_empty_dirs(_dir, cat_dirs.keys())
     # Return the result of the program in a formatted form.
     res_out = f"The directory\n{_dir}\ncontains the following files:\n"
     for cat in [c for c in categories if c['sort'] == True]:
