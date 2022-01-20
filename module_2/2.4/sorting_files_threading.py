@@ -1,10 +1,13 @@
+import re
 from datetime import datetime
 from pathlib import Path, PosixPath, WindowsPath
-from sys import argv
 from shutil import unpack_archive
-import re
-from threading import Thread, RLock
-from typing import List, Union, Type, Callable
+from sys import argv
+from threading import RLock, Thread
+from typing import Callable, List, Type, Union
+
+from timebudget import timebudget
+
 
 # Decorator for file type constants.
 def constant(f):
@@ -29,7 +32,7 @@ typeObj = TypeOfShowObject()
 
 class ProcThread(Thread):
 
-    def __init__(self, locker: object, wrapper: Callable[[Union[Type[PosixPath], Type[WindowsPath]], Union[List[str], str]], None], root_dir: Union[Type[PosixPath], Type[WindowsPath]], file_name: Union[List[str], str]) -> None:
+    def __init__(self, wrapper: Callable[[Union[Type[PosixPath], Type[WindowsPath]], Union[List[str], str]], None], root_dir: Union[Type[PosixPath], Type[WindowsPath]], file_name: Union[List[str], str], locker: Union[object, None] = None) -> None:
         super().__init__()
         self.locker = locker
         self.root_dir = root_dir
@@ -37,9 +40,11 @@ class ProcThread(Thread):
         self.wrapper = wrapper
 
     def run(self):
-        self.locker.acquire()
+        if self.locker:
+            self.locker.acquire()
         self.wrapper(self.root_dir, self.file_name)
-        self.locker.release()
+        if self.locker:
+            self.locker.release()
 
 
 def del_empty_dirs(path: Union[Type[PosixPath], Type[WindowsPath]], sort_dirs: List[str]):
@@ -127,6 +132,7 @@ def get_dir_obj(path, ext='*', show_all_files_dirs=typeObj.ALL, categories_list=
             print(typeObj.ERROR, 'No such file or directory')
 
 
+@timebudget
 def sort_dir(_dir):
     """Sorting files in the passed directory.
 
@@ -170,12 +176,12 @@ def sort_dir(_dir):
             if cat_dir:
                 # If it is a file from the 'media' tag (document, music, video, image).
                 if ext in ext_media_list:
-                    move_mdi = ProcThread(lock,move_media, _dir.joinpath(cat_dir), path_name)
+                    move_mdi = ProcThread(move_media, _dir.joinpath(cat_dir), path_name, lock)
                     # Start the thread
                     move_mdi.start()
                 # If it is an archive (tag 'archive').
                 elif ext in ext_archive_list:
-                    move_arch = ProcThread(lock, move_archives, _dir.joinpath(cat_dir), path_name)
+                    move_arch = ProcThread(move_archives, _dir.joinpath(cat_dir), path_name)
                     move_arch.start()
                 if ext not in extensions_list['known']:
                     extensions_list['known'].append(ext)
@@ -186,7 +192,7 @@ def sort_dir(_dir):
                     extensions_list['unknown'].append(ext)
     # We delete empty directories in the target directory
     # (except directories for categories).
-    del_dirs = ProcThread(lock, del_empty_dirs, _dir, cat_dirs.keys())
+    del_dirs = ProcThread(del_empty_dirs, _dir, cat_dirs.keys(), lock)
     del_dirs.start()
     # Return the result of the program in a formatted form.
     res_out = f"The directory\n{_dir}\ncontains the following files:\n"
