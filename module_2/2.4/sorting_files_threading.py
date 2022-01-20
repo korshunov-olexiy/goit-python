@@ -32,7 +32,7 @@ typeObj = TypeOfShowObject()
 
 class ProcThread(Thread):
 
-    def __init__(self, wrapper: Callable[[Union[Type[PosixPath], Type[WindowsPath]], Union[List[str], str]], None], root_dir: Union[Type[PosixPath], Type[WindowsPath]], file_name: Union[List[str], str], locker: Union[object, None] = None) -> None:
+    def __init__(self, wrapper: Callable[[Union[Type[PosixPath], Type[WindowsPath]], str, None], root_dir: Union[Type[PosixPath], Type[WindowsPath]], file_name: str, locker: Union[object, None] = None) -> None:
         super().__init__()
         self.locker = locker
         self.root_dir = root_dir
