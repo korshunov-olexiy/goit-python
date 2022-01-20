@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM python:3.9.9-slim-buster
 WORKDIR /
-COPY src/ /src/
+COPY src/ .
 RUN python3 -m venv env
 RUN . ./env/bin/activate
 RUN pip3 install -r /src/personal_manager/requirements.txt
