@@ -103,7 +103,7 @@ def normalize(in_str: str):
     return rx.sub('_', in_str.translate(map_cyr_to_latin))
 
 
-def get_dir_obj(path: Type[Path], ext: str = '*', show_all_files_dirs: Type[typeObj] = typeObj.ALL, categories_list: List[str] = []):
+def get_dir_obj(path: Type[Path], ext: str = '*', show_all_files_dirs: str = typeObj.ALL, categories_list: List[str] = []):
     """We search recursively in the passed directory for files, directories or files or directories,
     skipping directory names from the passed categories.
 
