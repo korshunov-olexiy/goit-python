@@ -28,14 +28,14 @@ def factorize_sync(*number):
 
     def wr(num):
         result.append([n for n in range(1, num+1) if not num % n])
-
+    dict_sync = {}
     for num in number:
-        s = SyncThread(wr, num)
-        s.start()
-    while s.is_alive():
+        dict_sync[num] = SyncThread(wr, num)
+        dict_sync[num].start()
+    while not all([not res.is_alive() for res in dict_sync.values()]):
         """"""
     return result
 
 
 # factorize(128, 255, 99999, 10651060)
-print(factorize_sync(128, 255, 99999, 10651060))
+print(factorize_sync(10651060, 128, 255, 99999))
