@@ -1,7 +1,10 @@
 from multiprocessing import Process
-from timebudget import timebudget
 from threading import RLock, Thread
+from time import sleep
 from typing import Type
+from sys import exit
+from timebudget import timebudget
+
 
 class SyncThread(Thread):
 
@@ -36,6 +39,26 @@ def factorize_sync(*number):
         """"""
     return result
 
+def f(number):
+    print([n for n in range(1, number+1)  if not number % n])
+    exit(0)
+    # return result
 
-# factorize(128, 255, 99999, 10651060)
-print(factorize_sync(10651060, 128, 255, 99999))
+@timebudget
+def factorize_proc(*number):
+    result = []
+
+    dict_sync = {}
+    for num in number:
+        dict_sync[num] = Process(target=f, args=(num,))
+        dict_sync[num].start()
+    while not all([not res.is_alive() for res in dict_sync.values()]):
+        """"""
+    return result
+
+
+
+if __name__ == '__main__':
+    # factorize(128, 255, 99999, 10651060)
+    # print(factorize_sync(10651060, 128, 255, 99999))
+    factorize_proc(128, 255, 99999, 10651060)
