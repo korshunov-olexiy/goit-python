@@ -60,8 +60,29 @@ def factorize_pool_proc(numbers: List[int]):
 
 if __name__ == '__main__':
     RESULT = []
-    data = [128, 255, 99999, 1065106000]
-    print(factorize(data))
-    print(factorize_sync(data))
-    print(factorize_proc(data))
-    print(factorize_pool_proc(data))
+    data = [128, 255, 99999, 10651060]
+    # Checking and displaying the result.
+    func_res = factorize(data)
+    print(func_res)
+    assert func_res[0] == [1, 2, 4, 8, 16, 32, 64, 128]
+    assert func_res[1] == [1, 3, 5, 15, 17, 51, 85, 255]
+    assert func_res[2] == [1, 3, 9, 41, 123, 271, 369, 813, 2439, 11111, 33333, 99999]
+    assert func_res[3] == [1, 2, 4, 5, 7, 10, 14, 20, 28, 35, 70, 140, 76079, 152158, 304316, 380395, 532553, 760790, 1065106, 1521580, 2130212, 2662765, 5325530, 10651060]
+    func_res = factorize_sync(data)
+    print(func_res)
+    assert func_res[0] == [1, 2, 4, 8, 16, 32, 64, 128]
+    assert func_res[1] == [1, 3, 5, 15, 17, 51, 85, 255]
+    assert func_res[2] == [1, 3, 9, 41, 123, 271, 369, 813, 2439, 11111, 33333, 99999]
+    assert func_res[3] == [1, 2, 4, 5, 7, 10, 14, 20, 28, 35, 70, 140, 76079, 152158, 304316, 380395, 532553, 760790, 1065106, 1521580, 2130212, 2662765, 5325530, 10651060]
+    func_res = factorize_proc(data)
+    print(func_res)
+    assert func_res[0] == [1, 2, 4, 8, 16, 32, 64, 128]
+    assert func_res[1] == [1, 3, 5, 15, 17, 51, 85, 255]
+    assert func_res[2] == [1, 3, 9, 41, 123, 271, 369, 813, 2439, 11111, 33333, 99999]
+    assert func_res[3] == [1, 2, 4, 5, 7, 10, 14, 20, 28, 35, 70, 140, 76079, 152158, 304316, 380395, 532553, 760790, 1065106, 1521580, 2130212, 2662765, 5325530, 10651060]
+    func_res = factorize_pool_proc(data)
+    print(func_res)
+    assert func_res[0] == [1, 2, 4, 8, 16, 32, 64, 128]
+    assert func_res[1] == [1, 3, 5, 15, 17, 51, 85, 255]
+    assert func_res[2] == [1, 3, 9, 41, 123, 271, 369, 813, 2439, 11111, 33333, 99999]
+    assert func_res[3] == [1, 2, 4, 5, 7, 10, 14, 20, 28, 35, 70, 140, 76079, 152158, 304316, 380395, 532553, 760790, 1065106, 1521580, 2130212, 2662765, 5325530, 10651060]
