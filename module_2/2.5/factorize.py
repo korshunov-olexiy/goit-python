@@ -40,22 +40,28 @@ def factorize_sync(numbers: List[int]):
 
 @timebudget
 def factorize_proc(numbers: List[int]):
-    arr = Manager().list()
-    dict_sync = {}
-    for number in numbers:
-        dict_sync[number] = Process(target=factorize, args=(number, arr))
-        dict_sync[number].start()
-    while not all([not process.is_alive() for process in dict_sync.values()]):
-        """"""
-    return arr
+    res = []
+    with Manager() as manager:
+        arr = manager.list()
+        dict_sync = {}
+        for number in numbers:
+            dict_sync[number] = Process(target=factorize, args=(number, arr))
+            dict_sync[number].start()
+        while not all([not process.is_alive() for process in dict_sync.values()]):
+            """"""
+        res = [a for a in arr]
+    return res
 
 
 @timebudget
 def factorize_pool_proc(numbers: List[int]):
-    arr = Manager().list()
-    data = [[num, arr] for num in numbers]
-    Pool(processes=cpu_count()-1).starmap(factorize, data)
-    return arr
+    res = []
+    with Manager() as manager:
+        arr = manager.list()
+        data = [[num, arr] for num in numbers]
+        Pool(processes=cpu_count()-1).starmap(factorize, data)
+        res = [a for a in arr]
+    return res
 
 
 if __name__ == '__main__':
