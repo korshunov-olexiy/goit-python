@@ -1,16 +1,14 @@
 import asyncio
-import re
-from datetime import datetime
-from pathlib import Path, PosixPath, WindowsPath
-from sys import argv
-from threading import RLock, Thread
-from typing import Callable, List, Type, Union
 import concurrent.futures
+import re
+from pathlib import Path, PosixPath, WindowsPath
+from random import randint
+from sys import argv
+from typing import List, Type, Union
 
-# aioshutil
-# from aioshutil import unpack_archive
+import aiofiles.os
+import aiofiles.ospath
 from aioshutil import unpack_archive
-from timebudget import timebudget
 
 
 # Decorator for file type constants.
@@ -50,23 +48,6 @@ class ArchivesMediaExt:
 
 typeObj = TypeOfShowObject()
 
-class ProcThread(Thread):
-
-    def __init__(self, wrapper: Callable[[Type[Path], str], None], root_dir: Type[Path], file_name: str, locker: Union[object, None] = None) -> None:
-        super().__init__()
-        self.locker = locker
-        self.root_dir = root_dir
-        self.file_name = file_name
-        self.wrapper = wrapper
-
-    def run(self):
-        if self.locker:
-            self.locker.acquire()
-        self.wrapper(self.root_dir, self.file_name)
-        if self.locker:
-            self.locker.release()
-
-
 def del_empty_dirs(path: Type[Path], sort_dirs: List[str]):
     """Recursively deleting empty directories in the target directory path.
 
@@ -80,33 +61,47 @@ def del_empty_dirs(path: Type[Path], sort_dirs: List[str]):
             return del_empty_dirs(path, sort_dirs)
 
 
-async def move_archives(root_dir: Type[Path], file_name: str, dir_exists: bool = False):
+async def move_archives(root_dir: Type[Path], file_name: str):
     """Unpacking the archive into the root_dir directory and then deleting the original archive.
 
     Key arguments:
     root_dir is the directory into which the archive will be unpacked.
     file_name is the name of the archive. 
     """
-    if dir_exists:
-        await unpack_archive(file_name, root_dir.joinpath(f"{file_name.stem}_{str(datetime.now().microsecond)}"))
-    else:
-        await unpack_archive(file_name, root_dir.joinpath(file_name.stem))
-    # Delete the original archive file file_name.
-    file_name.unlink()
+    dir_extract = root_dir.joinpath(file_name.stem)
+    try:
+        await unpack_archive(file_name, dir_extract)
+    except FileExistsError:
+        rnd = randint(1, 1000000)
+        dir_extract = root_dir.joinpath(f"{file_name.stem}_{rnd}")
+        print(f"Processing a duplicate archive. New directory is: {dir_extract}")
+        await unpack_archive(file_name, dir_extract)
+    except OSError as os_err:
+        print(f"The error occurred: {os_err}")
+    # Delete the original archive file.
+    try:
+        await aiofiles.os.remove(file_name)
+    except OSError as os_err:
+        print(f"An error occurred: {os_err}")
 
 
-def move_media(root_dir: Type[Path], file_name: str):
+async def move_media(root_dir: Type[Path], file_name: str):
     """Transferring the file using the 'media' tag to the root_dir directory.
 
     Key arguments:
     root_dir is the directory into which the archive will be unpacked.
     file_name is the name of the source file.
     """
-    if root_dir.joinpath(file_name.name).exists():
-        # Move file_name to root_dir using filename + time in milliseconds.
-        file_name.replace(root_dir.joinpath(f"{file_name.stem}_{str(datetime.now().microsecond)}{file_name.suffix}"))
-    else:
-        file_name.replace(root_dir.joinpath(file_name.name))
+    new_file_name = root_dir.joinpath(file_name.name)
+    try:
+        await aiofiles.os.rename(file_name, new_file_name)
+    except FileExistsError:
+        rnd = randint(1, 1000000)
+        new_file_name = root_dir.joinpath(f"{file_name.stem}_{rnd}{file_name.suffix}")
+        print(f"Processing a duplicate file. New file name is: {new_file_name}")
+        await aiofiles.os.rename(file_name, new_file_name)
+    except OSError as os_err:
+        print(f"The error occurred: {os_err}")
 
 
 def normalize(in_str: str):
@@ -162,7 +157,7 @@ async def file_processing(executor, type_obj, path_name):
     elif type_obj == typeObj.FILES:
         name_ext, ext = path_name.name, path_name.suffix[1:]
         # By the file extension path_name,
-        # we determine the name of the directory into which we will move the files.
+        # determine the name of the directory into which we will move the files.
         cat_dir = dir_of_category(ext)
         # Add the found filenames to the list of files for a specific category.
         for cat in categories:
@@ -174,13 +169,12 @@ async def file_processing(executor, type_obj, path_name):
             root_dir = _dir.joinpath(cat_dir)
             # If it is a file from the 'media' tag (document, music, video, image).
             if ext in ext_media_list:
-                await loop.run_in_executor(executor, move_media, root_dir, path_name)
+                # await loop.run_in_executor(executor, move_media, root_dir, path_name)
+                await move_media(root_dir, path_name)
             # If it is an archive (tag 'archive').
             elif ext in ext_archive_list:
                 # await loop.run_in_executor(executor, move_archives, file_name, path_name)
-                dir_exists = root_dir.joinpath(path_name.stem).exists()
-                print("::::::: ARCHIVE DIR: ", root_dir.joinpath(path_name.stem), root_dir.joinpath(path_name.stem).exists())
-                await move_archives(root_dir, path_name, dir_exists)
+                await move_archives(root_dir, path_name)
             if ext not in extensions_list['known']:
                 extensions_list['known'].append(ext)
         # If you find a file with an unknown extension.
@@ -190,7 +184,12 @@ async def file_processing(executor, type_obj, path_name):
                 extensions_list['unknown'].append(ext)
 
 
-@timebudget
+async def run_blocking_tasks(executor, func, *args):
+    loop = asyncio.get_event_loop()
+    files_gen = await loop.run_in_executor(executor, func, *args)
+    return files_gen
+
+
 async def sort_dir(_dir: Type[Path]):
     """Sorting files in the passed directory.
 
@@ -201,17 +200,15 @@ async def sort_dir(_dir: Type[Path]):
     # Create subdirectories for the categories in the target directory.
     for dir_name in cat_dirs.keys():
         _dir.joinpath(dir_name).mkdir(parents=True, exist_ok=True)
-    # We generate a list of files contained in the target directory.
-    src_files_gen = get_dir_obj(_dir, show_all_files_dirs=typeObj.FILES, categories_list=cat_dirs.keys())
-    # We sort the files: with the media and archive tags according to our own rules.
+    # Generate a list of files contained in the target directory.
+    src_files_gen = await run_blocking_tasks(executor, get_dir_obj, _dir, "*", typeObj.FILES, cat_dirs.keys())
+    # Sort the files: with the media and archive tags according to our own rules.
     futures = [file_processing(executor, type_obj, path_name) for type_obj, path_name in src_files_gen]
     await asyncio.gather(*futures)
-    # await asyncio.gather(del_empty_dirs(_dir, cat_dirs.keys()))
-    # We delete empty directories in the target directory (except directories for categories).
-    # del_dirs = ProcThread(del_empty_dirs, _dir, cat_dirs.keys())
-    # del_dirs.start()
+    # Delete empty directories in the target directory (except directories for categories).
+    await run_blocking_tasks(executor, del_empty_dirs, _dir, cat_dirs.keys())
     # Return the result of the program in a formatted form.
-    res_out = f"The directory\n{_dir}\ncontains the following files:\n"
+    res_out = f"The directory \"{_dir}\" contains the following files:\n"
     for cat in [c for c in categories if c['sort'] == True]:
         res_out += f"{cat['name']:<12}: {', '.join(cat['files'])}\n"
     res_out += f"List of known extensions: {', '.join(extensions_list['known'])}\n"
