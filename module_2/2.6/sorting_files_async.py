@@ -1,12 +1,9 @@
 import asyncio
-import concurrent.futures
 import re
 from random import randint
 from sys import argv
-from typing import List, Type, Union
+from typing import List, Type
 
-# import aiofiles.os
-# import aiofiles.ospath
 from aiopath import AsyncPath, AsyncPosixPath, AsyncWindowsPath
 from aioshutil import unpack_archive
 
@@ -48,27 +45,26 @@ class ArchivesMediaExt:
 
 typeObj = TypeOfShowObject()
 
-async def del_empty_dirs(path: Type[AsyncPath], sort_dirs: List[str], root_dir: bool = True):
+async def del_empty_dirs(path: Type[AsyncPath], sort_dirs: List[str]):
     """Recursively deleting empty directories in the target directory AsyncPath.
 
     Key arguments:
     AsyncPath - the directory in which the deletion will be carried out.
     sort_dirs is a list of directory names to be skipped anyway. 
     """
-    if root_dir:
-        dirs = [f async for f in path.iterdir() if f.name not in sort_dirs and await f.is_dir()]
-    else:
-        dirs =  [f async for f in path.rglob("*") if f.name not in sort_dirs and await f.is_dir()]
-    for dir in dirs:
-        if not [d async for d in dir.iterdir()]:
-            await dir.rmdir()
-            await del_empty_dirs(path, sort_dirs)
-        else:
-            try:
-                await del_empty_dirs(dir, sort_dirs, root_dir=False)
-            except FileNotFoundError:
-                await del_empty_dirs(path, sort_dirs)
-    return None
+    _dir_parts = path.parts
+    folders = []
+    async for obj in path.rglob("*"):
+        is_dir = await obj.is_dir()
+        same_level = len(obj.parts) == len(_dir_parts)
+        not_in_categories = obj.name not in sort_dirs
+        if is_dir and (same_level or not_in_categories):
+            folders.append(obj)
+    folders = sorted(folders, key=lambda folder: len(folder.parts), reverse=True)
+    for folder in folders:
+        is_empty = not [f async for f in folder.iterdir()]
+        if is_empty:
+            await folder.rmdir()
 
 
 async def move_archives(root_dir: Type[AsyncPath], file_name: str):
@@ -159,7 +155,7 @@ async def get_dir_obj(path: Type[AsyncPath], ext: str = '*', show_all_files_dirs
             print(typeObj.ERROR, 'No such file or directory')
 
 
-async def file_processing(executor, type_obj, path_name):
+async def file_processing(type_obj, path_name):
     loop = asyncio.get_event_loop()
     ext_media_list, ext_archive_list = ArchivesMediaExt()().values()
     # If the object type is "error", print a message to the console and end the loop. 
@@ -196,29 +192,23 @@ async def file_processing(executor, type_obj, path_name):
                 extensions_list['unknown'].append(ext)
 
 
-async def run_blocking_tasks(executor, func, *args):
-    loop = asyncio.get_event_loop()
-    files_gen = await loop.run_in_executor(executor, func, *args)
-    return files_gen
-
-
 async def sort_dir(_dir: Type[AsyncPath]):
     """Sorting files in the passed directory.
 
     Key arguments:
     _dir is the target directory in which we are looking for objects.
     """
-    executor = concurrent.futures.ThreadPoolExecutor(max_workers=5)
+    # executor = concurrent.futures.ThreadPoolExecutor(max_workers=5)
     # Create subdirectories for the categories in the target directory.
     for dir_name in cat_dirs.keys():
         await _dir.joinpath(dir_name).mkdir(parents=True, exist_ok=True)
     # Generate a list of files contained in the target directory.
-    src_files_gen = await run_blocking_tasks(executor, get_dir_obj, _dir, "*", typeObj.FILES, cat_dirs.keys())
+    src_files_gen = get_dir_obj(_dir, "*", typeObj.FILES, cat_dirs.keys())
     # Sort the files: with the media and archive tags according to our own rules.
-    futures = [file_processing(executor, type_obj, path_name) async for type_obj, path_name in src_files_gen]
+    futures = [file_processing(type_obj, path_name) async for type_obj, path_name in src_files_gen]
     await asyncio.gather(*futures)
     # Delete empty directories in the target directory (except directories for categories).
-    await del_empty_dirs(_dir, cat_dirs.keys(), root_dir=True)
+    await del_empty_dirs(_dir, cat_dirs.keys())
     # Return the result of the program in a formatted form.
     res_out = f"The directory \"{_dir}\" contains the following files:\n"
     for cat in [c for c in categories if c['sort'] == True]:
