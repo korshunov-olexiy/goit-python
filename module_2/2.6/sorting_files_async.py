@@ -254,7 +254,7 @@ async def check_argv(param1):
             print("The program has stopped: The parameter passed is not a directory, or the directory does not exist.")
             exit()
     except IndexError:
-        print("Fatal error: Use the target directory AsyncPath parameter to run the program.")
+        print("Fatal error: Use the target directory path parameter to run the program.")
         exit()
     except Exception as err:
         print(f"Fatal error: {str(err)}")
