@@ -16,13 +16,13 @@ def simple_server(host, port):
             while True:
                 data = conn.recv(1024).decode("utf8")
                 current_datetime = datetime.today().strftime("%d.%m.%y %H:%M:%S")
-                print(f'{current_datetime}. From client: {data}')
+                print(f'{current_datetime}. From client:\n{data}')
                 if data == "exit":
                     print(f'Exit command received. Shutdown server...')
                     conn.close()
                     break
                 else:
-                    send_data = input("Enter your message to send: ").encode("utf8")
+                    send_data = input("Enter your message to send:\n").encode("utf8")
                     if send_data:
                         conn.send(send_data)
 
