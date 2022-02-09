@@ -2,23 +2,31 @@
 
 import socket
 import sys
+from datetime import datetime
 
-def echo_server(host, port):
+def simple_server(host, port):
     with socket.socket() as soc:
         soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         soc.bind((host, port))
-        soc.listen()
+        soc.listen(1)
         conn, addr = soc.accept()
-        print(f"Connected by {addr}")
+        current_datetime = datetime.today().strftime("%d.%m.%y %H:%M:%S")
+        print(f'{current_datetime}. Connected by {addr}')
         with conn:
-            print("wait size of data...")
-            size_msg = conn.recv(1024)
-            print(size_msg.decode("utf8"))
-            # data = conn.recv(int(size_msg))
-            # print(f"Size: {sys.getsizeof(data)}, msg: {data.decode('utf8')}")
-            conn.sendall(str.encode("ok"))
+            while True:
+                data = conn.recv(1024).decode("utf8")
+                current_datetime = datetime.today().strftime("%d.%m.%y %H:%M:%S")
+                print(f'{current_datetime}. From client: {data}')
+                if data == "exit":
+                    print(f'Exit command received. Shutdown server...')
+                    conn.close()
+                    break
+                else:
+                    send_data = input("Enter your message to send: ").encode("utf8")
+                    if send_data:
+                        conn.send(send_data)
 
 
 if __name__ == "__main__":
-    host, port = "", 9090
-    echo_server(host, port)
+    host, port = "127.0.0.1", 9080
+    simple_server(host, port)
