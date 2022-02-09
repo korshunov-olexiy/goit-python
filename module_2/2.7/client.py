@@ -6,6 +6,7 @@ import sys
 from time import sleep
 
 def simple_client(host, port):
+    socket.setdefaulttimeout(120.0)
     with socket.socket() as soc:
         soc.connect((host, port))
         # soc.setblocking(False)
@@ -21,7 +22,6 @@ def simple_client(host, port):
                     print(f'From server: {data}')
             except ConnectionRefusedError:
                 sleep(0.5)
-    return simple_client(host, port)
 
 
 if __name__ == "__main__":
