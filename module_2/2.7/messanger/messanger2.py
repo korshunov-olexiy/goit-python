@@ -51,10 +51,10 @@ def simple_client(host, port):
             sleep(timeout)
             sys.exit()
         while True:
-            send_data = input("Enter your message: ").encode("utf8")
+            send_data = input("::").encode("utf8")
             try:
                 soc.sendall(send_data)
-            except ConnectionRefusedError:
+            except (ConnectionRefusedError, ConnectionResetError):
                 sleep(timeout)
                 sys.exit()
             if send_data == b"exit":
