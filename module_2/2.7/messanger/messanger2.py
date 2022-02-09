@@ -1,16 +1,21 @@
-# -*- coding: utf8 -*-
-
 import socket
 import sys
+from multiprocessing.dummy import Pool as ThreadPool
 from threading import Thread
 from time import sleep
 from typing import Any, Callable, Iterable, Mapping
 
 
 class ThreadWithReturnValue(Thread):
-    def __init__(self, group=None, target=None, name=None, args=(), kwargs={}, Verbose=None):
+    def __init__(self, group):
+        target =  group.get("target", None)
+        args = group.get("args", ())
+        name=group.get("name", None)
+        kwargs=group.get("kwargs", {})
+        group = None
         Thread.__init__(self, group, target, name, args, kwargs)
         self._return = None
+        # self.daemon = True
     def run(self):
         if self._target is not None:
             self._return = self._target(*self._args, **self._kwargs)
@@ -20,7 +25,7 @@ class ThreadWithReturnValue(Thread):
 
 
 def simple_server(host, port):
-    print(f"listening port {port} on host {host}")
+    print(f"listening {host}:{port}")
     with socket.socket() as soc:
         soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         soc.bind((host, port))
@@ -31,12 +36,10 @@ def simple_server(host, port):
             while True:
                 data = conn.recv(1024).decode("utf8")
                 if data:
-                    print(f'From client:\n{data}')
+                    print(f'From client: {data}')
                 elif data == "exit":
                     conn.close()
                     return "exit"
-                # else:
-                #     conn.send(data.upper())
 
 def simple_client(host, port):
     timeout = 5
@@ -48,7 +51,7 @@ def simple_client(host, port):
             sleep(timeout)
             sys.exit()
         while True:
-            send_data = input("Enter your message:\n").encode("utf8")
+            send_data = input("Enter your message: ").encode("utf8")
             try:
                 soc.sendall(send_data)
             except ConnectionRefusedError:
@@ -58,12 +61,6 @@ def simple_client(host, port):
                 soc.close()
                 return "exit"
 
-def run_service_in_thread(func, vals):
-    sc = None
-    while not sc or sc.join() != "exit":
-        if not sc or not sc.is_alive():
-            sc = ThreadWithReturnValue(target=func, args=vals)
-            sc.start()
 
 if __name__ == "__main__":
     try:
@@ -77,12 +74,12 @@ if __name__ == "__main__":
         except:
             print("Error in configuration file.")
     HOST, PORT_SERVER, PORT_CLIENT = config_values
-    # server = ThreadWithReturnValue(target=simple_server, args=(HOST, PORT_SERVER))
-    # client = ThreadWithReturnValue(target=simple_client, args=(HOST, PORT_CLIENT))
-    # server.start()
-    # client.start()
-    # server.join()
-    # client.join()
-    run_service_in_thread(simple_client, (HOST, PORT_CLIENT))
-    run_service_in_thread(simple_server, (HOST, PORT_SERVER))
-    print('Done!')
+    pool = ThreadPool(4)
+    vals = [{"target": simple_server, "args": (HOST, PORT_SERVER)}, {"target": simple_client, "args": (HOST, PORT_CLIENT)}]
+    results = pool.map(ThreadWithReturnValue, vals)
+    for res in results:
+        res.start()
+    while all([res.is_alive() for res in results]):
+        """"""
+    pool.close()
+    pool.join()
