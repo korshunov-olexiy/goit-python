@@ -2,26 +2,20 @@ import socket
 import sys
 from multiprocessing.dummy import Pool as ThreadPool
 from threading import Thread
-from time import sleep
-from typing import Any, Callable, Iterable, Mapping
+from functools import partial
+from time import sleep, time
+from typing import Any, Callable, Dict, Iterable, Mapping
 
 
-class ThreadWithReturnValue(Thread):
-    def __init__(self, group):
-        target =  group.get("target", None)
-        args = group.get("args", ())
-        name=group.get("name", None)
-        kwargs=group.get("kwargs", {})
+class SimpleThread(Thread):
+    def __init__(self, targs: Dict) -> None:
+        target = targs.get("target", None)
+        name = targs.get("name", None)
+        args = targs.get("args", ())
+        kwargs = targs.get("kwargs", {})
+        daemon = targs.get("daemon", True)
         group = None
-        Thread.__init__(self, group, target, name, args, kwargs)
-        self._return = None
-        # self.daemon = True
-    def run(self):
-        if self._target is not None:
-            self._return = self._target(*self._args, **self._kwargs)
-    def join(self, *args):
-        Thread.join(self, *args)
-        return self._return
+        super().__init__(group, target, name, args, kwargs, daemon=daemon)
 
 
 def simple_server(host, port):
@@ -42,21 +36,25 @@ def simple_server(host, port):
                     return "exit"
 
 def simple_client(host, port):
+    socket.setdefaulttimeout(120.0)
     timeout = 5
     print(f"attempt connect to server {host}:{port}")
-    with socket.socket() as soc:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as soc:
         try:
-            soc.connect((host, port))
-        except ConnectionRefusedError:
+            soc.setblocking(False)
+            soc.connect_ex((host, port))
+        except socket.error:
             sleep(timeout)
-            sys.exit()
+            return simple_client(host, port)
         while True:
-            send_data = input("::").encode("utf8")
+            send_data = input("::> ").encode("utf8")
             try:
                 soc.sendall(send_data)
-            except (ConnectionRefusedError, ConnectionResetError):
-                sleep(timeout)
-                sys.exit()
+            except socket.error as error:
+                print(f"An error has occurred: {error.errno}: {error.strerror}")
+                if send_data == b"exit":
+                    return "exit"
+                return simple_client(host, port)
             if send_data == b"exit":
                 soc.close()
                 return "exit"
@@ -74,12 +72,17 @@ if __name__ == "__main__":
         except:
             print("Error in configuration file.")
     HOST, PORT_SERVER, PORT_CLIENT = config_values
-    pool = ThreadPool(4)
-    vals = [{"target": simple_server, "args": (HOST, PORT_SERVER)}, {"target": simple_client, "args": (HOST, PORT_CLIENT)}]
-    results = pool.map(ThreadWithReturnValue, vals)
+    # pool = ThreadPool(4)
+    # vals = [{"target": simple_server, "args": (HOST, PORT_SERVER)}, {"target": simple_client, "args": (HOST, PORT_CLIENT)}]
+    # results = pool.map(SimpleThread, vals)
+    res1 = Thread(target=simple_client, args=(HOST, PORT_CLIENT))
+    res2 = Thread(target=simple_server, args=(HOST, PORT_SERVER))
+    results = (res1, res2)
     for res in results:
         res.start()
     while all([res.is_alive() for res in results]):
         """"""
-    pool.close()
-    pool.join()
+    # for res in results:
+    #     res.join()
+    # pool.close()
+    # pool.join()
