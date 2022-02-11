@@ -28,8 +28,10 @@ class Manager:
                 while True:
                     try:
                         data = conn.recv(1024).decode("utf8")
-                    except (ConnectionResetError, ConnectionRefusedError):
-                        """"""
+                    except (ConnectionResetError, ConnectionRefusedError) as err:
+                        conn.close()
+                        self.stop()
+                        break
                     if data:
                         if data == "exit":
                             conn.close()
