@@ -1,6 +1,6 @@
 import socket
 import sys
-import time
+from time import sleep
 from threading import Event, Thread
 
 
@@ -45,7 +45,7 @@ class Manager:
             try:
                 soc.connect((self.host, self.port_client))
             except socket.error as error:
-                time.sleep(timeout)
+                sleep(timeout)
                 self.simple_client()
             while True:
                 send_data = input("::> ").encode("utf8")
@@ -74,7 +74,7 @@ class Manager:
             if self.stopped():
                 print("Shutdown messanger. Goodbye...")
                 sys.exit()
-            time.sleep(1)
+            sleep(1)
 
 
 if __name__ == '__main__':
