@@ -23,6 +23,7 @@ class Manager:
             soc.listen(1)
             conn, addr = soc.accept()
             print(f"Connected by {addr}")
+            data = ""
             with conn:
                 while True:
                     try:
