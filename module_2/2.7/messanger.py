@@ -44,7 +44,7 @@ class Manager:
                 soc.connect((self.host, self.port_client))
             except socket.error as error:
                 time.sleep(timeout)
-                return self.simple_client()
+                self.simple_client()
             while True:
                 send_data = input("::> ").encode("utf8")
                 try:
@@ -55,7 +55,7 @@ class Manager:
                         soc.close()
                         self.stop()
                         return None
-                    return self.simple_client()
+                    self.simple_client()
                 if send_data == b"exit":
                     soc.close()
                     self.stop()
