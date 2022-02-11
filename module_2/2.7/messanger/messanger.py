@@ -1,71 +1,80 @@
-# -*- coding: utf8 -*-
-
 import socket
 import sys
-from threading import Thread
-from time import sleep
-from typing import Any, Callable, Iterable, Mapping
+import time
+from threading import Event, Thread
 
 
-class ThreadWithReturnValue(Thread):
-    def __init__(self, group=None, target=None, name=None, args=(), kwargs={}, Verbose=None):
-        Thread.__init__(self, group, target, name, args, kwargs)
-        self._return = None
-    def run(self):
-        if self._target is not None:
-            self._return = self._target(*self._args, **self._kwargs)
-    def join(self, *args):
-        Thread.join(self, *args)
-        return self._return
+class Manager:
 
+    def __init__(self, host: str, port_server: int, port_client: int) -> None:
+        self.host, self.port_server, self.port_client = host, port_server, port_client
+        self._stop_event = Event()
+        thread1 = Thread(target=self.simple_server, daemon=True)
+        thread1.start()
+        thread2 = Thread(target=self.simple_client, daemon=True)
+        thread2.start()
+        self.check_stopped()
 
-def simple_server(host, port):
-    print(f"listening port {port} on host {host}")
-    with socket.socket() as soc:
-        soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        soc.bind((host, port))
-        soc.listen(1)
-        conn, addr = soc.accept()
-        print(f"Connected by {addr}")
-        with conn:
-            while True:
-                data = conn.recv(1024).decode("utf8")
-                if data:
-                    print(f'From client:\n{data}')
-                elif data == "exit":
-                    conn.close()
-                    return "exit"
-                # else:
-                #     conn.send(data.upper())
+    def simple_server(self):
+        print(f"listening {self.host}:{self.port_server}")
+        with socket.socket() as soc:
+            soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            soc.bind((self.host, self.port_server))
+            soc.listen(1)
+            conn, addr = soc.accept()
+            print(f"Connected by {addr}")
+            with conn:
+                while True:
+                    try:
+                        data = conn.recv(1024).decode("utf8")
+                    except (ConnectionResetError, ConnectionRefusedError):
+                        """"""
+                    if data:
+                        if data == "exit":
+                            conn.close()
+                            print("Shutdown messanger. Goodbye...")
+                            self.stop()
+                            break
+                        print(f'From client: {data}')
 
-def simple_client(host, port):
-    timeout = 5
-    print(f"attempt connect to server {host}:{port}")
-    with socket.socket() as soc:
-        try:
-            soc.connect((host, port))
-        except ConnectionRefusedError:
-            sleep(timeout)
-            sys.exit()
-        while True:
-            send_data = input("Enter your message:\n").encode("utf8")
+    def simple_client(self):
+        timeout = 5
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as soc:
             try:
-                soc.sendall(send_data)
-            except ConnectionRefusedError:
-                sleep(timeout)
+                soc.connect((self.host, self.port_client))
+            except socket.error as error:
+                time.sleep(timeout)
+                return self.simple_client()
+            while True:
+                send_data = input("::> ").encode("utf8")
+                try:
+                    soc.sendall(send_data)
+                except socket.error as error:
+                    print(f"An error has occurred: {error.errno}: {error.strerror}")
+                    if send_data == b"exit":
+                        soc.close()
+                        self.stop()
+                        return None
+                    return self.simple_client()
+                if send_data == b"exit":
+                    soc.close()
+                    self.stop()
+                    return None
+
+    def stop(self):
+        self._stop_event.set()
+
+    def stopped(self):
+        return self._stop_event.is_set()
+
+    def check_stopped(self):
+        while True:
+            if self.stopped():
                 sys.exit()
-            if send_data == b"exit":
-                soc.close()
-                return "exit"
+            time.sleep(1)
 
-def run_service_in_thread(func, vals):
-    sc = None
-    while not sc or sc.join() != "exit":
-        if not sc or not sc.is_alive():
-            sc = ThreadWithReturnValue(target=func, args=vals)
-            sc.start()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     try:
         config_file = sys.argv[1]
     except IndexError:
@@ -77,12 +86,4 @@ if __name__ == "__main__":
         except:
             print("Error in configuration file.")
     HOST, PORT_SERVER, PORT_CLIENT = config_values
-    # server = ThreadWithReturnValue(target=simple_server, args=(HOST, PORT_SERVER))
-    # client = ThreadWithReturnValue(target=simple_client, args=(HOST, PORT_CLIENT))
-    # server.start()
-    # client.start()
-    # server.join()
-    # client.join()
-    run_service_in_thread(simple_client, (HOST, PORT_CLIENT))
-    run_service_in_thread(simple_server, (HOST, PORT_SERVER))
-    print('Done!')
+    Manager(HOST, PORT_SERVER, PORT_CLIENT)
