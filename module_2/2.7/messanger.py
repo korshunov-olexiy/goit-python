@@ -37,7 +37,7 @@ class Manager:
                             conn.close()
                             self.stop()
                             break
-                        print(f'From client: {data}')
+                        print(f'::::> : {data}')
 
     def simple_client(self):
         timeout = 5
