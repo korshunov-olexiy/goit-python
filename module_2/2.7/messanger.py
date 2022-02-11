@@ -23,7 +23,7 @@ class Manager:
             soc.listen(1)
             conn, addr = soc.accept()
             print(f"Connected by {addr}")
-            data = ""
+            data = None
             with conn:
                 while True:
                     try:
