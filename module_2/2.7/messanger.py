@@ -32,7 +32,6 @@ class Manager:
                     if data:
                         if data == "exit":
                             conn.close()
-                            print("Shutdown messanger. Goodbye...")
                             self.stop()
                             break
                         print(f'From client: {data}')
@@ -70,6 +69,7 @@ class Manager:
     def check_stopped(self):
         while True:
             if self.stopped():
+                print("Shutdown messanger. Goodbye...")
                 sys.exit()
             time.sleep(1)
 
