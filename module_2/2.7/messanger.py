@@ -6,8 +6,9 @@ from threading import Event, Thread
 
 class Manager:
 
-    def __init__(self, host: str, port_server: int, port_client: int) -> None:
-        self.host, self.port_server, self.port_client = host, port_server, port_client
+    def __init__(self, host_server: str, host_client: str, port_server: int, port_client: int) -> None:
+        self.host_server, self.host_client = host_server, host_client
+        self.port_server, self.port_client = port_server, port_client
         self._stop_event = Event()
         thread1 = Thread(target=self.simple_server, daemon=True)
         thread1.start()
@@ -16,10 +17,10 @@ class Manager:
         self.check_stopped()
 
     def simple_server(self):
-        print(f"listening {self.host}:{self.port_server}")
+        print(f"listening {self.host_server}:{self.port_server}")
         with socket.socket() as soc:
             soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            soc.bind((self.host, self.port_server))
+            soc.bind((self.host_server, self.port_server))
             soc.listen(1)
             conn, addr = soc.accept()
             print(f"Connected by {addr}")
@@ -43,7 +44,7 @@ class Manager:
         timeout = 5
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as soc:
             try:
-                soc.connect((self.host, self.port_client))
+                soc.connect((self.host_client, self.port_client))
             except socket.error as error:
                 sleep(timeout)
                 self.simple_client()
@@ -88,5 +89,5 @@ if __name__ == '__main__':
             config_values = map(lambda val: int(val) if val.isdigit() else val, f.read().strip().split(";"))
         except:
             print("Error in configuration file.")
-    HOST, PORT_SERVER, PORT_CLIENT = config_values
-    Manager(HOST, PORT_SERVER, PORT_CLIENT)
+    HOST_SERVER, HOST_CLIENT, PORT_SERVER, PORT_CLIENT = config_values
+    Manager(HOST_SERVER, HOST_CLIENT, PORT_SERVER, PORT_CLIENT)
