@@ -74,3 +74,5 @@ CREATE TABLE lessons (
   CONSTRAINT subjects_FK FOREIGN KEY (subjects_id) REFERENCES subjects(subjects_id) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT groups_FK FOREIGN KEY (groups_id) REFERENCES groups(groups_id) ON DELETE SET NULL ON UPDATE CASCADE
 );
+
+INSERT INTO genders (name) VALUES("male"), ("female");
