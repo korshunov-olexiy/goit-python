@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS grades;
 DROP TABLE IF EXISTS groups;
 DROP TABLE IF EXISTS subjects;
 DROP TABLE IF EXISTS classes;
+DROP TABLE IF EXISTS lessons;
 
 
 CREATE TABLE students (
@@ -16,10 +17,12 @@ CREATE TABLE students (
 	genders_id INTEGER,
 	grades_id INTEGER,
 	groups_id INTEGER,
+	subjects_id INTEGER,
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT genders_FK FOREIGN KEY (genders_id) REFERENCES genders(genders_id) ON DELETE SET NULL ON UPDATE CASCADE,
 	CONSTRAINT grades_FK FOREIGN KEY (grades_id) REFERENCES grades(grades_id) ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT groups_FK FOREIGN KEY (groups_id) REFERENCES groups(groups_id) ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT groups_FK FOREIGN KEY (groups_id) REFERENCES groups(groups_id) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT subjects_FK FOREIGN KEY (subjects_id) REFERENCES subjects(subjects_id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 CREATE TABLE teachers (
@@ -57,4 +60,17 @@ CREATE TABLE subjects (
   subjects_id INTEGER PRIMARY KEY,
   name VARCHAR(80),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE lessons (
+  lessons_id INTEGER PRIMARY KEY,
+  students_id INTEGER,
+  teachers_id INTEGER,
+  subjects_id INTEGER,
+  groups_id INTEGER,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT students_FK FOREIGN KEY (students_id) REFERENCES students(students_id) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT teachers_FK FOREIGN KEY (teachers_id) REFERENCES teachers(teachers_id) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT subjects_FK FOREIGN KEY (subjects_id) REFERENCES subjects(subjects_id) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT groups_FK FOREIGN KEY (groups_id) REFERENCES groups(groups_id) ON DELETE SET NULL ON UPDATE CASCADE
 );
