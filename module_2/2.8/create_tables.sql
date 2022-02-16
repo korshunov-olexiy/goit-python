@@ -35,10 +35,8 @@ CREATE TABLE teachers (
   email VARCHAR(40) NOT NULL UNIQUE,
   phone VARCHAR(30) NOT NULL UNIQUE,
   gender_id INTEGER,
-  lesson_id INTEGER,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT genders_FK FOREIGN KEY (gender_id) REFERENCES genders(gender_id) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT lesson_FK FOREIGN KEY (lesson_id) REFERENCES lessons(lesson_id) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT genders_FK FOREIGN KEY (gender_id) REFERENCES genders(gender_id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 CREATE TABLE subjects (
@@ -72,10 +70,8 @@ CREATE TABLE groups (
   group_id INTEGER PRIMARY KEY,
   name VARCHAR(80),
   student_id INTEGER,
-  lesson_id INTEGER,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT students_FK FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT lesson_FK FOREIGN KEY (lesson_id) REFERENCES lessons(lesson_id) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT students_FK FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 CREATE TABLE groups_subjects (
@@ -89,15 +85,23 @@ CREATE TABLE groups_subjects (
 CREATE TABLE lessons (
   lesson_id INTEGER PRIMARY KEY,
   teacher_id INTEGER,
-  started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  group_id INTEGER,
+  subject_id INTEGER,
+  started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT teachers_FK FOREIGN KEY (teacher_id) REFERENCES teachers(teacher_id) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT groups_FK FOREIGN KEY (group_id) REFERENCES groups(group_id) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT subjects_FK FOREIGN KEY (subject_id) REFERENCES subjects(subject_id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- -- -- -- -- -- -- -- -- -- -- -- --
 -- ПОЛ (МУЖЧИНА/ЖЕНЩИНА)
 INSERT INTO genders (name) VALUES("male"), ("female");
 
+-- СОЗДАЕМ ПРОСЛУШАННЫЕ ГРУППАМИ ЗАНЯТИЯ
+--INSERT INTO lessons (teacher_id, started_at) VALUES (), ();
+
 -- ГРУППЫ
-INSERT INTO groups (name) VALUES("І-12"), ("ІМз-01с"), ("ІК.мз-11с");
+--INSERT INTO groups (name, student_id, lesson_id) VALUES("І-12"), ("ІМз-01с"), ("ІК.мз-11с");
 
 -- ПРЕДМЕТЫ
 INSERT INTO subjects (name) VALUES
