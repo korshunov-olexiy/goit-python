@@ -4,6 +4,8 @@ from datetime import datetime
 teachers = lambda: randint(1,3)
 groups = lambda: randint(1,3)
 subjects = lambda: randint(1,5)
+grades = lambda: randint(1,5)
+
 
 def datetime_generator():
     for day in range(1,31):
@@ -13,6 +15,6 @@ def datetime_generator():
 
 datetimes = datetime_generator()
 
-print("INSERT INTO lessons (teacher_id, group_id, subject_id, started_at) VALUES")
+print("INSERT INTO lessons (teacher_id, group_id, subject_id, grade_id, started_at) VALUES")
 for dt_hm in datetimes:
-    print(f"({teachers()}, {groups()}, {subjects()}, \"{dt_hm}\")", end=", ")
+    print(f"({teachers()}, {groups()}, {subjects()}, {grades()}, \"{dt_hm}\")", end=", ")
