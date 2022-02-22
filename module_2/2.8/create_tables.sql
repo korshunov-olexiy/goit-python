@@ -1,7 +1,6 @@
 DROP TABLE IF EXISTS departments;
 DROP TABLE IF EXISTS groups;
 DROP TABLE IF EXISTS lessons;
-DROP TABLE IF EXISTS grades;
 DROP TABLE IF EXISTS subjects;
 DROP TABLE IF EXISTS teachers;
 DROP TABLE IF EXISTS students;
@@ -33,11 +32,6 @@ CREATE TABLE lessons (
   CONSTRAINT teachers_FK FOREIGN KEY (teacher_id) REFERENCES teachers(teacher_id) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT subjects_FK FOREIGN KEY (subject_id) REFERENCES subjects(subject_id) ON DELETE SET NULL ON UPDATE CASCADE
 );
-
---CREATE TABLE grades (
---  grade_id INTEGER PRIMARY KEY,
---  value TINYINT UNSIGNED
---);
 
 CREATE TABLE subjects (
   subject_id INTEGER PRIMARY KEY,
