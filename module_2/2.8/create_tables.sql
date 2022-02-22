@@ -24,21 +24,20 @@ CREATE TABLE groups (
 
 CREATE TABLE lessons (
   lesson_id INTEGER PRIMARY KEY,
-  group_id INTEGER,
   subject_id INTEGER,
+  student_id INTEGER,
   teacher_id INTEGER,
+  grade INTEGER,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT groups_FK FOREIGN KEY (group_id) REFERENCES groups(group_id) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT students_FK FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT teachers_FK FOREIGN KEY (teacher_id) REFERENCES teachers(teacher_id) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT subjects_FK FOREIGN KEY (subject_id) REFERENCES subjects(subject_id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
-CREATE TABLE grades (
-  grade_id INTEGER PRIMARY KEY,
-  value TINYINT UNSIGNED,
-  lesson_id INTEGER,
-  CONSTRAINT lessons_FK FOREIGN KEY (lesson_id) REFERENCES lessons(lesson_id) ON DELETE SET NULL ON UPDATE CASCADE
-);
+--CREATE TABLE grades (
+--  grade_id INTEGER PRIMARY KEY,
+--  value TINYINT UNSIGNED
+--);
 
 CREATE TABLE subjects (
   subject_id INTEGER PRIMARY KEY,
@@ -51,7 +50,9 @@ CREATE TABLE teachers (
   last_name VARCHAR(50) NOT NULL,
   email VARCHAR(40) NOT NULL UNIQUE,
   phone VARCHAR(20) NOT NULL UNIQUE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  gender_id INTEGER,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT genders_FK FOREIGN KEY (gender_id) REFERENCES genders(gender_id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 CREATE TABLE students (
@@ -60,22 +61,14 @@ CREATE TABLE students (
 	last_name VARCHAR(50) NOT NULL,
 	email VARCHAR(40) NOT NULL,
 	phone VARCHAR(20) NOT NULL,
-	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	gender_id INTEGER,
+	group_id INTEGER,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT genders_FK FOREIGN KEY (gender_id) REFERENCES genders(gender_id) ON DELETE SET NULL ON UPDATE CASCADE,
+	CONSTRAINT groups_FK FOREIGN KEY (group_id) REFERENCES groups(group_id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 CREATE TABLE genders (
   gender_id INTEGER PRIMARY KEY,
-  name VARCHAR(30),
-  student_id INTEGER,
-  teacher_id INTEGER,
-  CONSTRAINT students_FK FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT teachers_FK FOREIGN KEY (teacher_id) REFERENCES teachers(teacher_id) ON DELETE SET NULL ON UPDATE CASCADE
-);
-
-CREATE TABLE groups_students(
-  gs_id INTEGER PRIMARY KEY,
-  group_id INTEGER,
-  student_id INTEGER,
-  CONSTRAINT groups_FK FOREIGN KEY (group_id) REFERENCES groups(group_id) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT students_FK FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE SET NULL ON UPDATE CASCADE
+  name VARCHAR(30)
 );
