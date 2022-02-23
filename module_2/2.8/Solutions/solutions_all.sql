@@ -50,7 +50,7 @@ on l.subject_id = sb.subject_id and l.student_id = s.student_id and s.group_id =
 order by sb.subject_id;
 
 -- Список курсов, которые посещает студент
-select s.last_name || ' ' || s.first_name, sb.name 'Subject' from students s
+select s.last_name || ' ' || s.first_name 'Subject', sb.name from students s
 inner join lessons l
 inner join subjects sb
 on s.student_id = l.student_id and l.subject_id = sb.subject_id order by s.student_id;
@@ -64,7 +64,7 @@ group by l.student_id, t.teacher_id
 order by t.teacher_id, s.student_id;
 
 -- Средний балл, который ставит преподаватель
-select t.teacher_id, t.last_name || ' ' || t.first_name teacher, round(avg(l.grade), 3) avg_grade from lessons l
-inner join teachers t
+select t.last_name || ' ' || t.first_name teacher, round(avg(l.grade), 3) avg_grade from teachers t
+left join lessons l
 on l.teacher_id = t.teacher_id
 group by teacher order by l.grade DESC;
