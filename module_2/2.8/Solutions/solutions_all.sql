@@ -55,6 +55,14 @@ inner join lessons l
 inner join subjects sb
 on s.student_id = l.student_id and l.subject_id = sb.subject_id order by s.student_id;
 
+-- Список курсов, которые студенту читает преподаватель
+select sb.name 'Subject', s.last_name || ' ' || s.first_name 'Student', t.last_name || ' ' || t.first_name 'Teacher' from students s
+inner join lessons l
+inner join subjects sb
+inner join teachers t
+on l.subject_id = sb.subject_id and s.student_id = l.student_id and l.teacher_id = t.teacher_id
+order by sb.subject_id, t.teacher_id;
+
 -- Средний балл, который преподаватель ставит студенту
 select t.last_name || ' ' || t.first_name teacher, s.last_name || ' ' || s.first_name students, round(avg(l.grade),3) avg_grade from lessons l
 inner join teachers t
